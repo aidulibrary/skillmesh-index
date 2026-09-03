@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="smb-title">
+  <title id="smb-title">SkillMesh / 插台 — 权与衡</title>
+
+  <!-- 衡：秤杆（贯穿，象征通约的尺度） -->
+  <line x1="3" y1="13.5" x2="29" y2="13.5" stroke="#18181B" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 刻度：可度量的最小单位 -->
+  <g stroke="#18181B" stroke-width="1.5" stroke-linecap="round">
+    <line x1="11" y1="9"   x2="11" y2="12"/>
+    <line x1="14" y1="9"   x2="14" y2="12"/>
+    <line x1="17" y1="9"   x2="17" y2="12"/>
+  </g>
+
+  <!-- 被评估者：悬挂的能力锚点 -->
+  <line x1="8" y1="13.5" x2="8" y2="18" stroke="#18181B" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="8" cy="20.5" r="2.6" fill="#18181B"/>
+
+  <!-- 权：可滑动的秤砣（加权/Weight） -->
+  <rect x="19.5" y="9" width="7.5" height="9" rx="1.75" fill="#0D9488"/>
+</svg>

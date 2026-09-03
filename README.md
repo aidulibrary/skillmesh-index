@@ -1,2 +1,154 @@
-# skillmesh-index
-SkillMesh / 插台 — 能力通约网络的开放索引层。CCP协议的开源实现，零服务器成本，个人维护，全球双语。 SkillMesh / Cha-Tai — Open index layer for capability commensurability network. CCP protocol implementation, zero server cost, bilingual, globally open.
+# SkillMesh / 插台 — 能力通约网络
+
+> **让任何能力被任何调用方发现、评估和调用。**
+
+**SkillMesh**（英文正式品牌）/ **插台**（中文社区昵称）是一个去中心化的能力通约网络。它不是一个"插件商店"，而是一个**协议优先的公共基础设施**——通过 CCP（Capability Commensurability Protocol，能力通约协议）让异构系统间的能力请求与能力执行得以对接。
+
+---
+
+## 为什么需要 SkillMesh
+
+当前 AI 能力生态面临核心问题：**"插件"之名遮蔽了"能力通约"之实。**
+
+- 插件被理解为"可安装的代码包"，但 Agent 需要的不是安装，而是**调用能力**。
+- 插件声明"提供了哪些工具"，但 Agent 需要的不是工具签名，而是**认知能力**。
+- 插件以"发布者"作为身份锚点，但 Agent 不关心能力来自谁，只关心**能力是否可靠、是否可用**。
+
+SkillMesh 将这三重误认消解，将"插件"重构为"能力锚点"——一个只包含元数据、不包含代码的通约结构。
+
+**核心原则**：不存储能力，只索引能力；不审核能力，只评估可信度；不拥有生态，只维护通约协议。
+
+---
+
+## 技术栈
+
+| 层级     | 技术                                      | 说明                                      |
+| -------- | ----------------------------------------- | ----------------------------------------- |
+| 前端     | HTML5 + CSS3 + Vanilla JS                 | 纯静态，零依赖（除 transformers.js 可选） |
+| 样式     | 自定义 CSS（极简风格）                    | 响应式设计，移动端优先                    |
+| 语义检索 | transformers.js (Xenova/all-MiniLM-L6-v2) | 浏览器端本地推理，零服务器                |
+| 托管     | Cloudflare Pages                          | 全球 CDN，零成本                          |
+| 数据     | 静态 JSON（js/data.js）                   | 版本管理，社区 PR 贡献                    |
+
+---
+
+## 本地运行
+
+本项目为纯静态网站，无需安装任何依赖。
+
+```bash
+# 1. Clone 仓库
+git clone https://github.com/aidulibrary/skillmesh-index.git
+cd skillmesh-index
+
+# 2. 直接打开 index.html（任选一种方式）
+# 方式 A：直接双击 index.html
+# 方式 B：使用任意静态服务器
+npx serve .        # Node.js
+python -m http.server 8000   # Python 3
+```
+
+打开浏览器访问 `http://localhost:3000`（或对应端口）即可看到插台首页。
+
+---
+
+## 项目结构
+
+```
+skillmesh-index/
+├── index.html              # 页面骨架（语义化 HTML5）
+├── css/
+│   └── style.css           # 全局样式（响应式 + 动画）
+├── js/
+│   ├── i18n.js             # 国际化文案（中/英）
+│   ├── data.js             # 能力锚点数据（20 条真实数据）
+│   └── app.js              # 应用逻辑（渲染/搜索/模态框/信任向量）
+├── docs/
+│   └── CCP-v0.1.md         # CCP 协议规范
+├── CONTRIBUTING.md         # 贡献指南
+└── README.md               # 本文件
+```
+
+---
+
+## 核心特性
+
+### 能力锚点网格
+
+- 20 条真实能力锚点数据，覆盖 AI、数据处理、媒体、语言、开发工具五大类
+- 卡片展示：名称、描述、调用方式图标、综合信任分星级、调用次数
+- 新能力徽标：证据量 < 100 的能力自动标注
+
+### 搜索与筛选
+
+- **语义检索**：集成 transformers.js 浏览器端向量检索，支持中文语义匹配
+- **关键词搜索**：300ms 防抖，实时过滤
+- **分类筛选**：全部 / AI 智能 / 数据处理 / 媒体处理 / 语言服务 / 开发工具
+
+### 可信度系统
+
+- **L1 信任向量**：五维信任评分（源码可验证、使用痕迹、成功率、依赖风险、时效性）
+- **L2 证据层**：证据量 + 不确定性，区分"3 次 100%"与"1 万次 97%"
+- **综合信任分排序**：加权信任分 × 不确定性惩罚，零随机数
+
+### 国际化
+
+- 中英文双语切换，自动检测浏览器语言
+- 所有能力锚点字段均支持中英双字段
+
+### 响应式设计
+
+- 移动端：单列卡片布局
+- 平板：双列卡片布局
+- 桌面：三列卡片布局
+- 模态框自适应高度
+
+### 无障碍
+
+- 语义化 HTML 标签
+- ARIA 属性（role、aria-label、aria-pressed、aria-modal）
+- 键盘操作：Ctrl+K 聚焦搜索、Escape 关闭模态框、Enter 打开详情
+
+---
+
+## CCP 协议
+
+SkillMesh / 插台是 CCP（Capability Commensurability Protocol）协议的参考实现。
+
+CCP 协议定义了：
+
+- 能力锚点的元数据 Schema
+- 信任向量（L1）和证据层（L2）标准
+- 发现、评估、调用三大操作
+
+详见 [CCP v0.1 协议规范](./docs/CCP-v0.1.md)。
+
+---
+
+## 贡献
+
+欢迎提交能力锚点、改进协议或参与代码贡献。详见 [贡献指南](./CONTRIBUTING.md)。
+
+**快速贡献路径**：
+
+1. 搜索确认能力锚点未被收录
+2. 在 GitHub Issues 中提交新能力锚点（使用模板）
+3. 或直接 Fork 仓库，在 `js/data.js` 中添加数据后提交 PR
+
+---
+
+## 理论基底
+
+SkillMesh / 插台的理论基础来自两大原创学术体系：
+
+- **名实学**（六公理·十五定律·九大悖论基元）：提供"插件"之名的消解与重构框架，以及技术选型的名实一致性验证方法论。
+- **道场学**（道场承载结构论·道场正义）：提供能力通约网络的承载结构设计和知识治理原则。
+
+详见 [SkillMesh 插台——名实学·道场学终极理论指导](./docs/SkillMesh%20插台——名实学·道场学终极理论指导与项目执行规划.md)。
+
+---
+
+## License
+
+- **代码**（`index.html`、`js/`、`css/`）：[MIT](https://opensource.org/licenses/MIT)
+- **协议文档**（`docs/CCP-v0.1.md`、`CONTRIBUTING.md`、`README.md`）：[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)

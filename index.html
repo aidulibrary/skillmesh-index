@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SkillMesh 插台 v1.0.0 — 能力通约网络：让任何能力被任何调用方发现、评估和调用"
+    />
+    <meta property="og:title" content="SkillMesh / 插台 — 能力通约网络" />
+    <meta
+      property="og:description"
+      content="让任何能力被任何调用方发现、评估和调用。CCP协议开源实现。"
+    />
+    <meta property="og:type" content="website" />
+    <title>SkillMesh / 插台 — 能力通约网络</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg" />
+    <link rel="apple-touch-icon" href="assets/brand/logo-mark.svg" />
+
+    <!-- Design Tokens (must load before style.css) -->
+    <link rel="stylesheet" href="css/tokens.css" />
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- ==============================================================
+           Navbar
+           ============================================================== -->
+      <nav class="navbar">
+        <div class="navbar-inner">
+          <div class="navbar-brand">
+            <img
+              src="assets/brand/logo-mark.svg"
+              alt=""
+              width="24"
+              height="24"
+              aria-hidden="true"
+            />
+            <span class="navbar-logo">SkillMesh</span>
+            <span class="navbar-badge">插台</span>
+            <span class="navbar-version">v1.0.0</span>
+          </div>
+          <div class="navbar-lang">
+            <span id="auth-area">
+              <a
+                href="/api/auth/github/login"
+                id="btn-login"
+                class="lang-btn"
+                aria-label="Login with GitHub"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  style="vertical-align: middle; margin-right: 4px"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                  />
+                </svg>
+                <span data-i18n="login">Login</span>
+              </a>
+            </span>
+            <span id="user-area" style="display: none">
+              <a
+                href="/api/auth/github/logout"
+                id="btn-logout"
+                class="lang-btn"
+                aria-label="Logout"
+                title="Logout"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  style="vertical-align: middle; margin-right: 4px"
+                >
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span data-i18n="logout">Logout</span>
+              </a>
+            </span>
+            <span class="navbar-lang-sep">/</span>
+            <button
+              onclick="App.setLang('zh')"
+              id="btn-zh"
+              class="lang-btn active"
+              aria-label="切换到中文"
+            >
+              中文
+            </button>
+            <span class="navbar-lang-sep">/</span>
+            <button
+              onclick="App.setLang('en')"
+              id="btn-en"
+              class="lang-btn"
+              aria-label="Switch to English"
+            >
+              EN
+            </button>
+            <span class="navbar-lang-sep">/</span>
+            <button
+              onclick="App.setLang('ja')"
+              id="btn-ja"
+              class="lang-btn"
+              aria-label="日本語に切り替え"
+            >
+              日本語
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ==============================================================
+           Main Content
+           ============================================================== -->
+      <main class="main-container">
+        <!-- Hero -->
+        <section class="hero">
+          <h1 class="hero-title">
+            SkillMesh / <span class="hero-title-light">插台</span>
+          </h1>
+          <p id="subtitle" class="hero-subtitle">
+            能力通约网络 — 让任何能力被任何调用方发现、评估和调用
+          </p>
+        </section>
+
+        <!-- Search -->
+        <section class="search-wrapper">
+          <div class="search-container">
+            <input
+              id="searchInput"
+              type="text"
+              class="search-input"
+              placeholder="描述你需要的能力，例如：提取PDF表格"
+              autocomplete="off"
+            />
+            <svg
+              class="search-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <p id="searchHint" class="search-hint">
+            输入自然语言描述，实时匹配能力锚点
+          </p>
+          <div class="search-options">
+            <label class="federated-toggle" id="federatedToggleLabel">
+              <input type="checkbox" id="federatedToggle" />
+              <span class="federated-toggle-slider"></span>
+              <span class="federated-toggle-text" id="federatedToggleText"
+                >联邦</span
+              >
+            </label>
+          </div>
+        </section>
+
+        <!-- Category Filter -->
+        <section
+          id="categoryFilter"
+          class="category-filter"
+          aria-label="分类筛选"
+        >
+          <!-- Dynamically rendered by App.js -->
+        </section>
+
+        <!-- Loading Skeleton -->
+        <section
+          id="loadingSkeleton"
+          class="skeleton-grid"
+          aria-label="加载中"
+          aria-busy="true"
+        >
+          <!-- Dynamically rendered by App.js -->
+        </section>
+
+        <!-- Card Grid -->
+        <section id="cardGrid" class="card-grid" aria-label="能力锚点列表">
+          <!-- Dynamically rendered by App.js -->
+        </section>
+
+        <!-- Empty State -->
+        <section id="emptyState" class="empty-state hidden" aria-live="polite">
+          <svg
+            class="empty-icon"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+            />
+          </svg>
+          <p class="empty-title">未找到匹配的能力锚点</p>
+          <p class="empty-sub">尝试更换关键词或切换分类筛选</p>
+        </section>
+
+        <!-- Federation Panel -->
+        <section
+          id="federationPanel"
+          class="federation-panel"
+          aria-label="联邦网络"
+        >
+          <div class="federation-header">
+            <h2 class="federation-title" id="federationTitle">联邦网络</h2>
+            <button
+              id="federationToggleBtn"
+              class="federation-toggle-btn"
+              aria-expanded="true"
+            >
+              <svg
+                class="federation-chevron"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+          </div>
+          <div class="federation-body" id="federationBody">
+            <div class="federation-add-section">
+              <h3 class="federation-subtitle" id="federationAddNodeTitle">
+                添加节点
+              </h3>
+              <div class="federation-add-form">
+                <div class="federation-form-row">
+                  <input
+                    id="fedNodeId"
+                    class="federation-input"
+                    placeholder="节点 ID"
+                  />
+                  <input
+                    id="fedNodeName"
+                    class="federation-input"
+                    placeholder="节点名称"
+                  />
+                </div>
+                <div class="federation-form-row">
+                  <input
+                    id="fedNodeEndpoint"
+                    class="federation-input"
+                    placeholder="https://node.example.com/api/ccp/v1"
+                  />
+                </div>
+                <div class="federation-form-row">
+                  <input
+                    id="fedNodeDesc"
+                    class="federation-input"
+                    placeholder="节点描述（可选）"
+                  />
+                  <input
+                    id="fedNodeTrust"
+                    class="federation-input federation-input-sm"
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value="0.5"
+                    placeholder="信任权重"
+                  />
+                </div>
+                <button id="fedAddBtn" class="federation-add-btn">
+                  注册节点
+                </button>
+              </div>
+            </div>
+            <div class="federation-nodes-section">
+              <h3 class="federation-subtitle" id="federationNodesTitle">
+                已知节点
+              </h3>
+              <div id="federationNodesList" class="federation-nodes-list">
+                <p class="federation-empty" id="federationNoNodes">
+                  暂无联邦节点
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- ==============================================================
+           Modal Overlay
+           ============================================================== -->
+      <div
+        id="modalOverlay"
+        class="modal-overlay hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <div id="modalContainer" class="modal-container">
+          <div class="modal-card">
+            <!-- Header -->
+            <div class="modal-header">
+              <h2 id="modalTitle" class="modal-title"></h2>
+              <button
+                onclick="App.closeModal()"
+                class="modal-close-btn"
+                aria-label="关闭"
+              >
+                <svg
+                  class="modal-close-icon"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+              <!-- Description -->
+              <div>
+                <p class="modal-section-label">描述</p>
+                <p id="modalDesc" class="modal-section-text"></p>
+              </div>
+
+              <!-- Input / Output -->
+              <div class="modal-grid-2">
+                <div>
+                  <p class="modal-section-label">输入参数</p>
+                  <p id="modalInput" class="modal-section-text"></p>
+                </div>
+                <div>
+                  <p class="modal-section-label">输出承诺</p>
+                  <p id="modalOutput" class="modal-section-text"></p>
+                </div>
+              </div>
+
+              <!-- Features -->
+              <div>
+                <p class="modal-section-label">功能特性</p>
+                <div id="modalFeatures" class="feature-tags"></div>
+              </div>
+
+              <!-- Usage Guide -->
+              <div>
+                <p class="modal-section-label">使用说明</p>
+                <p id="modalUsageGuide" class="modal-section-text"></p>
+              </div>
+
+              <!-- Code Example -->
+              <div>
+                <p class="modal-section-label">调用示例</p>
+                <code id="modalCodeExample" class="modal-endpoint-code"></code>
+              </div>
+
+              <!-- Endpoint -->
+              <div>
+                <p class="modal-section-label">调用端点</p>
+                <code id="modalEndpoint" class="modal-endpoint-code"></code>
+              </div>
+
+              <!-- Provenance -->
+              <div>
+                <p class="modal-section-label">来源链接</p>
+                <a
+                  id="modalProvenance"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="modal-provenance-link"
+                ></a>
+              </div>
+
+              <!-- Trust Vector -->
+              <div>
+                <p class="modal-section-label">可信度向量</p>
+                <div class="trust-vector">
+                  <div class="trust-row">
+                    <span class="trust-row-label">源码可验证</span>
+                    <div class="trust-row-bar">
+                      <div
+                        id="trustSource"
+                        class="trust-row-fill"
+                        style="background: var(--sm-trust-source)"
+                      ></div>
+                    </div>
+                    <span id="trustSourceVal" class="trust-row-value"></span>
+                  </div>
+                  <div class="trust-row">
+                    <span class="trust-row-label">使用痕迹</span>
+                    <div class="trust-row-bar">
+                      <div
+                        id="trustUsage"
+                        class="trust-row-fill"
+                        style="background: var(--sm-trust-usage)"
+                      ></div>
+                    </div>
+                    <span id="trustUsageVal" class="trust-row-value"></span>
+                  </div>
+                  <div class="trust-row">
+                    <span class="trust-row-label">成功率</span>
+                    <div class="trust-row-bar">
+                      <div
+                        id="trustSuccess"
+                        class="trust-row-fill"
+                        style="background: var(--sm-trust-success)"
+                      ></div>
+                    </div>
+                    <span id="trustSuccessVal" class="trust-row-value"></span>
+                  </div>
+                  <div class="trust-row">
+                    <span class="trust-row-label">依赖风险</span>
+                    <div class="trust-row-bar">
+                      <div
+                        id="trustRisk"
+                        class="trust-row-fill"
+                        style="background: var(--sm-trust-risk)"
+                      ></div>
+                    </div>
+                    <span id="trustRiskVal" class="trust-row-value"></span>
+                  </div>
+                  <div class="trust-row">
+                    <span class="trust-row-label">时效性</span>
+                    <div class="trust-row-bar">
+                      <div
+                        id="trustTime"
+                        class="trust-row-fill"
+                        style="background: var(--sm-trust-time)"
+                      ></div>
+                    </div>
+                    <span id="trustTimeVal" class="trust-row-value"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Evidence Bar -->
+              <div class="evidence-bar">
+                <span id="evidenceCount" class="evidence-count"></span>
+                <span
+                  id="evidenceUncertainty"
+                  class="evidence-uncertainty"
+                ></span>
+              </div>
+
+              <!-- Routing Section -->
+              <div class="routing-section">
+                <p class="modal-section-label">路由操作</p>
+                <div class="routing-actions">
+                  <button
+                    class="routing-btn routing-btn-code"
+                    onclick="App.generateCode()"
+                    aria-label="生成调用代码"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      width="16"
+                      height="16"
+                    >
+                      <polyline points="16 18 22 12 16 6" />
+                      <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                    <span>生成代码</span>
+                  </button>
+                  <button
+                    id="tryItBtn"
+                    class="routing-btn routing-btn-try"
+                    onclick="App.toggleTryIt()"
+                    aria-label="浏览器端试用"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      width="16"
+                      height="16"
+                    >
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    <span>浏览器试用</span>
+                  </button>
+                  <button
+                    class="routing-btn routing-btn-export"
+                    onclick="App.toggleExport()"
+                    aria-label="导出适配器"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      width="16"
+                      height="16"
+                    >
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    <span>导出适配器</span>
+                  </button>
+                </div>
+
+                <!-- Generated Code Panel -->
+                <div id="codePanel" class="routing-panel hidden">
+                  <div class="routing-panel-header">
+                    <span id="codePanelTitle" class="routing-panel-title"
+                      >调用代码</span
+                    >
+                    <div class="routing-panel-tabs" id="codeTabs"></div>
+                    <button
+                      class="routing-copy-btn"
+                      onclick="App.copyCode()"
+                      aria-label="复制代码"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        width="14"
+                        height="14"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" />
+                        <path
+                          d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <pre id="codeContent" class="routing-code"></pre>
+                </div>
+
+                <!-- Try-It Panel -->
+                <div id="tryItPanel" class="routing-panel hidden">
+                  <div class="routing-panel-header">
+                    <span class="routing-panel-title">浏览器端试用</span>
+                  </div>
+                  <div id="tryItOnlyHttp" class="hidden">
+                    <p class="try-it-note">仅支持 HTTP 类型的能力端点</p>
+                  </div>
+                  <div id="tryItForm" class="hidden">
+                    <div class="try-it-row">
+                      <label class="try-it-label">请求方法</label>
+                      <select id="tryItMethod" class="try-it-select">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                      </select>
+                    </div>
+                    <div class="try-it-row">
+                      <label class="try-it-label">请求参数</label>
+                      <textarea
+                        id="tryItParams"
+                        class="try-it-textarea"
+                        rows="3"
+                        placeholder='{"key": "value"}'
+                      ></textarea>
+                    </div>
+                    <div class="try-it-row">
+                      <label class="try-it-label">请求头</label>
+                      <textarea
+                        id="tryItHeaders"
+                        class="try-it-textarea"
+                        rows="2"
+                        placeholder='{"Content-Type": "application/json"}'
+                      ></textarea>
+                    </div>
+                    <button class="try-it-send-btn" onclick="App.sendTryIt()">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        width="14"
+                        height="14"
+                      >
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                      发送请求
+                    </button>
+                    <div id="tryItResult" class="try-it-result hidden">
+                      <div class="try-it-result-header">
+                        <span class="try-it-result-label">响应结果</span>
+                        <span id="tryItMeta" class="try-it-result-meta"></span>
+                      </div>
+                      <pre id="tryItResponse" class="routing-code"></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Export Adapter Panel -->
+                <div id="exportPanel" class="routing-panel hidden">
+                  <div class="routing-panel-header">
+                    <span class="routing-panel-title">导出到</span>
+                  </div>
+                  <div class="export-options">
+                    <label class="export-option">
+                      <input
+                        type="radio"
+                        name="exportTarget"
+                        value="dsh"
+                        class="export-radio"
+                      />
+                      <span class="export-option-label">DeepSeek-Harness</span>
+                      <span class="export-option-desc">plugin.yaml</span>
+                    </label>
+                    <label class="export-option">
+                      <input
+                        type="radio"
+                        name="exportTarget"
+                        value="mcp"
+                        class="export-radio"
+                      />
+                      <span class="export-option-label">MCP 客户端</span>
+                      <span class="export-option-desc">mcp.json</span>
+                    </label>
+                    <label class="export-option">
+                      <input
+                        type="radio"
+                        name="exportTarget"
+                        value="langchain"
+                        class="export-radio"
+                      />
+                      <span class="export-option-label">LangChain</span>
+                      <span class="export-option-desc">Tool JSON</span>
+                    </label>
+                    <label class="export-option">
+                      <input
+                        type="radio"
+                        name="exportTarget"
+                        value="crewai"
+                        class="export-radio"
+                      />
+                      <span class="export-option-label">CrewAI</span>
+                      <span class="export-option-desc">Tool Schema</span>
+                    </label>
+                    <label class="export-option">
+                      <input
+                        type="radio"
+                        name="exportTarget"
+                        value="dify"
+                        class="export-radio"
+                      />
+                      <span class="export-option-label">Dify</span>
+                      <span class="export-option-desc">工具配置</span>
+                    </label>
+                  </div>
+                  <div class="export-actions">
+                    <button
+                      class="export-gen-btn"
+                      onclick="App.generateExport()"
+                    >
+                      导出选中
+                    </button>
+                    <button class="export-copy-btn" onclick="App.copyAll()">
+                      复制全部
+                    </button>
+                  </div>
+                  <div id="exportContent" class="routing-panel hidden">
+                    <div class="routing-panel-header">
+                      <span
+                        id="exportContentTitle"
+                        class="routing-panel-title"
+                      ></span>
+                      <button
+                        class="routing-copy-btn"
+                        onclick="App.copyCode()"
+                        aria-label="复制代码"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          width="14"
+                          height="14"
+                        >
+                          <rect x="9" y="9" width="13" height="13" rx="2" />
+                          <path
+                            d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <pre id="exportCodeContent" class="routing-code"></pre>
+                    <div
+                      id="dshInstallSection"
+                      class="dsh-install-section hidden"
+                    >
+                      <p class="dsh-install-hint">
+                        在 DeepSeek-Harness 环境中执行以下命令安装
+                      </p>
+                      <div class="dsh-install-commands">
+                        <div class="dsh-install-block">
+                          <span class="dsh-install-label">通过 CLI 安装</span>
+                          <code
+                            id="dshCliCommand"
+                            class="dsh-install-code"
+                          ></code>
+                        </div>
+                        <div class="dsh-install-block">
+                          <span class="dsh-install-label">通过 URL 安装</span>
+                          <code
+                            id="dshUrlCommand"
+                            class="dsh-install-code"
+                          ></code>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==============================================================
+           Footer
+           ============================================================== -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <p class="footer-copy">SkillMesh / 插台 v1.0.0 — CCP 协议开源实现</p>
+          <div class="footer-links">
+            <a
+              href="https://github.com/aidulibrary/skillmesh-index"
+              class="footer-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub</a
+            >
+            <a href="docs/CCP-v0.1.md" class="footer-link">CCP 协议</a>
+            <a href="CONTRIBUTING.md" class="footer-link">提交能力</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ================================================================
+         Scripts
+         ================================================================ -->
+    <script src="js/i18n.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- transformers.js — semantic search (lazy-loaded, graceful degradation) -->
+    <script type="module">
+      try {
+        const { pipeline } =
+          await import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js");
+        window.__transformers = { pipeline };
+      } catch (e) {
+        console.warn(
+          "transformers.js CDN unavailable, semantic search disabled. Falling back to keyword search.",
+        );
+        window.__transformers = null;
+      }
+    </script>
+  </body>
+</html>

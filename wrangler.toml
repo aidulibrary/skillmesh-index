@@ -1,0 +1,51 @@
+# Cloudflare Pages 部署配置
+# 部署命令：npx wrangler pages deploy . --project-name=skillmesh
+#
+# 注意：
+# 1. [site] 配置与新版 Pages 部署冲突，已注释，部署时使用纯静态副本
+# 2. 缓存策略分层管理：
+#    - _headers: 全局安全头 + 静态资源长期缓存(immutable) + API禁用缓存
+#    - functions/_middleware.js: HTML入口 stale-while-revalidate + 安全头兜底
+# 3. 安全头: HSTS(2年) + CSP + Permissions-Policy + 基础安全头
+
+name = "skillmesh"
+compatibility_date = "2026-08-28"
+pages_build_output_dir = "."
+
+# [site] 配置与新版 Pages 冲突，已注释
+# [site]
+# bucket = "./"
+
+# 自定义域名（在 Cloudflare 控制台配置）
+# CNAME 记录：skillmesh → skillmesh.pages.dev
+# 主域名：礼字号.中国 (xn--rpr94o750a.xn--fiqs8s)
+# 二级域名：skillmesh.礼字号.中国 (skillmesh.xn--rpr94o750a.xn--fiqs8s)
+
+# 环境变量
+[vars]
+SITE_NAME = "SkillMesh / 插台"
+SITE_VERSION = "1.0.0"
+SITE_DOMAIN = "skillmesh.礼字号.中国"
+GITHUB_REPO = "https://github.com/aidulibrary/skillmesh-index"
+# GitHub OAuth — Client Secret 通过 `wrangler secret put GITHUB_CLIENT_SECRET` 注入，不入库
+GITHUB_CLIENT_ID = "Ov23liPnb82EspR3oMqk"
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "skillmesh_db"
+database_name = "skillmesh-db"
+database_id = "9c603ca8-d492-4afa-910c-23c9bf2f73a0"
+
+# Workers AI 绑定（语义搜索）
+[ai]
+binding = "AI"
+
+# KV Session 绑定（需在 Cloudflare 控制台创建 KV 命名空间后填入 ID）
+# [[kv_namespaces]]
+# binding = "KV_SESSIONS"
+# id = "your-kv-namespace-id"
+
+# KV 缓存绑定（可选）
+# [[kv_namespaces]]
+# binding = "KV_CACHE"
+# id = ""

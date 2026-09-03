@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="sm-fav-title">
+  <title id="sm-fav-title">SkillMesh</title>
+  <!-- 简化版：移除 8 个外围节点，保证 16px 下可辨识 -->
+  <rect x="2" y="2" width="28" height="28" rx="7.5" fill="none" stroke="#18181B" stroke-width="2.5"/>
+  <circle cx="16" cy="16" r="7" fill="none" stroke="#0D9488" stroke-width="2"/>
+  <circle cx="16" cy="16" r="4" fill="#0D9488"/>
+</svg>

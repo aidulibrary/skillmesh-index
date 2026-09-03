@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="smb-f-title">
+  <title id="smb-f-title">SkillMesh</title>
+  <!-- 简化版：移除刻度线，保证 16px 下可辨识 -->
+  <line x1="3" y1="14" x2="29" y2="14" stroke="#18181B" stroke-width="3" stroke-linecap="round"/>
+  <line x1="8" y1="14" x2="8" y2="18" stroke="#18181B" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="8" cy="21.5" r="3" fill="#18181B"/>
+  <rect x="19" y="9" width="8" height="10" rx="2" fill="#0D9488"/>
+</svg>

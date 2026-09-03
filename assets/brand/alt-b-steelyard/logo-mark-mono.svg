@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="smb-m-title">
+  <title id="smb-m-title">SkillMesh / 插台 — 权与衡</title>
+
+  <line x1="3" y1="13.5" x2="29" y2="13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+
+  <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+    <line x1="11" y1="9"   x2="11" y2="12"/>
+    <line x1="14" y1="9"   x2="14" y2="12"/>
+    <line x1="17" y1="9"   x2="17" y2="12"/>
+  </g>
+
+  <line x1="8" y1="13.5" x2="8" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="8" cy="20.5" r="2.6" fill="currentColor"/>
+
+  <rect x="19.5" y="9" width="7.5" height="9" rx="1.75" fill="currentColor"/>
+</svg>

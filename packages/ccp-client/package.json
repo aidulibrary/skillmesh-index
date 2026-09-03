@@ -1,0 +1,49 @@
+{
+  "name": "@skillmesh-ccp/ccp-client",
+  "version": "1.0.0",
+  "description": "CCP v1.0.0 client SDK — 13 API methods for agents to discover, evaluate, invoke, and route capabilities via the Capability Commensurability Protocol",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "skillmesh",
+    "ccp",
+    "capability",
+    "commensurability",
+    "protocol",
+    "sdk",
+    "agent",
+    "ai",
+    "plugin",
+    "discovery",
+    "federation",
+    "trust-vector"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aidulibrary/skillmesh-index",
+    "directory": "packages/ccp-client"
+  },
+  "homepage": "https://github.com/aidulibrary/ccp-spec#readme",
+  "bugs": {
+    "url": "https://github.com/aidulibrary/skillmesh-index/issues"
+  },
+  "author": "SkillMesh Community",
+  "license": "MIT"
+}

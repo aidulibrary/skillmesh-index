@@ -1,0 +1,508 @@
+openapi: "3.1.0"
+info:
+  title: "CCP — 能力通约协议 API"
+  version: "v1.0.0"
+  description: |
+    能力通约网络 (Capability Commensurability Protocol)
+
+    核心功能：
+    - 能力锚点发现：关键词搜索 + 语义搜索 + 联邦搜索
+    - 信任向量运行时闭环：Agent 回传遥测数据，自动更新可信度
+    - 社区贡献：通过 Schema 校验提交新能力锚点
+    - 联邦化协议：多节点索引摘要交换，手动节点注册
+    - 适配器生成：一键导出 DSH / MCP / LangChain / CrewAI / Dify
+
+    版本策略：
+    - 自 v1.0.0 起冻结，Schema 承诺向后兼容
+    - 新增字段为 optional，已有字段不删除不修改类型
+  contact:
+    name: "CCP 社区"
+    url: "https://github.com/aidulibrary/ccp-spec"
+  license:
+    name: "CC BY-SA 4.0"
+    url: "https://creativecommons.org/licenses/by-sa/4.0/"
+
+servers:
+  - url: "https://skillmesh.礼字号.中国/api/ccp/v1"
+    description: "SkillMesh 参考实现（生产环境）"
+
+paths:
+  /capabilities:
+    get:
+      operationId: listCapabilities
+      summary: "获取能力锚点列表"
+      description: "返回所有已注册的能力锚点，支持 KV 缓存（5 分钟 TTL）。"
+      tags: ["Capabilities"]
+      responses:
+        "200":
+          description: "能力锚点列表"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapabilityListResponse"
+
+  /capabilities/{id}:
+    get:
+      operationId: getCapability
+      summary: "获取能力锚点详情"
+      description: "根据 ID 获取单个能力锚点的完整信息，支持 KV 缓存（10 分钟 TTL）。"
+      tags: ["Capabilities"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-z0-9]+(-[a-z0-9]+)*-[0-9]{3}$"
+          example: "pdf-extract-text-001"
+      responses:
+        "200":
+          description: "能力锚点详情"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapabilityAnchor"
+        "404":
+          description: "能力锚点不存在"
+
+  /capabilities/{id}/adapters/{framework}:
+    get:
+      operationId: generateAdapter
+      summary: "生成适配器"
+      description: "为指定能力锚点生成对应框架的适配器配置。"
+      tags: ["Capabilities"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "pdf-extract-text-001"
+        - name: framework
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: ["dsh", "mcp", "langchain", "crewai", "dify"]
+          example: "mcp"
+      responses:
+        "200":
+          description: "适配器配置（JSON 或 YAML）"
+        "400":
+          description: "不支持的框架"
+        "404":
+          description: "能力锚点不存在"
+
+  /search:
+    get:
+      operationId: searchCapabilities
+      summary: "搜索能力锚点"
+      description: |
+        支持三种搜索模式：
+        1. FTS5 全文搜索（精确匹配）
+        2. LIKE 模糊搜索（FTS5 无结果时回退）
+        3. 语义搜索（Workers AI text-embeddings）
+        4. 联邦搜索（federated=true 时聚合联邦节点结果）
+      tags: ["Search"]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "PDF 提取"
+        - name: federated
+          in: query
+          schema:
+            type: boolean
+            default: false
+          example: "true"
+      responses:
+        "200":
+          description: "搜索结果"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        "400":
+          description: "缺少搜索参数"
+
+  /metrics:
+    get:
+      operationId: getMetrics
+      summary: "请求监控指标"
+      description: "返回当前 Worker 实例的请求计数、错误率和延迟分位数（P50/P99）。"
+      tags: ["Monitoring"]
+      responses:
+        "200":
+          description: "监控指标"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsResponse"
+
+  /telemetry:
+    post:
+      operationId: submitTelemetry
+      summary: "提交遥测数据"
+      description: |
+        Agent 回传调用结果，自动更新信任向量和证据层。
+        限流：每 IP 每能力每秒最多 1 次请求。
+        批量写入：内存缓冲 60 秒或 100 条。
+      tags: ["Telemetry"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["capability_id", "agent_id", "success"]
+              properties:
+                capability_id:
+                  type: string
+                  example: "pdf-extract-text-001"
+                agent_id:
+                  type: string
+                  example: "my-agent-001"
+                success:
+                  type: boolean
+                latency_ms:
+                  type: integer
+                error:
+                  type: string
+      responses:
+        "200":
+          description: "遥测已接收，信任向量已更新"
+        "400":
+          description: "缺少必填字段"
+        "404":
+          description: "能力锚点不存在"
+        "429":
+          description: "请求频率过高"
+
+  /contribute:
+    post:
+      operationId: contributeCapability
+      summary: "贡献能力锚点"
+      description: |
+        通过 JSON Schema 校验提交新能力锚点。
+        重复 ID 返回 409。
+        支持 GitHub OAuth 贡献者身份锚定（可选）。
+      tags: ["Contribution"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CapabilityAnchor"
+      responses:
+        "200":
+          description: "贡献已接受"
+        "400":
+          description: "Schema 校验失败"
+        "409":
+          description: "能力锚点 ID 已存在"
+
+  /federation:
+    get:
+      operationId: getNodeInfo
+      summary: "获取本节点信息"
+      description: "返回本 CCP 节点的元信息，用于联邦节点发现。"
+      tags: ["Federation"]
+      responses:
+        "200":
+          description: "节点信息"
+
+  /federation/nodes:
+    get:
+      operationId: listFederationNodes
+      summary: "获取联邦节点列表"
+      description: "返回所有已注册的活跃联邦节点，按信任权重降序排列。"
+      tags: ["Federation"]
+      responses:
+        "200":
+          description: "联邦节点列表"
+    post:
+      operationId: registerFederationNode
+      summary: "注册联邦节点"
+      description: "手动注册一个联邦节点，用于后续索引交换。"
+      tags: ["Federation"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["id", "name", "endpoint"]
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                endpoint:
+                  type: string
+                  format: uri
+                description:
+                  type: string
+                trust_weight:
+                  type: number
+                  default: 0.5
+      responses:
+        "200":
+          description: "节点已注册"
+
+  /federation/nodes/{id}:
+    delete:
+      operationId: removeFederationNode
+      summary: "移除联邦节点"
+      description: "从联邦网络中移除一个已注册的节点。"
+      tags: ["Federation"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "节点 ID"
+      responses:
+        "200":
+          description: "节点已移除"
+        "400":
+          description: "节点 ID 无效"
+
+  /federation/exchange:
+    post:
+      operationId: exchangeIndex
+      summary: "联邦索引摘要交换"
+      description: |
+        节点间交换能力锚点索引摘要。
+        只交换摘要（id + name + category + trust_summary），不传输完整数据。
+        未注册节点返回 403。
+      tags: ["Federation"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FederationExchangeRequest"
+      responses:
+        "200":
+          description: "交换成功，返回本节点索引摘要"
+        "403":
+          description: "未注册节点"
+
+components:
+  schemas:
+    CapabilityAnchor:
+      type: object
+      required:
+        - id
+        - name
+        - name_en
+        - desc
+        - desc_en
+        - input
+        - output
+        - endpoint
+        - endpointType
+        - category
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z0-9]+(-[a-z0-9]+)*-[0-9]{3}$"
+          description: "唯一标识"
+        name:
+          type: string
+          description: "中文名称"
+        name_en:
+          type: string
+          description: "英文名称"
+        desc:
+          type: string
+          description: "中文描述"
+        desc_en:
+          type: string
+          description: "英文描述"
+        input:
+          type: string
+          description: "输入说明"
+        output:
+          type: string
+          description: "输出说明"
+        endpoint:
+          type: string
+          description: "能力端点 URI"
+        endpointType:
+          type: string
+          enum: ["mcp", "http", "command", "prompt", "workflow"]
+        category:
+          type: string
+          enum: ["data", "media", "language", "ai", "dev"]
+        provenance:
+          type: string
+          format: uri
+        trustSource:
+          type: number
+          description: "源码可验证性（0-1）"
+        trustUsage:
+          type: integer
+          description: "使用次数"
+        trustUsageRate:
+          type: number
+          description: "使用率（0-1）"
+        trustSuccess:
+          type: number
+          description: "成功率（0-1）"
+        trustRisk:
+          type: number
+          description: "依赖风险（0-1）"
+        trustTime:
+          type: number
+          description: "时效性（0-1）"
+        evidence:
+          type: object
+          properties:
+            count:
+              type: integer
+            uncertainty:
+              type: number
+        features:
+          type: array
+          items:
+            type: string
+        features_en:
+          type: array
+          items:
+            type: string
+        contributor:
+          type: object
+          description: "v1.0.0 新增：贡献者身份锚定"
+          properties:
+            github_login:
+              type: string
+            github_id:
+              type: integer
+            submitted_at:
+              type: string
+              format: date-time
+
+    CapabilityListResponse:
+      type: object
+      properties:
+        protocol:
+          type: string
+          example: "CCP"
+        version:
+          type: string
+          example: "v1.0.0"
+        count:
+          type: integer
+        capabilities:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityAnchor"
+
+    SearchResponse:
+      type: object
+      properties:
+        protocol:
+          type: string
+          example: "CCP"
+        version:
+          type: string
+          example: "v1.0.0"
+        query:
+          type: string
+        count:
+          type: integer
+        federated:
+          type: boolean
+        results:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/CapabilityAnchor"
+              - type: object
+                properties:
+                  _source:
+                    type: string
+                    enum: ["local", "federated"]
+                  _source_node:
+                    type: string
+                  _semanticScore:
+                    type: number
+
+    MetricsResponse:
+      type: object
+      properties:
+        requests:
+          type: object
+          additionalProperties:
+            type: integer
+        errors:
+          type: object
+          additionalProperties:
+            type: integer
+        latency:
+          type: object
+          properties:
+            p50:
+              type: number
+            p99:
+              type: number
+            avg:
+              type: number
+            samples:
+              type: integer
+
+    FederationExchangeRequest:
+      type: object
+      required: ["node", "capabilities"]
+      properties:
+        node:
+          type: object
+          required: ["id", "endpoint"]
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            endpoint:
+              type: string
+              format: uri
+        capabilities:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              name_en:
+                type: string
+              category:
+                type: string
+              trust_summary:
+                type: object
+                properties:
+                  usage_rate:
+                    type: number
+                  success:
+                    type: number
+                  uncertainty:
+                    type: number
+
+tags:
+  - name: "Capabilities"
+    description: "能力锚点 CRUD 与适配器生成"
+  - name: "Search"
+    description: "关键词搜索 + 语义搜索 + 联邦搜索"
+  - name: "Telemetry"
+    description: "信任向量运行时闭环"
+  - name: "Contribution"
+    description: "社区贡献"
+  - name: "Federation"
+    description: "联邦化协议"
+  - name: "Monitoring"
+    description: "请求监控指标"

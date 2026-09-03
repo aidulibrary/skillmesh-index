@@ -1,0 +1,40 @@
+{
+  "id": "pdf-extract-text-001",
+  "name": "PDF文本提取",
+  "name_en": "PDF Text Extraction",
+  "desc": "从PDF文件中提取全部文本内容，保留段落结构",
+  "desc_en": "Extract all text content from PDF files, preserving paragraph structure",
+  "input": "PDF文件URL或本地路径",
+  "input_en": "PDF file URL or local path",
+  "output": "结构化文本字符串，包含页码映射",
+  "output_en": "Structured text string with page mapping",
+  "endpoint": "mcp://pymupdf-server/extract-text",
+  "endpointType": "mcp",
+  "category": "data",
+  "provenance": "https://github.com/pymupdf/PyMuPDF",
+  "trustSource": 0.92,
+  "trustUsage": 1240,
+  "trustUsageRate": 0.78,
+  "trustSuccess": 0.97,
+  "trustRisk": 0.1,
+  "trustTime": 0.88,
+  "lastUpdated": "2026-09-01",
+  "evidence": {
+    "count": 1240,
+    "uncertainty": 0.24
+  },
+  "features": ["支持多种PDF格式", "保留段落结构", "页码映射", "支持加密PDF"],
+  "features_en": [
+    "Multiple PDF format support",
+    "Paragraph structure preservation",
+    "Page mapping",
+    "Encrypted PDF support"
+  ],
+  "usageGuide": "1. 安装PyMuPDF: pip install pymupdf\n2. 启动MCP服务: python -m pymupdf_server\n3. 调用端点: mcp://pymupdf-server/extract-text",
+  "usageGuide_en": "1. Install PyMuPDF: pip install pymupdf\n2. Start MCP server: python -m pymupdf_server\n3. Call endpoint: mcp://pymupdf-server/extract-text",
+  "codeExample": "{\n  \"mcp\": {\n    \"server\": \"pymupdf-server\",\n    \"method\": \"extract-text\",\n    \"params\": {\n      \"file\": \"https://example.com/document.pdf\"\n    }\n  }\n}",
+  "tags": ["pdf", "text", "extraction", "document", "data"],
+  "dependencies": [],
+  "version": "1.0.0",
+  "status": "active"
+}

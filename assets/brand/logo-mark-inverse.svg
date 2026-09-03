@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="sm-inv-title">
+  <title id="sm-inv-title">SkillMesh / 插台</title>
+
+  <!-- 反白版：用于深色背景（teal-400 锚点保证深色底上的对比度） -->
+  <rect x="2" y="2" width="28" height="28" rx="7.5" fill="none" stroke="#FAFAFA" stroke-width="2"/>
+
+  <g fill="#FAFAFA">
+    <circle cx="8"  cy="8"  r="1.4"/>
+    <circle cx="16" cy="8"  r="1.4"/>
+    <circle cx="24" cy="8"  r="1.4"/>
+    <circle cx="8"  cy="16" r="1.4"/>
+    <circle cx="24" cy="16" r="1.4"/>
+    <circle cx="8"  cy="24" r="1.4"/>
+    <circle cx="16" cy="24" r="1.4"/>
+    <circle cx="24" cy="24" r="1.4"/>
+  </g>
+
+  <circle cx="16" cy="16" r="5.6" fill="none" stroke="#5EEAD4" stroke-width="1.1"/>
+  <circle cx="16" cy="16" r="3.6" fill="#2DD4BF"/>
+</svg>

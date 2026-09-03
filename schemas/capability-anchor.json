@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skillmesh.礼字号.中国/schemas/capability-anchor.json",
+  "title": "CCP 能力锚点 Schema v1.0.0",
+  "description": "CCP 协议能力锚点的 JSON Schema 校验规范。自 v1.0.0 起冻结，承诺向后兼容：新增字段为 optional，已有字段不删除不修改类型。",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "name_en",
+    "desc",
+    "desc_en",
+    "input",
+    "output",
+    "endpoint",
+    "endpointType",
+    "category"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*-[0-9]{3}$",
+      "description": "能力锚点唯一标识。格式：{name}-{variant}-{seq}，如 pdf-extract-text-001"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "中文名称"
+    },
+    "name_en": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "英文名称"
+    },
+    "desc": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "中文描述"
+    },
+    "desc_en": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "英文描述"
+    },
+    "input": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "description": "输入说明（中文）"
+    },
+    "input_en": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "输入说明（英文）"
+    },
+    "output": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "description": "输出说明（中文）"
+    },
+    "output_en": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "输出说明（英文）"
+    },
+    "endpoint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "能力端点 URI。格式：{type}://{host}/{path}"
+    },
+    "endpointType": {
+      "type": "string",
+      "enum": ["mcp", "http", "command", "prompt", "workflow"],
+      "description": "端点类型"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["data", "media", "language", "ai", "dev"],
+      "description": "能力分类"
+    },
+    "provenance": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 500,
+      "description": "源码仓库 URL"
+    },
+    "trustSource": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "源码可验证性"
+    },
+    "trustUsage": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "使用次数"
+    },
+    "trustUsageRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "使用率"
+    },
+    "trustSuccess": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "成功率"
+    },
+    "trustRisk": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "依赖风险"
+    },
+    "trustTime": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "时效性"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date",
+      "description": "最后更新日期"
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "uncertainty": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "功能特性（中文）"
+    },
+    "features_en": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "功能特性（英文）"
+    },
+    "usageGuide": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "使用指南（中文）"
+    },
+    "usageGuide_en": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "使用指南（英文）"
+    },
+    "codeExample": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "调用示例"
+    },
+    "contributor": {
+      "type": "object",
+      "description": "贡献者身份锚定（v1.0.0 新增）",
+      "properties": {
+        "github_login": {
+          "type": "string",
+          "description": "GitHub 用户名"
+        },
+        "github_id": {
+          "type": "integer",
+          "description": "GitHub 用户 ID"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "提交时间"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
