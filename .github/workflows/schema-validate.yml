@@ -1,0 +1,60 @@
+name: Schema Validate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "js/data.js"
+      - "schemas/capability-anchor.json"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install ajv
+        run: npm install ajv
+
+      - name: Validate capability anchors
+        run: |
+          node -e "
+          const fs = require('fs');
+          const Ajv = require('ajv');
+          const ajv = new Ajv({ allErrors: true });
+
+          const schema = JSON.parse(fs.readFileSync('schemas/capability-anchor.json', 'utf8'));
+          const validate = ajv.compile(schema);
+
+          const dataFile = fs.readFileSync('js/data.js', 'utf8');
+          const match = dataFile.match(/const CAPABILITIES = (\[[\s\S]*?\]);/);
+          if (!match) {
+            console.error('ERROR: Could not parse CAPABILITIES array from js/data.js');
+            process.exit(1);
+          }
+          const capabilities = eval('(' + match[1] + ')');
+
+          let errors = 0;
+          capabilities.forEach((cap, i) => {
+            const valid = validate(cap);
+            if (!valid) {
+              console.error('Capability ' + (i + 1) + ' [' + (cap.id || 'no-id') + ']:');
+              validate.errors.forEach(e => {
+                console.error('  - ' + e.instancePath + ': ' + e.message);
+              });
+              errors++;
+            }
+          });
+
+          console.log('Validated ' + capabilities.length + ' capabilities');
+          if (errors > 0) {
+            console.error(errors + ' capability(s) have schema errors');
+            process.exit(1);
+          }
+          console.log('All capabilities pass schema validation.');
+          "
