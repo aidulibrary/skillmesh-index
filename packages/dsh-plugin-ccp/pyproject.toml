@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dsh-plugin-ccp"
+version = "1.0.0"
+description = "DSH 插件：CCP 协议能力发现层 — 让 DSH Agent 通过 CCP 协议搜索、评估、调用能力"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "CCP Community", email = "ccp@skillmesh.礼字号.中国" }
+]
+keywords = ["dsh", "ccp", "deepseek-harness", "capability", "discovery", "trust-vector"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.9"
+dependencies = ["urllib3>=2.0"]
+
+[project.urls]
+Homepage = "https://skillmesh.礼字号.中国"
+Repository = "https://github.com/aidulibrary/skillmesh-index"
+"CCP RFC" = "https://github.com/aidulibrary/skillmesh-index/blob/main/docs/rfc-dsh-ccp-discovery.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]

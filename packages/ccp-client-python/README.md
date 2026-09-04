@@ -1,0 +1,67 @@
+# CCP Client — Python SDK
+
+CCP 协议（能力通约协议）的 Python 参考实现。与 JS SDK (`@skillmesh-ccp/ccp-client`) 功能对等。
+
+## 安装
+
+```bash
+pip install ccp-client
+```
+
+## 快速开始
+
+```python
+from ccp_client import CCPClient, search, get_trust_summary
+
+# 创建客户端
+client = CCPClient()
+
+# 搜索能力
+results = client.search("pdf text extraction")
+for cap in results["results"]:
+    summary = get_trust_summary(cap)
+    print(f"{cap['name']} — {summary['verdict']} ({summary['weighted_score']:.2f})")
+
+# 获取详情
+detail = client.detail("pdf-extract-text-001")
+
+# 生成适配器
+adapter = client.adapter("pdf-extract-text-001", framework="dsh")
+
+# 回传遥测
+client.telemetry("pdf-extract-text-001", success=True, latency_ms=120)
+```
+
+## API 参考
+
+| 方法                                  | 说明           |
+| ------------------------------------- | -------------- |
+| `search(q, category?, federated?)`    | 搜索能力锚点   |
+| `detail(id)`                          | 获取能力详情   |
+| `list_capabilities(category?)`        | 列出所有能力   |
+| `adapter(id, framework)`              | 生成适配器代码 |
+| `telemetry(id, success, latency_ms?)` | 回传调用结果   |
+| `node_info()`                         | 获取节点信息   |
+| `contribute(capability)`              | 贡献新能力     |
+
+## 信任向量
+
+```python
+from ccp_client import compute_weighted_score, compute_uncertainty
+
+trust = {
+    "trustSource": 0.95,
+    "trustUsage": 1200,
+    "trustSuccess": 0.97,
+    "trustRisk": 0.05,
+    "trustTime": 0.95,
+}
+
+uncertainty = compute_uncertainty(1200)
+score = compute_weighted_score(trust, uncertainty)
+print(f"信任分: {score:.2f}")  # 信任分: 0.85
+```
+
+## 许可
+
+MIT

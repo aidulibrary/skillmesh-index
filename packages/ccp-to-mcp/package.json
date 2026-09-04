@@ -1,0 +1,27 @@
+{
+  "name": "ccp-to-mcp",
+  "version": "1.0.0",
+  "description": "CCP → MCP 桥接工具：将 CCP 能力锚点转换为 MCP Server 配置",
+  "main": "src/cli.js",
+  "bin": {
+    "ccp-to-mcp": "src/cli.js"
+  },
+  "type": "module",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "ccp",
+    "mcp",
+    "bridge",
+    "capability",
+    "skillmesh"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aidulibrary/skillmesh-index.git",
+    "directory": "packages/ccp-to-mcp"
+  }
+}
