@@ -1,0 +1,154 @@
+# ============================================================
+# DSH 插件清单（plugin.yaml）
+# 源能力锚点：CCP github-ci-cd-secrets-001
+# 源文件：ccp-spec/anchors/github-ci-cd-secrets-001.json
+# 导出时间：2026-09-03T15:24:12Z
+#
+# 生成依据：
+#   1) docs/CCP-v0.1.md §10.2-10.3（CCP -> DSH 映射规则与 plugin.yaml 模板）
+#   2) docs/DeepSeek-Harness 插件市场：超级开发规划与执行策略.md §5.1-5.3
+#      （plugin.yaml 字段、kind: Plugin/skill 类型定义）
+#   3) functions/api/ccp/v1/handlers/adapters.js（generateDSHAdapter 生成实现）
+#
+# 项目内无独立的 DSH plugin.yaml schema 文件，亦无 kind: skill 的现成 yaml
+# 样例；按锚点 JSON 字段等价映射生成。prompt / requires / trust 等 kind: skill
+# 专用结构为约定字段，规范缺失，按约定生成。
+# ============================================================
+apiVersion: deepseek.io/plugin/v1
+kind: skill
+
+metadata:
+  # 规范映射：锚点 id -> metadata.name（CCP-v0.1 §10.2）
+  name: github-ci-cd-secrets-001
+  # 锚点 version
+  version: 1.0.0
+  description: >-
+    GitHub CI/CD 密钥配置自动化（GitHub CI/CD Secrets Automation）：通过细粒度
+    PAT 自动完成 Actions Secrets 公钥加密写入、Git Data API 推送代码与 workflow、
+    空提交触发 CI 流水线并验证线上站点。适配 github.com 网页/git 通道不可达、
+    仅 api.github.com 可达的网络环境。
+  authors:
+    - name: CCP Community
+  license: MIT
+  # 锚点 homepage/provenance
+  homepage: https://skillmesh.礼字号.中国
+  repository: https://github.com/aidulibrary/skillmesh-index
+  tags:
+    - github
+    - ci
+    - cd
+    - secrets
+    - automation
+    - devops
+    - git-data-api
+    - cloudflare
+  categories:
+    - dev
+  maturity: stable
+  minHarnessVersion: "0.8.0"
+
+# ============================================================
+# kind: skill = 提示词/工作流/知识模板类纯数据技能，由 Harness 解释执行。
+# 源锚点 endpointType: http 已知识化，技能本体为下方案例化提示词（约定字段）。
+# ============================================================
+prompt:
+  zh: |
+    你是 GitHub CI/CD 密钥配置自动化执行器。目标仓库由用户提供（owner/repo），
+    操作凭据为具备 Secrets=Read and write 的 Fine-grained PAT（由环境变量
+    GITHUB_TOKEN 注入），仅通过 api.github.com REST API 执行，禁止依赖
+    github.com 网页或 git 通道。
+
+    执行步骤：
+    A. 写 Secrets：GET /repos/{owner}/{repo}/actions/secrets/public-key 取
+       key 与 key_id；对每个密钥值用 PyNaCl nacl.bindings.crypto_box_seal
+       加密（libsodium sealed box）；PUT /actions/secrets/{name} 提交
+       {"encrypted_value": "<base64>", "key_id": "<id>"}。
+    B. 推代码：GET /git/ref/heads/main 取 base sha；逐个文件 POST
+       /git/blobs（content 为 base64）取 blob sha；POST /git/trees 带
+       base_tree 组装目录树；POST /git/commits 生成提交；PATCH
+       /git/refs/heads/main 推进分支。顺序策略：先推业务代码，最后推
+       .github/workflows，避免 secrets 未配置时 workflow 提前失败。
+    C. 触发：若 deploy.yml 无 workflow_dispatch 等手动触发入口，创建与
+       当前 tree 相同的空提交并推送，触发 push 型 workflow。
+    D. 验证：轮询 /repos/{owner}/{repo}/actions/runs 直至 completed=success；
+       随后请求线上 Pages 站点确认 HTTP 200。
+
+    权限诊断：写 secrets 返回 403 时，归因于 PAT 缺少 Secrets=Read and write
+    （仅 Administration 权限不足），向用户给出 GitHub Developer settings 授权指引。
+    报告输出：密钥写入结果与更新时间、新提交 SHA、CI run 状态与 URL、
+    线上站点 HTTP 可访问性。
+  en: |
+    You are a GitHub CI/CD secrets automation executor. Target repo comes from
+    the user (owner/repo); credentials are a fine-grained PAT with Secrets=Read
+    and write (injected via env GITHUB_TOKEN). Use ONLY api.github.com REST API;
+    do not rely on github.com web or git channels.
+
+    Steps:
+    A. Write secrets: GET /repos/{owner}/{repo}/actions/secrets/public-key for
+       key & key_id; encrypt each value with PyNaCl
+       nacl.bindings.crypto_box_seal (libsodium sealed box); PUT
+       /actions/secrets/{name} with {"encrypted_value": "<base64>",
+       "key_id": "<id>"}.
+    B. Push code: GET /git/refs/heads/main for base sha; POST /git/blobs per
+       file (base64 content); POST /git/trees with base_tree; POST
+       /git/commits; PATCH /git/refs/heads/main. Push business code first and
+       .github/workflows last so workflows don't fail before secrets exist.
+    C. Trigger: when deploy.yml has no manual trigger (e.g. workflow_dispatch),
+       create an empty commit sharing the current tree and push it.
+    D. Verify: poll /repos/{owner}/{repo}/actions/runs until
+       completed=success, then request the live Pages site for HTTP 200.
+
+    Permission diagnosis: a 403 when writing secrets means the PAT lacks
+    Secrets=Read and write (Administration alone is NOT enough); guide the user
+    to grant it in GitHub Developer settings.
+    Report: secret write results with timestamps, new commit SHA, CI run status
+    & URL, and live site HTTP reachability.
+
+input:
+  zh: 目标仓库 owner/repo、具备 Secrets=Read and write 的 Fine-grained PAT、需写入的密钥名值对；可选：待推送文件路径（按先业务代码、后 .github/workflows 的顺序策略）。
+  en: Target repo owner/repo, fine-grained PAT with Secrets=Read and write, secret key-value pairs to write; optional: file paths to push (order strategy pushes .github/workflows last).
+
+output:
+  zh: 密钥写入结果与更新时间、新提交 SHA、CI run 状态与链接、线上站点 HTTP 可访问性。
+  en: Secret write results with timestamps, new commit SHA, CI run status & URL, and live site HTTP reachability.
+
+example: |
+  {
+    "writeSecret": {
+      "method": "PUT",
+      "url": "https://api.github.com/repos/aidulibrary/skillmesh-index/actions/secrets/CLOUDFLARE_API_TOKEN",
+      "body": {
+        "encrypted_value": "<base64-sealed-box>",
+        "key_id": "<public-key-id>"
+      },
+      "headers": { "Authorization": "Bearer github_pat_***", "Accept": "application/vnd.github+json" }
+    },
+    "triggerEmptyCommit": {
+      "steps": ["GET /git/refs/heads/main", "GET /git/commits/{sha} 取 tree", "POST /git/commits (同 tree, message=ci: re-trigger)", "PATCH /git/refs/heads/main"]
+    }
+  }
+
+# 执行/安全需求提示（供 Harness 装配套件与 registry 安全扫描；约定字段）
+requires:
+  network:
+    - api.github.com
+  env:
+    - GITHUB_TOKEN
+  dependencies:
+    - pynacl>=1.5
+
+# CCP 信任向量（等价映射锚点 trust* 字段，供 registry 风险分级；约定字段）
+trust:
+  source: 0.85
+  usage: 1
+  usageRate: 1.0
+  success: 1.0
+  risk: 0.45
+  time: 0.9
+  lastUpdated: "2026-09-03"
+
+# ============================================================
+# 尾注
+# 锚点 status: active；evidence.count=1, uncertainty=0.35。
+# 完整结构化调用示例见锚点 codeExample（已并入上方 example 字段）。
+# ============================================================

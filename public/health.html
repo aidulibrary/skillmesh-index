@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CCP 联邦网络健康面板</title>
+    <link rel="stylesheet" href="/health.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>CCP 联邦网络健康面板</h1>
+      <p class="subtitle">SkillMesh — 能力通约协议 联邦网络可观测性仪表盘</p>
+      <div id="status-overview" class="status-overview">
+        <span class="status-indicator" id="overall-status">加载中...</span>
+        <span class="timestamp" id="timestamp"></span>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="card stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-capabilities">--</div>
+          <div class="stat-label">能力锚点</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-nodes">--</div>
+          <div class="stat-label">联邦节点</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-contributors">--</div>
+          <div class="stat-label">贡献者</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-telemetries">--</div>
+          <div class="stat-label">遥测记录</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-proposals">--</div>
+          <div class="stat-label">治理提案</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>节点状态</h2>
+        <div class="node-summary" id="node-summary">
+          <span class="node-badge healthy"
+            >🟢 健康: <span id="healthy-count">0</span></span
+          >
+          <span class="node-badge degraded"
+            >🟡 降级: <span id="degraded-count">0</span></span
+          >
+          <span class="node-badge offline"
+            >🔴 离线: <span id="offline-count">0</span></span
+          >
+        </div>
+        <div class="table-container">
+          <table id="nodes-table">
+            <thead>
+              <tr>
+                <th>节点</th>
+                <th>端点</th>
+                <th>状态</th>
+                <th>信任分数</th>
+                <th>能力数量</th>
+                <th>最后交换</th>
+              </tr>
+            </thead>
+            <tbody id="nodes-tbody">
+              <tr>
+                <td colspan="6" class="loading">加载中...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>索引覆盖率</h2>
+        <div class="coverage-bar" id="coverage-bar">
+          <div class="coverage-fill" id="coverage-fill" style="width: 0%"></div>
+          <span class="coverage-text" id="coverage-text">0%</span>
+        </div>
+        <div class="coverage-detail" id="coverage-detail"></div>
+      </section>
+
+      <section class="card">
+        <h2>24 小时遥测</h2>
+        <div class="telemetry-stats" id="telemetry-stats">
+          <div class="telemetry-card">
+            <div class="telemetry-value" id="telemetry-total">--</div>
+            <div class="telemetry-label">总计</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="telemetry-value" id="telemetry-24h">--</div>
+            <div class="telemetry-label">最近24小时</div>
+          </div>
+        </div>
+        <div id="telemetry-types" class="telemetry-types"></div>
+      </section>
+
+      <section class="card">
+        <h2>能力分类分布</h2>
+        <div id="categories-chart" class="categories-chart"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>CCP v1.0.0 · SkillMesh 联邦网络 · 数据每 60 秒自动刷新</p>
+    </footer>
+
+    <script src="/health.js"></script>
+  </body>
+</html>

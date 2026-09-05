@@ -34,11 +34,7 @@ import {
 } from "./handlers/capabilities.js";
 import { handleTelemetry } from "./handlers/telemetry.js";
 import { handleContribute } from "./handlers/contribute.js";
-import {
-  jsonResponse,
-  yamlResponse,
-  corsResponse,
-} from "./lib/response.js";
+import { jsonResponse, yamlResponse, corsResponse } from "./lib/response.js";
 import { structuredError } from "./lib/errors.js";
 import { safeErrorResponse } from "./lib/error-boundary.js";
 import { recordRequest, getMetrics } from "./lib/monitoring.js";
@@ -49,6 +45,9 @@ import {
   removeNode,
 } from "./federation/node.js";
 import { handleExchange } from "./federation/exchange.js";
+import { handleGovernance } from "./handlers/governance.js";
+import { handleContributors } from "./handlers/contributors.js";
+import { handleHealth } from "./handlers/health.js";
 
 export async function onRequest(context) {
   try {
@@ -88,6 +87,10 @@ export async function onRequest(context) {
             detail: { cause: e.message },
           });
         }
+      } else if (relative.startsWith("governance")) {
+        response = await handleGovernance(request, db);
+      } else if (relative.startsWith("contributors")) {
+        response = await handleContributors(request, db);
       } else {
         response = structuredError("METHOD_NOT_ALLOWED");
       }
@@ -105,6 +108,12 @@ export async function onRequest(context) {
       } else {
         response = structuredError("METHOD_NOT_ALLOWED");
       }
+    } else if (request.method === "PATCH") {
+      if (relative.startsWith("governance")) {
+        response = await handleGovernance(request, db);
+      } else {
+        response = structuredError("METHOD_NOT_ALLOWED");
+      }
     } else if (request.method !== "GET") {
       response = structuredError("METHOD_NOT_ALLOWED");
     } else if (relative === "metrics") {
@@ -118,6 +127,12 @@ export async function onRequest(context) {
     } else if (relative === "federation/nodes") {
       const nodes = await listNodes(db);
       response = jsonResponse({ nodes, count: nodes.length });
+    } else if (relative.startsWith("governance")) {
+      response = await handleGovernance(request, db);
+    } else if (relative.startsWith("contributors")) {
+      response = await handleContributors(request, db);
+    } else if (relative.startsWith("health")) {
+      response = await handleHealth(request, db);
     } else if (!relative || relative === "capabilities") {
       response = await handleList(db, env);
     } else {

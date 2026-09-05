@@ -1,0 +1,65 @@
+Metadata-Version: 2.4
+Name: dsh-plugin-ccp
+Version: 1.0.0
+Summary: DSH 插件：CCP 协议能力发现层 — 让 DSH Agent 通过 CCP 协议搜索、评估、调用能力
+Author-email: CCP Community <ccp@skillmesh.礼字号.中国>
+License: MIT
+Project-URL: Homepage, https://skillmesh.礼字号.中国
+Project-URL: Repository, https://github.com/aidulibrary/skillmesh-index
+Project-URL: CCP RFC, https://github.com/aidulibrary/skillmesh-index/blob/main/docs/rfc-dsh-ccp-discovery.md
+Keywords: dsh,ccp,deepseek-harness,capability,discovery,trust-vector
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: urllib3>=2.0
+
+# dsh-plugin-ccp
+
+DSH 插件：CCP 协议能力发现层。
+
+## 安装
+
+```bash
+dsh plugin install dsh-plugin-ccp
+```
+
+## 配置
+
+```bash
+dsh config set ccp.endpoint https://skillmesh.礼字号.中国/api/ccp/v1
+dsh config set ccp.federated true
+```
+
+## 提供的工具
+
+| 工具            | 功能                          |
+| --------------- | ----------------------------- |
+| `ccp_search`    | 搜索能力锚点（支持中文/英文） |
+| `ccp_detail`    | 获取能力详情 + 信任向量       |
+| `ccp_telemetry` | 回传调用结果（信任向量闭环）  |
+
+## 使用示例
+
+```python
+# DSH Agent 中使用 CCP 发现能力
+result = ccp_search("pdf text extraction")
+for cap in result["results"]:
+    print(f"{cap['name']} — trust: {cap['trust']['success']:.0%}")
+
+# 获取详情
+detail = ccp_detail("pdf-extract-text-001")
+
+# 回传调用结果
+ccp_telemetry("pdf-extract-text-001", success=True, latency_ms=120)
+```
+
+## 许可
+
+MIT

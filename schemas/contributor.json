@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skillmesh.礼字号.中国/schemas/contributor.json",
+  "title": "CCP 贡献者 Schema v1.0.0",
+  "description": "CCP 协议社区贡献者身份 Schema。定义贡献者角色、信任权重、徽章体系。",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["github_id", "github_login", "role"],
+  "properties": {
+    "github_id": {
+      "type": "integer",
+      "description": "GitHub 用户 ID"
+    },
+    "github_login": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 39,
+      "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$",
+      "description": "GitHub 用户名"
+    },
+    "github_name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "GitHub 显示名称"
+    },
+    "github_avatar": {
+      "type": "string",
+      "format": "uri",
+      "description": "GitHub 头像 URL"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["observer", "contributor", "maintainer", "steward"],
+      "description": "贡献者角色"
+    },
+    "trust_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.5,
+      "description": "贡献者信任分数（从信任向量派生）"
+    },
+    "contributions_count": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "贡献总数"
+    },
+    "badges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "徽章唯一标识"
+          },
+          "name": {
+            "type": "string",
+            "description": "徽章名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "徽章说明"
+          },
+          "earned_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "获得时间"
+          }
+        }
+      },
+      "description": "已获得的徽章列表"
+    },
+    "node_id": {
+      "type": "string",
+      "description": "关联的联邦节点 ID（若该贡献者运营节点）"
+    },
+    "joined_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "加入时间"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "最后活跃时间"
+    }
+  },
+  "examples": [
+    {
+      "github_id": 12345678,
+      "github_login": "ccp-contributor",
+      "github_name": "CCP Contributor",
+      "github_avatar": "https://avatars.githubusercontent.com/u/12345678",
+      "role": "contributor",
+      "trust_score": 0.75,
+      "contributions_count": 15,
+      "badges": [
+        {
+          "id": "first-capability",
+          "name": "First Capability",
+          "earned_at": "2026-09-01T00:00:00Z"
+        }
+      ],
+      "joined_at": "2026-09-01T00:00:00Z",
+      "last_seen": "2026-09-05T12:00:00Z"
+    }
+  ]
+}
