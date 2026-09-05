@@ -184,11 +184,20 @@ async function registerContributor(request, db) {
     return structuredError("INVALID_JSON");
   }
 
-  const { github_id, github_login } = body;
+  let { github_id, github_login } = body;
 
-  if (!github_id || !github_login) {
+  if (!body.github_id || !github_login) {
     return structuredError("INVALID_SCHEMA", {
       detail: { errors: ["github_id and github_login are required"] },
+    });
+  }
+
+  github_id = typeof github_id === "number" ? github_id : Number(github_id);
+  if (!Number.isInteger(github_id) || github_id <= 0) {
+    return structuredError("INVALID_SCHEMA", {
+      detail: {
+        errors: ["github_id must be a positive integer (GitHub numeric user id)"],
+      },
     });
   }
 
@@ -240,7 +249,7 @@ async function registerContributor(request, db) {
   await db
     .prepare(
       `INSERT INTO contributors
-       (github_id, github_login, github_name, github_avatar, role, trust_score, contributions_count, badges, joined_at, last_seen)
+       (github_id, github_login, github_name, github_avatar, role, trust_score, contributions_count, badges, created_at, last_seen)
        VALUES (?, ?, ?, ?, ?, 0.5, 0, ?, ?, ?)`,
     )
     .bind(
@@ -346,7 +355,7 @@ async function getContributor(contributorId, db) {
 
   const { results: contributions } = await db
     .prepare(
-      "SELECT * FROM contribution_records WHERE github_id = ? ORDER BY created_at DESC LIMIT 50",
+      "SELECT * FROM contribution_records WHERE github_id = ? ORDER BY submitted_at DESC LIMIT 50",
     )
     .bind(contributor.github_id)
     .all();

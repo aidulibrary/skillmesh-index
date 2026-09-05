@@ -12,7 +12,7 @@
  * 协议：CCP v1.0.0
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const CCP_VERSION = "v1.0.0";
@@ -174,7 +174,6 @@ function main() {
   const sql = generateSQL(validCaps);
 
   const outputPath = resolve("scripts/import-capabilities.sql");
-  const { writeFileSync } = require("node:fs");
   writeFileSync(outputPath, sql, "utf-8");
 
   console.log(`SQL 已生成: ${outputPath}`);

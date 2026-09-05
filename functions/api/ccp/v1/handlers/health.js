@@ -68,7 +68,7 @@ async function getIndexCoverage(db) {
 
   const { results: indexedCounts } = await db
     .prepare(
-      "SELECT node_id, COUNT(*) as count FROM capability_index WHERE indexed = 1 GROUP BY node_id",
+      "SELECT node_id, COUNT(*) as count FROM federation_index_cache GROUP BY node_id",
     )
     .all();
 
@@ -202,7 +202,7 @@ async function getNodeStatus(nodeId, db) {
 
   const { results: indexedCaps } = await db
     .prepare(
-      "SELECT cap_id FROM capability_index WHERE node_id = ? AND indexed = 1",
+      "SELECT capability_id as cap_id FROM federation_index_cache WHERE node_id = ?",
     )
     .bind(nodeId)
     .all();
