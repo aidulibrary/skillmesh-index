@@ -47,7 +47,17 @@ function checkRateLimit(ip, capId) {
 // 单条遥测持久化：更新信任向量 + 写版本历史 + 写遥测明细
 // （S9-3/S9-7 依赖此三处落库；必须随请求同步完成，不能依赖后台批量 flush，
 //  否则 Serverless isolate 回收会导致明细与版本历史丢失）
-async function persistItem({ db, capId, update, version, agentId, success, latencyMs }) {
+async function persistItem({
+  db,
+  capId,
+  update,
+  version,
+  agentId,
+  success,
+  latencyMs,
+  traceId,
+  traceParent,
+}) {
   try {
     await db
       .prepare(
@@ -90,10 +100,11 @@ async function persistItem({ db, capId, update, version, agentId, success, laten
       .run();
 
     // S9-3：遥测明细落 telemetry_records（健康面板数据源）
+    // S10-9：附加 W3C Trace Context（trace_id + trace_parent）
     await db
       .prepare(
-        `INSERT INTO telemetry_records (capability_id, agent_id, event_type, success, latency_ms, created_at)
-         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+        `INSERT INTO telemetry_records (capability_id, agent_id, event_type, success, latency_ms, trace_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
       )
       .bind(
         capId,
@@ -101,6 +112,7 @@ async function persistItem({ db, capId, update, version, agentId, success, laten
         success ? "invocation" : "error",
         success ? 1 : 0,
         latencyMs || 0,
+        traceId || null,
       )
       .run();
   } catch (_) {}
@@ -144,6 +156,11 @@ export async function handleTelemetry(request, db, env) {
     });
   }
 
+  // S10-9：W3C Trace Context — 提取 traceparent 头
+  const traceParent = request.headers.get("traceparent") || "";
+  const traceId =
+    body.trace_id || (traceParent ? traceParent.split("-")[1] : null);
+
   try {
     const existing = await queryOne(db, capId);
     if (!existing) {
@@ -168,6 +185,8 @@ export async function handleTelemetry(request, db, env) {
       agentId: body.agent_id,
       success: body.success,
       latencyMs: body.latency_ms || 0,
+      traceId,
+      traceParent,
       update: {
         ...result,
         snapshot: existing,
@@ -180,6 +199,7 @@ export async function handleTelemetry(request, db, env) {
       capability_id: capId,
       agent_id: body.agent_id,
       success: body.success,
+      trace_id: traceId || undefined,
       updated: {
         trust_usage: result.trustUsage,
         trust_usage_rate: result.trustUsageRate,

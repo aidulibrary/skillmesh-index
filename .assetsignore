@@ -1,0 +1,34 @@
+# ============================================
+# Cloudflare Pages assetsignore — 站点根部署白名单收口
+# 说明：pages_build_output_dir='.' 以仓库根为站点根，
+#   此文件排除开发/内部工作文件，避免随站点发布。
+# ============================================
+
+# 开发工作区（不入库也不入站）
+docs/
+temp/
+preview/
+skillmesh-index/
+ima知识库上传专用/
+.vscode/
+.github/
+
+# 本地工作记录文件
+deploy_log.txt
+deploy_log2.txt
+headers.txt
+index-body.txt
+index-headers.txt
+response.txt
+开发需求说明书.md
+
+# 构建与依赖（gitignore 已覆盖，双保险）
+node_modules/
+.wrangler/
+dist/
+*.log
+
+# public/ 为"以 public 为构建目录"假设下的文档化副本，
+# 本站实际以仓库根为站点根（wrangler.toml pages_build_output_dir='.'），
+# 运行文件均在根目录，public/ 不参与发布
+public/

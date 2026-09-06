@@ -21,6 +21,7 @@ import { validateCapability } from "../lib/schema.js";
 import { jsonResponse } from "../lib/response.js";
 import { structuredError } from "../lib/errors.js";
 import { parseSessionCookie, getSessionUser } from "../lib/session.js";
+import { cacheKey } from "../lib/cache.js";
 
 const CCP_VERSION = "v1.0.0";
 
@@ -159,6 +160,12 @@ export async function handleContribute(request, db, env) {
       accepted: true,
       capability_id: body.id,
       message: "Capability anchor accepted. Thank you for your contribution!",
+      next_steps: {
+        search: `/api/ccp/v1/search?q=${encodeURIComponent(body.name)}`,
+        adapter: `/api/ccp/v1/capabilities/${body.id}/adapters/langchain`,
+        telemetry: `POST /api/ccp/v1/telemetry { capability_id: "${body.id}", success: true }`,
+        trust_tracking: `信任向量将在首次调用后自动更新，访问 /api/ccp/v1/capabilities/${body.id} 查看`,
+      },
     };
 
     if (contributor) {
@@ -167,6 +174,12 @@ export async function handleContribute(request, db, env) {
         github_id: contributor.github_id,
       };
     }
+
+    try {
+      if (env && env.CCP_KV) {
+        await env.CCP_KV.delete(cacheKey("list"));
+      }
+    } catch (_) {}
 
     return jsonResponse(responseData, 201);
   } catch (e) {

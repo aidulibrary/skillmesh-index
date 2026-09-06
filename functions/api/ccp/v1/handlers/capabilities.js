@@ -29,6 +29,11 @@ import { jsonResponse } from "../lib/response.js";
 import { structuredError } from "../lib/errors.js";
 import { semanticSearch } from "../lib/semantic-search.js";
 import { searchFederated } from "../federation/exchange.js";
+import {
+  computeUsageRate,
+  computeWeightedScore,
+  computeUncertainty,
+} from "../lib/trust-vector.js";
 
 const CCP_VERSION = "v1.0.0";
 
@@ -103,10 +108,78 @@ export async function handleDetail(db, env, capId) {
     ...cap,
     versions,
     version_count: versions.length,
+    trust_radar: buildTrustRadar(cap),
   };
 
   await cacheSet(env, key, data, CACHE_TTL.detail);
   return jsonResponse(data);
+}
+
+function buildTrustRadar(cap) {
+  const trustSource = cap.trustSource ?? 0.5;
+  const trustUsage = cap.trustUsage ?? 0;
+  const trustUsageRate = cap.trustUsageRate ?? computeUsageRate(trustUsage);
+  const trustSuccess = cap.trustSuccess ?? 0.5;
+  const trustRisk = cap.trustRisk ?? 0.5;
+  const trustTime = cap.trustTime ?? 0.8;
+  const evidenceCount = cap.evidence
+    ? cap.evidence.count
+    : (cap.evidence_count ?? 0);
+  const uncertainty = cap.evidence
+    ? cap.evidence.uncertainty
+    : (cap.evidence_uncertainty ?? computeUncertainty(evidenceCount));
+
+  const dimensions = [
+    {
+      name: "来源可信度",
+      name_en: "Source Trust",
+      value: Math.round(trustSource * 100) / 100,
+      weight: 0.25,
+    },
+    {
+      name: "使用痕迹",
+      name_en: "Usage",
+      value: Math.round(trustUsageRate * 100) / 100,
+      weight: 0.2,
+    },
+    {
+      name: "成功率",
+      name_en: "Success Rate",
+      value: Math.round(trustSuccess * 100) / 100,
+      weight: 0.3,
+    },
+    {
+      name: "低风险",
+      name_en: "Low Risk",
+      value: Math.round((1 - trustRisk) * 100) / 100,
+      weight: 0.15,
+    },
+    {
+      name: "时效性",
+      name_en: "Freshness",
+      value: Math.round(trustTime * 100) / 100,
+      weight: 0.1,
+    },
+  ];
+
+  const overall = computeWeightedScore(
+    {
+      trustSource,
+      trustUsage,
+      trustUsageRate,
+      trustSuccess,
+      trustRisk,
+      trustTime,
+    },
+    uncertainty,
+  );
+
+  return {
+    dimensions,
+    overall: Math.round(overall * 100) / 100,
+    evidence_count: evidenceCount,
+    uncertainty: Math.round(uncertainty * 100) / 100,
+  };
 }
 
 export async function handleSearch(db, env, q, federated = false) {

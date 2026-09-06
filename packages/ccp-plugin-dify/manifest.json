@@ -1,0 +1,126 @@
+{
+  "name": "ccp-plugin-dify",
+  "version": "1.0.0",
+  "description": "CCP 能力通约协议 Dify 插件 — 搜索、评估、调用全球能力锚点",
+  "author": "SkillMesh",
+  "license": "MIT",
+  "dify_plugin": {
+    "version": "0.0.1",
+    "type": "tool",
+    "provider": "SkillMesh",
+    "label": {
+      "zh_Hans": "CCP 能力通约协议",
+      "en_US": "CCP Capability Protocol"
+    },
+    "description": {
+      "zh_Hans": "CCP（能力通约协议）让 AI Agent 发现和调用全球能力锚点。基于联邦信任向量，自动评估每个能力的可靠性。",
+      "en_US": "CCP (Capability Commensurability Protocol) enables AI Agents to discover and invoke capability anchors worldwide. Trust vectors ensure reliability."
+    },
+    "icon": "ccp_icon.svg",
+    "tools": [
+      {
+        "name": "ccp_search",
+        "label": {
+          "zh_Hans": "搜索能力",
+          "en_US": "Search Capabilities"
+        },
+        "description": {
+          "zh_Hans": "在 CCP 联邦网络中搜索 AI 能力锚点。返回匹配的能力列表，含信任评分。",
+          "en_US": "Search AI capability anchors in the CCP federation network. Returns matched capabilities with trust scores."
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "type": "string",
+            "required": true,
+            "label": {
+              "zh_Hans": "搜索关键词",
+              "en_US": "Search Query"
+            },
+            "description": {
+              "zh_Hans": "要搜索的能力关键词，例如 'pdf 解析'、'翻译'、'代码解释'",
+              "en_US": "Capability keyword to search, e.g. 'pdf extraction', 'translation', 'code explanation'"
+            }
+          },
+          {
+            "name": "federated",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "label": {
+              "zh_Hans": "联邦搜索",
+              "en_US": "Federated Search"
+            },
+            "description": {
+              "zh_Hans": "是否同时搜索其他联邦节点",
+              "en_US": "Whether to search other federation nodes"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ccp_get_capability",
+        "label": {
+          "zh_Hans": "获取能力详情",
+          "en_US": "Get Capability Detail"
+        },
+        "description": {
+          "zh_Hans": "获取指定能力锚点的详细信息，包括信任向量、版本历史、适配器。",
+          "en_US": "Get detailed info of a capability anchor, including trust vector, version history, and adapters."
+        },
+        "parameters": [
+          {
+            "name": "capability_id",
+            "type": "string",
+            "required": true,
+            "label": {
+              "zh_Hans": "能力 ID",
+              "en_US": "Capability ID"
+            },
+            "description": {
+              "zh_Hans": "能力锚点的唯一标识，例如 'pdf-extract-text-001'",
+              "en_US": "Unique identifier of the capability anchor, e.g. 'pdf-extract-text-001'"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ccp_get_adapter",
+        "label": {
+          "zh_Hans": "获取适配器",
+          "en_US": "Get Adapter"
+        },
+        "description": {
+          "zh_Hans": "获取指定能力锚点在指定框架下的适配器，包含可运行示例代码。",
+          "en_US": "Get the adapter for a capability anchor in a specific framework, with runnable examples."
+        },
+        "parameters": [
+          {
+            "name": "capability_id",
+            "type": "string",
+            "required": true,
+            "label": {
+              "zh_Hans": "能力 ID",
+              "en_US": "Capability ID"
+            }
+          },
+          {
+            "name": "framework",
+            "type": "string",
+            "required": false,
+            "default": "langchain",
+            "options": [
+              { "value": "langchain", "label": "LangChain" },
+              { "value": "mcp", "label": "MCP" },
+              { "value": "dify", "label": "Dify" }
+            ],
+            "label": {
+              "zh_Hans": "目标框架",
+              "en_US": "Target Framework"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkillMesh — CCP 能力通约协议（v1 预览）</title>
+    <link rel="stylesheet" href="/dark-mode.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #ffffff;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --accent: #6366f1;
+        --accent-hover: #4f46e5;
+        --accent-light: #eef2ff;
+        --gradient-start: #4f46e5;
+        --gradient-end: #7c3aed;
+        --success: #16a34a;
+        --warning: #ca8a04;
+        --radius: 12px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .hero {
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start) 0%,
+          var(--gradient-end) 50%,
+          #a855f7 100%
+        );
+        padding: 80px 24px 100px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 80% 50% at 50% 100%,
+          rgba(0, 0, 0, 0.15),
+          transparent
+        );
+      }
+      .hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.9);
+        padding: 4px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        margin-bottom: 20px;
+        position: relative;
+        backdrop-filter: blur(4px);
+      }
+      .hero h1 {
+        font-size: 48px;
+        font-weight: 800;
+        color: #fff;
+        position: relative;
+        letter-spacing: -1px;
+      }
+      .hero h1 span {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero .subtitle {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 20px;
+        margin: 16px 0 36px;
+        position: relative;
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-cta {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        position: relative;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 28px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #fff;
+        color: var(--accent);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      }
+      .btn-outline {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+      }
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .hero-stats {
+        display: flex;
+        gap: 32px;
+        justify-content: center;
+        margin-top: 48px;
+        position: relative;
+        flex-wrap: wrap;
+      }
+      .hero-stat {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .hero-stat .val {
+        font-size: 28px;
+        font-weight: 700;
+      }
+      .hero-stat .lbl {
+        font-size: 13px;
+        opacity: 0.7;
+      }
+      .section {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 72px 24px;
+      }
+      .section h2 {
+        font-size: 32px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .section > .desc {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 18px;
+        margin-bottom: 48px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .step {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 32px 24px;
+        position: relative;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .step:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+      .step-num {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+      .step h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      .step p {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .step code {
+        display: block;
+        background: var(--bg-secondary, #f8fafc);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-family: "SF Mono", "Fira Code", monospace;
+        overflow-x: auto;
+        white-space: nowrap;
+        color: var(--text);
+      }
+      .step a {
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 8px;
+      }
+      .step a:hover {
+        text-decoration: underline;
+      }
+      .for-whom {
+        background: var(--bg-secondary, #f8fafc);
+      }
+      .for-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+      .for-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 36px 32px;
+        box-shadow: var(--shadow);
+      }
+      .for-card .icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+      }
+      .for-card h3 {
+        font-size: 22px;
+        margin-bottom: 8px;
+      }
+      .for-card p {
+        color: var(--text-muted);
+        font-size: 15px;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+      .for-card ul {
+        list-style: none;
+        padding: 0;
+      }
+      .for-card li {
+        padding: 6px 0;
+        font-size: 14px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .for-card li::before {
+        content: "✓";
+        color: var(--success);
+        font-weight: 700;
+      }
+      .integrations {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .int-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        text-decoration: none;
+        color: var(--text);
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .int-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .int-card .logo {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+      .int-card .name {
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .int-card .tag {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .cta-bottom {
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        color: #fff;
+        padding: 72px 24px;
+      }
+      .cta-bottom h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .cta-bottom p {
+        font-size: 18px;
+        opacity: 0.85;
+        margin-bottom: 32px;
+      }
+      .cta-bottom .btn {
+        background: #fff;
+        color: var(--accent);
+      }
+      footer {
+        text-align: center;
+        padding: 32px 24px;
+        color: var(--text-muted);
+        font-size: 13px;
+        border-top: 1px solid var(--border);
+      }
+      footer a {
+        color: var(--accent);
+        text-decoration: none;
+        margin: 0 8px;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+      .theme-toggle {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+      }
+      .theme-toggle:hover {
+        transform: scale(1.1);
+      }
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 32px;
+        }
+        .steps,
+        .for-grid {
+          grid-template-columns: 1fr;
+        }
+        .integrations {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .hero-stats {
+          gap: 20px;
+        }
+      }
+      @media (max-width: 480px) {
+        .hero {
+          padding: 48px 16px 64px;
+        }
+        .section {
+          padding: 48px 16px;
+        }
+        .integrations {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-badge">🚀 CCP 协议 v1.0 · 联邦网络已就绪</div>
+      <h1>让 AI Agent 像调用函数一样<br />发现和使用<span>任意能力</span></h1>
+      <p class="subtitle">
+        CCP（能力通约协议）是面向 AI Agent 的能力发现与调用协议。
+        搜索、评估、调用——Agent 无需硬编码，即可接入全球 32 个能力锚点。
+      </p>
+      <div class="hero-cta">
+        <a href="#quickstart" class="btn btn-primary">⚡ 5 分钟快速开始</a>
+        <a href="/api/ccp/v1/search?q=demo" class="btn btn-outline"
+          >🔍 在线体验 Playground</a
+        >
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="val" id="stat-cap">--</div>
+          <div class="lbl">能力锚点</div>
+        </div>
+        <div class="hero-stat">
+          <div class="val" id="stat-node">--</div>
+          <div class="lbl">联邦节点</div>
+        </div>
+        <div class="hero-stat">
+          <div class="val" id="stat-contrib">--</div>
+          <div class="lbl">贡献者</div>
+        </div>
+        <div class="hero-stat">
+          <div class="val" id="stat-telem">--</div>
+          <div class="lbl">调用记录</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section" id="quickstart">
+      <h2>三步接入，立即可用</h2>
+      <p class="desc">
+        不管你是开发者、Agent 使用者，还是低代码玩家，都能在 5
+        分钟内跑通第一条调用。
+      </p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>搜索能力</h3>
+          <p>
+            用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……
+          </p>
+          <code
+            >curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"</code
+          >
+          <a href="/api/ccp/v1/search?q=pdf" target="_blank">在线试试 →</a>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>获取适配器</h3>
+          <p>
+            一键生成你所用框架的调用代码：LangChain Tool、MCP Server、DSH
+            Plugin……
+          </p>
+          <code>GET /capabilities/pdf-extract-001/adapters/langchain</code>
+          <a
+            href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
+            target="_blank"
+            >查看示例 →</a
+          >
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>注册你的能力</h3>
+          <p>把你的 AI 能力贡献给联邦网络，让全球 Agent 都能发现和调用。</p>
+          <code>POST /api/ccp/v1/contribute</code>
+          <a href="/docs/quickstart.md" target="_blank">查看教程 →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="for-whom">
+      <div class="section">
+        <h2>无论是谁，都能找到入口</h2>
+        <p class="desc">CCP 为不同角色设计了不同的接入路径，总有一条适合你。</p>
+        <div class="for-grid">
+          <div class="for-card">
+            <div class="icon">👨‍💻</div>
+            <h3>我是开发者</h3>
+            <p>
+              我写代码，想给我的 Agent 接入更多能力，或者发布自己的 AI 服务。
+            </p>
+            <ul>
+              <li>LangChain / MCP / DSH / CrewAI 多框架适配</li>
+              <li>5 行代码接入，npm install / pip install 即用</li>
+              <li>能力贡献后自动出现在联邦搜索</li>
+              <li>信任向量自动更新，高质量能力优先展示</li>
+            </ul>
+          </div>
+          <div class="for-card">
+            <div class="icon">🤖</div>
+            <h3>我是 Agent 使用者</h3>
+            <p>
+              我用 Dify、Coze 等低代码平台搭建 Agent，想拖拽式接入更多能力。
+            </p>
+            <ul>
+              <li>Dify 插件即将上线（阶段十）</li>
+              <li>MCP 协议一键连接，无需写代码</li>
+              <li>自然语言搜索能力，不用记 ID</li>
+              <li>在线 Playground 直接体验每个能力</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>已支持的框架</h2>
+      <p class="desc">CCP 协议提供 4 条集成通道，覆盖主流 Agent 框架。</p>
+      <div class="integrations">
+        <a
+          href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
+          class="int-card"
+        >
+          <div class="logo">🦜</div>
+          <div class="name">LangChain</div>
+          <div class="tag">Python / JS</div>
+        </a>
+        <a
+          href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/mcp"
+          class="int-card"
+        >
+          <div class="logo">🔌</div>
+          <div class="name">MCP</div>
+          <div class="tag">Model Context Protocol</div>
+        </a>
+        <a
+          href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/dsh"
+          class="int-card"
+        >
+          <div class="logo">⚙️</div>
+          <div class="name">DSH</div>
+          <div class="tag">DSH Plugin</div>
+        </a>
+        <div class="int-card" style="opacity: 0.6">
+          <div class="logo">🧩</div>
+          <div class="name">Dify</div>
+          <div class="tag">即将上线</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-bottom">
+      <h2>准备好让你的 Agent 更聪明了吗？</h2>
+      <p>5 分钟，从零到第一条能力调用。不写代码也能玩。</p>
+      <a href="/api/ccp/v1/search?q=demo" class="btn"
+        >🔍 打开 Playground 试试</a
+      >
+    </section>
+
+    <footer>
+      <a href="/health.html">健康面板</a>
+      <a href="/api/ccp/v1/capabilities">能力列表</a>
+      <a href="/api/ccp/v1/federation/nodes">联邦节点</a>
+      <a href="/docs/quickstart.md">文档</a>
+      <br /><br />
+      CCP v1.0 · 联邦 · 开源 · <a href="https://github.com">GitHub</a>
+    </footer>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+      🌓
+    </button>
+    <script src="/dark-mode.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+      }
+      (async function () {
+        try {
+          const res = await fetch("/api/ccp/v1/health");
+          const data = await res.json();
+          const s = data.stats || data;
+          document.getElementById("stat-cap").textContent =
+            s.capabilities ?? "--";
+          document.getElementById("stat-node").textContent = s.nodes ?? "--";
+          document.getElementById("stat-contrib").textContent =
+            s.contributors ?? "--";
+          document.getElementById("stat-telem").textContent =
+            s.telemetries?.total ?? "--";
+        } catch (e) {
+          document.getElementById("stat-cap").textContent = "32";
+          document.getElementById("stat-node").textContent = "4";
+          document.getElementById("stat-contrib").textContent = "2";
+          document.getElementById("stat-telem").textContent = "1";
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -207,7 +207,9 @@ async function registerContributor(request, db) {
   if (!Number.isInteger(github_id) || github_id <= 0) {
     return structuredError("INVALID_SCHEMA", {
       detail: {
-        errors: ["github_id must be a positive integer (GitHub numeric user id)"],
+        errors: [
+          "github_id must be a positive integer (GitHub numeric user id)",
+        ],
       },
     });
   }
@@ -444,6 +446,51 @@ function getBadgeSVG(badgeId) {
 }
 
 /**
+ * 贡献者排行榜
+ * S10-11：排行榜端点 — 按贡献数/信任分/最近活跃排序，含排名位置
+ */
+async function getLeaderboard(url, db) {
+  const sort = url.searchParams.get("sort") || "contributions_count";
+  const limit = Math.min(parseInt(url.searchParams.get("limit")) || 20, 100);
+
+  const validSort = ["contributions_count", "trust_score", "last_seen"];
+  const sortField = validSort.includes(sort) ? sort : "contributions_count";
+
+  const { results } = await db
+    .prepare(
+      `SELECT github_id, github_login, github_name, github_avatar,
+              role, trust_score, contributions_count, badges, last_seen
+       FROM contributors
+       ORDER BY ${sortField} DESC
+       LIMIT ?`,
+    )
+    .bind(limit)
+    .all();
+
+  const leaderboard = (results || []).map((c, i) => ({
+    rank: i + 1,
+    github_id: c.github_id,
+    github_login: c.github_login,
+    github_name: c.github_name,
+    github_avatar: c.github_avatar,
+    role: c.role,
+    trust_score: c.trust_score,
+    contributions_count: c.contributions_count,
+    badges:
+      typeof c.badges === "string" ? JSON.parse(c.badges) : c.badges || [],
+    last_seen: c.last_seen,
+  }));
+
+  return jsonResponse({
+    protocol: "CCP",
+    version: CCP_VERSION,
+    sort: sortField,
+    count: leaderboard.length,
+    leaderboard,
+  });
+}
+
+/**
  * 主路由
  */
 export async function handleContributors(request, db) {
@@ -456,6 +503,10 @@ export async function handleContributors(request, db) {
   }
 
   const apiPath = path.replace("/api/ccp/v1/contributors", "");
+
+  if (apiPath === "/leaderboard") {
+    return getLeaderboard(url, db);
+  }
 
   if (apiPath === "" || apiPath === "/") {
     if (request.method === "POST") return registerContributor(request, db);

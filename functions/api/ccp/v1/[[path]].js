@@ -45,11 +45,67 @@ import {
   removeNode,
 } from "./federation/node.js";
 import { handleExchange } from "./federation/exchange.js";
+import { handleTrustPolicy } from "./federation/trust-policy.js";
 import { handleGovernance } from "./handlers/governance.js";
 import { handleContributors } from "./handlers/contributors.js";
 import { handleHealth } from "./handlers/health.js";
 
 const CCP_VERSION = "v1.0.0";
+
+function buildAdapterExamples(cap, framework) {
+  const capId = cap.id;
+  const baseUrl = "https://skillmesh.礼字号.中国/api/ccp/v1";
+  const searchUrl = `${baseUrl}/search?q=${encodeURIComponent(cap.name)}`;
+
+  const curl = `# 搜索能力
+curl "${searchUrl}"
+
+# 获取 ${framework} 适配器
+curl "${baseUrl}/capabilities/${capId}/adapters/${framework}"
+
+# 使用能力（示例）
+curl -X POST "${cap.endpoint}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"input": "${cap.input || "your input here"}"}'`;
+
+  const python = `import requests
+
+# 搜索能力
+resp = requests.get("${searchUrl}")
+caps = resp.json()
+print(f"找到 {caps['count']} 个能力")
+
+# 获取适配器
+adapter = requests.get(
+    "${baseUrl}/capabilities/${capId}/adapters/${framework}"
+).json()
+
+# 使用能力
+resp = requests.post(
+    "${cap.endpoint}",
+    json={"input": "${cap.input || "your input here"}"}
+)
+print(resp.json())`;
+
+  const js = `// 搜索能力
+const caps = await fetch("${searchUrl}").then(r => r.json());
+console.log("找到", caps.count, "个能力");
+
+// 获取适配器
+const adapter = await fetch(
+  "${baseUrl}/capabilities/${capId}/adapters/${framework}"
+).then(r => r.json());
+
+// 使用能力
+const result = await fetch("${cap.endpoint}", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ input: "${cap.input || "your input here"}" })
+}).then(r => r.json());
+console.log(result);`;
+
+  return { curl, python, javascript: js };
+}
 
 export async function onRequest(context) {
   try {
@@ -116,6 +172,18 @@ export async function onRequest(context) {
       } else {
         response = structuredError("METHOD_NOT_ALLOWED");
       }
+    } else if (request.method === "PUT") {
+      if (relative.startsWith("federation/nodes/")) {
+        const nodePath = relative.slice("federation/nodes/".length);
+        const nodeParts = nodePath.split("/");
+        if (nodeParts.length === 2 && nodeParts[1] === "trust-policy") {
+          response = await handleTrustPolicy(request, db, nodeParts[0]);
+        } else {
+          response = structuredError("METHOD_NOT_ALLOWED");
+        }
+      } else {
+        response = structuredError("METHOD_NOT_ALLOWED");
+      }
     } else if (request.method !== "GET") {
       response = structuredError("METHOD_NOT_ALLOWED");
     } else if (relative === "metrics") {
@@ -129,6 +197,16 @@ export async function onRequest(context) {
     } else if (relative === "federation/nodes") {
       const nodes = await listNodes(db);
       response = jsonResponse({ nodes, count: nodes.length });
+    } else if (relative.startsWith("federation/nodes/")) {
+      const nodePath = relative.slice("federation/nodes/".length);
+      const nodeParts = nodePath.split("/");
+      if (nodeParts.length === 2 && nodeParts[1] === "trust-policy") {
+        response = await handleTrustPolicy(request, db, nodeParts[0]);
+      } else {
+        response = structuredError("CAPABILITY_NOT_FOUND", {
+          detail: { path: relative },
+        });
+      }
     } else if (relative.startsWith("governance")) {
       response = await handleGovernance(request, db);
     } else if (relative.startsWith("badge/")) {
@@ -221,10 +299,15 @@ export async function onRequest(context) {
                 supported: ["dsh", "mcp", "langchain", "crewai", "dify"],
               },
             });
-          } else if (result.type === "yaml") {
-            response = yamlResponse(result.content);
           } else {
-            response = jsonResponse(JSON.parse(result.content));
+            const examples = buildAdapterExamples(cap, parts[2]);
+            if (result.type === "yaml") {
+              response = yamlResponse(result.content);
+            } else {
+              const adapterData = JSON.parse(result.content);
+              adapterData._examples = examples;
+              response = jsonResponse(adapterData);
+            }
           }
         }
       } else {
