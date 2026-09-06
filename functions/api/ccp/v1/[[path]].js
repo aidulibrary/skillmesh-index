@@ -49,6 +49,8 @@ import { handleGovernance } from "./handlers/governance.js";
 import { handleContributors } from "./handlers/contributors.js";
 import { handleHealth } from "./handlers/health.js";
 
+const CCP_VERSION = "v1.0.0";
+
 export async function onRequest(context) {
   try {
     const { request, env } = context;
@@ -129,6 +131,38 @@ export async function onRequest(context) {
       response = jsonResponse({ nodes, count: nodes.length });
     } else if (relative.startsWith("governance")) {
       response = await handleGovernance(request, db);
+    } else if (relative.startsWith("badge/")) {
+      const badgePath = relative.slice("badge/".length);
+      const [contributorId, badgeFile] = badgePath.split("/");
+      const badgeId = badgeFile?.replace(".svg", "");
+      const contributor = await db
+        .prepare("SELECT * FROM contributors WHERE github_id = ?")
+        .bind(Number(contributorId))
+        .first();
+      if (!contributor) {
+        response = structuredError("CAPABILITY_NOT_FOUND", {
+          detail: { reason: `Contributor ${contributorId} not found` },
+        });
+      } else {
+        const badges = JSON.parse(contributor.badges || "[]");
+        const badge = badges.find((b) => b.id === badgeId);
+        if (!badge) {
+          response = structuredError("CAPABILITY_NOT_FOUND", {
+            detail: { reason: `Badge ${badgeId} not earned` },
+          });
+        } else {
+          const icon = badge.icon || "?";
+          const name = badge.name || badgeId;
+          const totalWidth = 20 + name.length * 7 + 14;
+          const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="20" viewBox="0 0 ${totalWidth} 20"><linearGradient id="bg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient><rect width="${totalWidth}" height="20" rx="3" fill="url(#bg)"/><rect x="20" width="1" height="20" fill="rgba(255,255,255,0.2)"/><text x="10" y="14" text-anchor="middle" font-size="12" fill="white">${icon}</text><text x="26" y="14" font-size="11" fill="white" font-family="Arial,sans-serif">${name}</text></svg>`;
+          response = new Response(svg, {
+            headers: {
+              "Content-Type": "image/svg+xml",
+              "Cache-Control": "public, max-age=86400",
+            },
+          });
+        }
+      }
     } else if (relative.startsWith("contributors")) {
       response = await handleContributors(request, db);
     } else if (relative.startsWith("health")) {
@@ -141,6 +175,27 @@ export async function onRequest(context) {
 
       if (parts.length === 1) {
         response = await handleDetail(db, env, capId);
+      } else if (parts.length === 2 && parts[1] === "versions") {
+        // S9-7：版本历史路由
+        let versions = [];
+        if (db) {
+          try {
+            const { results } = await db
+              .prepare(
+                "SELECT * FROM capability_versions WHERE cap_id = ? ORDER BY version DESC",
+              )
+              .bind(parts[0])
+              .all();
+            versions = results || [];
+          } catch (_) {}
+        }
+        response = jsonResponse({
+          protocol: "CCP",
+          version: CCP_VERSION,
+          capability_id: parts[0],
+          versions,
+          count: versions.length,
+        });
       } else if (parts[1] === "adapters" && parts[2]) {
         let cap;
         if (db) {

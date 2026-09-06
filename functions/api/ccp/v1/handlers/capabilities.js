@@ -85,8 +85,28 @@ export async function handleDetail(db, env, capId) {
     });
   }
 
-  await cacheSet(env, key, cap, CACHE_TTL.detail);
-  return jsonResponse(cap);
+  // S9-7：版本管理启用 — 返回最近 10 条版本历史
+  let versions = [];
+  if (db) {
+    try {
+      const { results } = await db
+        .prepare(
+          "SELECT version, changes, created_at FROM capability_versions WHERE cap_id = ? ORDER BY version DESC LIMIT 10",
+        )
+        .bind(capId)
+        .all();
+      versions = results || [];
+    } catch (_) {}
+  }
+
+  const data = {
+    ...cap,
+    versions,
+    version_count: versions.length,
+  };
+
+  await cacheSet(env, key, data, CACHE_TTL.detail);
+  return jsonResponse(data);
 }
 
 export async function handleSearch(db, env, q, federated = false) {

@@ -164,6 +164,24 @@ class CCPClient {
     });
   }
 
+  /**
+   * 遥测中间件 — 自动回传调用结果到 CCP
+   * @returns {{ after: (capabilityId: string, success: boolean, latencyMs?: number) => Promise<void> }}
+   */
+  telemetryMiddleware() {
+    return {
+      after: async (capabilityId, success, latencyMs) => {
+        try {
+          await this.sendTelemetry({
+            capability_id: capabilityId,
+            success,
+            latency_ms: latencyMs,
+          });
+        } catch (_) {}
+      },
+    };
+  }
+
   /** 提交社区贡献 */
   async contribute(data) {
     return this._request("POST", "/contribute", data);

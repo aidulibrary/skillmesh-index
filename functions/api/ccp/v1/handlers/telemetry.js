@@ -66,7 +66,7 @@ async function flushBatch() {
     batchTimer = null;
   }
 
-  for (const { db, capId, update, version } of batch) {
+  for (const { db, capId, update, version, agentId, success, latencyMs } of batch) {
     try {
       await db
         .prepare(
@@ -105,6 +105,21 @@ async function flushBatch() {
           version,
           JSON.stringify(update.changes),
           JSON.stringify(update.snapshot),
+        )
+        .run();
+
+      // S9-3：遥测明细落 telemetry_records（健康面板数据源）
+      await db
+        .prepare(
+          `INSERT INTO telemetry_records (capability_id, agent_id, event_type, success, latency_ms, created_at)
+           VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+        )
+        .bind(
+          capId,
+          agentId || "unknown",
+          success ? "invocation" : "error",
+          success ? 1 : 0,
+          latencyMs || 0,
         )
         .run();
     } catch (_) {}
@@ -169,6 +184,9 @@ export async function handleTelemetry(request, db, env) {
       db,
       capId,
       version: newVersion,
+      agentId: body.agent_id,
+      success: body.success,
+      latencyMs: body.latency_ms || 0,
       update: {
         ...result,
         snapshot: existing,

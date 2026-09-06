@@ -142,6 +142,15 @@ export async function handleExchange(request, db, env) {
 
     await touchNode(db, body.node.id, body.capabilities.length);
 
+    // S9-3：交换成功后写入 federation_exchanges 流水（健康面板数据源）
+    await db
+      .prepare(
+        `INSERT INTO federation_exchanges (node_id, exchanged_at, capabilities_count, status)
+         VALUES (?, datetime('now'), ?, 'completed')`,
+      )
+      .bind(body.node.id, body.capabilities.length)
+      .run();
+
     const reply = await buildExchangePayload(db, env);
 
     return new Response(JSON.stringify(reply), {

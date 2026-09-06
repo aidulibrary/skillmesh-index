@@ -14,6 +14,7 @@ DSH Plugin CCP — CCP 协议能力发现层
 
 import os
 import json
+import time
 import urllib.parse
 import urllib.request
 import urllib.error
@@ -220,3 +221,33 @@ def ccp_telemetry(capability_id: str, success: bool, latency_ms: int = 0) -> dic
     if "error" in result:
         return {"error": result["error"], "acknowledged": False}
     return {"acknowledged": True, "capability_id": capability_id}
+
+
+def telemetry_wrapper(func, capability_id: str):
+    """自动遥测包装器 — 包裹任意能力调用，自动回传 success/latency_ms 到 CCP。"""
+    start = time.time()
+    try:
+        result = func()
+        latency = int((time.time() - start) * 1000)
+        _client.telemetry(capability_id, True, latency)
+        return result
+    except Exception as e:
+        latency = int((time.time() - start) * 1000)
+        _client.telemetry(capability_id, False, latency)
+        raise e
+
+
+def telemetry_async_wrapper(func, capability_id: str):
+    """异步遥测包装器 — 包裹异步能力调用，自动回传遥测到 CCP。"""
+    async def _wrap():
+        start = time.time()
+        try:
+            result = await func
+            latency = int((time.time() - start) * 1000)
+            _client.telemetry(capability_id, True, latency)
+            return result
+        except Exception as e:
+            latency = int((time.time() - start) * 1000)
+            _client.telemetry(capability_id, False, latency)
+            raise e
+    return _wrap()
