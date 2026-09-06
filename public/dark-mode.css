@@ -1,10 +1,35 @@
+/* 亮色主题：默认无 data-theme 时生效，覆盖 health.css 的深色 :root */
 :root, [data-theme="light"] {
+    --bg: #ffffff;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --accent: #6366f1;
+    --accent-glow: #818cf8;
+    --healthy: #16a34a;
+    --degraded: #ca8a04;
+    --offline: #dc2626;
+    --gradient-start: #4f46e5;
+    --gradient-end: #7c3aed;
     --bg-primary: #ffffff; --bg-secondary: #f8fafc; --bg-card: #ffffff;
-    --border: #e2e8f0; --text-primary: #1e293b; --text-secondary: #64748b;
-    --accent: #6366f1; --accent-hover: #4f46e5;
+    --text-primary: #1e293b; --text-secondary: #64748b;
+    --accent-hover: #4f46e5;
 }
 [data-theme="dark"] {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #818cf8;
+    --accent-glow: #a5b4fc;
+    --healthy: #22c55e;
+    --degraded: #eab308;
+    --offline: #ef4444;
+    --gradient-start: #6366f1;
+    --gradient-end: #8b5cf6;
     --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-card: #1e293b;
-    --border: #334155; --text-primary: #e2e8f0; --text-secondary: #94a3b8;
-    --accent: #818cf8; --accent-hover: #6366f1;
+    --text-primary: #e2e8f0; --text-secondary: #94a3b8;
+    --accent-hover: #818cf8;
 }

@@ -37,7 +37,7 @@ async function main() {
     console.log(`[${MY_NAME}] 发送索引交换请求`);
     const exc = await fetchJSON(`${PRIMARY}/federation/exchange`, {
         method: "POST",
-        body: JSON.stringify({ node_id: MY_NAME, node_endpoint: MY_ENDPOINT, capabilities: [{ id: "standalone-echo-001", name: "Echo Service", category: "dev" }], summary: { total: 1, categories: { dev: 1 } } }),
+        body: JSON.stringify({ node: { id: MY_NAME, name: MY_NAME, endpoint: MY_ENDPOINT }, capabilities: [{ id: "standalone-echo-001", name: "Echo Service", name_en: "Echo Service", category: "dev", trust_summary: { usage_rate: 0, success: 0.5, uncertainty: 0.5 } }], summary: { total: 1, categories: { dev: 1 } } }),
     });
     console.log(`[${MY_NAME}] 交换结果:`, JSON.stringify(exc, null, 2));
 

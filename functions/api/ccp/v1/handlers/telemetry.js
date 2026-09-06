@@ -11,7 +11,7 @@
  * - 版本历史（capability_versions 表）
  *
  * 限流：每 IP 每能力每秒最多 1 次请求
- * 批量写入：内存缓冲 60 秒或 100 条，批量写入 D1
+ * 持久化：随请求同步写入 D1（信任向量 + 版本历史 + 遥测明细）
  *
  * 版本：v1.0
  * 协议：CCP v1.0.0
@@ -24,11 +24,6 @@ import { structuredError } from "../lib/errors.js";
 
 const CCP_VERSION = "v1.0.0";
 const TELEMETRY_RATE_LIMIT = new Map();
-const BATCH_INTERVAL_MS = 60000;
-const BATCH_MAX_SIZE = 100;
-
-let batchBuffer = [];
-let batchTimer = null;
 
 function getRateKey(ip, capId) {
   return `${ip}:${capId}`;
@@ -49,81 +44,66 @@ function checkRateLimit(ip, capId) {
   return true;
 }
 
-function addToBatch(item) {
-  batchBuffer.push(item);
-  if (batchBuffer.length >= BATCH_MAX_SIZE) {
-    flushBatch();
-  } else if (!batchTimer) {
-    batchTimer = setTimeout(flushBatch, BATCH_INTERVAL_MS);
-  }
-}
+// 单条遥测持久化：更新信任向量 + 写版本历史 + 写遥测明细
+// （S9-3/S9-7 依赖此三处落库；必须随请求同步完成，不能依赖后台批量 flush，
+//  否则 Serverless isolate 回收会导致明细与版本历史丢失）
+async function persistItem({ db, capId, update, version, agentId, success, latencyMs }) {
+  try {
+    await db
+      .prepare(
+        `UPDATE capabilities SET
+           trust_usage = ?,
+           trust_usage_rate = ?,
+           trust_success = ?,
+           evidence_count = ?,
+           evidence_uncertainty = ?,
+           trust_time = ?,
+           last_updated = ?,
+           version = ?,
+           updated_at = datetime('now')
+         WHERE id = ?`,
+      )
+      .bind(
+        update.trustUsage,
+        update.trustUsageRate,
+        update.trustSuccess,
+        update.evidenceCount,
+        update.evidenceUncertainty,
+        update.trustTime,
+        update.lastUpdated,
+        version,
+        capId,
+      )
+      .run();
 
-async function flushBatch() {
-  if (batchBuffer.length === 0) return;
-  const batch = batchBuffer.splice(0);
-  if (batchTimer) {
-    clearTimeout(batchTimer);
-    batchTimer = null;
-  }
+    await db
+      .prepare(
+        `INSERT INTO capability_versions (cap_id, version, changes, data_snapshot)
+         VALUES (?, ?, ?, ?)`,
+      )
+      .bind(
+        capId,
+        version,
+        JSON.stringify(update.changes),
+        JSON.stringify(update.snapshot),
+      )
+      .run();
 
-  for (const { db, capId, update, version, agentId, success, latencyMs } of batch) {
-    try {
-      await db
-        .prepare(
-          `UPDATE capabilities SET
-             trust_usage = ?,
-             trust_usage_rate = ?,
-             trust_success = ?,
-             evidence_count = ?,
-             evidence_uncertainty = ?,
-             trust_time = ?,
-             last_updated = ?,
-             version = ?,
-             updated_at = datetime('now')
-           WHERE id = ?`,
-        )
-        .bind(
-          update.trustUsage,
-          update.trustUsageRate,
-          update.trustSuccess,
-          update.evidenceCount,
-          update.evidenceUncertainty,
-          update.trustTime,
-          update.lastUpdated,
-          version,
-          capId,
-        )
-        .run();
-
-      await db
-        .prepare(
-          `INSERT INTO capability_versions (cap_id, version, changes, data_snapshot)
-           VALUES (?, ?, ?, ?)`,
-        )
-        .bind(
-          capId,
-          version,
-          JSON.stringify(update.changes),
-          JSON.stringify(update.snapshot),
-        )
-        .run();
-
-      // S9-3：遥测明细落 telemetry_records（健康面板数据源）
-      await db
-        .prepare(
-          `INSERT INTO telemetry_records (capability_id, agent_id, event_type, success, latency_ms, created_at)
-           VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-        )
-        .bind(
-          capId,
-          agentId || "unknown",
-          success ? "invocation" : "error",
-          success ? 1 : 0,
-          latencyMs || 0,
-        )
-        .run();
-    } catch (_) {}
-  }
+    // S9-3：遥测明细落 telemetry_records（健康面板数据源）
+    await db
+      .prepare(
+        `INSERT INTO telemetry_records (capability_id, agent_id, event_type, success, latency_ms, created_at)
+         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+      )
+      .bind(
+        capId,
+        agentId || "unknown",
+        success ? "invocation" : "error",
+        success ? 1 : 0,
+        latencyMs || 0,
+      )
+      .run();
+  } catch (_) {}
 }
 
 export async function handleTelemetry(request, db, env) {
@@ -180,7 +160,8 @@ export async function handleTelemetry(request, db, env) {
 
     const newVersion = (existing.version || 1) + 1;
 
-    addToBatch({
+    // 同步落库：信任向量 / 版本历史 / 遥测明细随请求完成持久化
+    await persistItem({
       db,
       capId,
       version: newVersion,

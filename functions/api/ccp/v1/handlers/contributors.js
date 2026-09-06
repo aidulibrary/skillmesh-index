@@ -121,12 +121,23 @@ function computeBadges(contributor) {
   const count = contributor.contributions_count || 0;
   const role = contributor.role || "observer";
   const nodeId = contributor.node_id;
+  // badges 列在库中为 JSON 字符串，读取时需解析为数组
+  const storedBadges =
+    typeof contributor.badges === "string"
+      ? (() => {
+          try {
+            return JSON.parse(contributor.badges || "[]");
+          } catch (_) {
+            return [];
+          }
+        })()
+      : contributor.badges || [];
 
   for (const [badgeId, def] of Object.entries(BADGE_DEFINITIONS)) {
     let earned = false;
     if (badgeId === "node-operator") earned = def.condition(nodeId);
     else if (badgeId === "federation-pioneer")
-      earned = def.condition(contributor.badges);
+      earned = def.condition(storedBadges);
     else if (badgeId === "maintainer" || badgeId === "steward")
       earned = def.condition(role);
     else earned = def.condition(count);
@@ -138,7 +149,7 @@ function computeBadges(contributor) {
         description: def.description,
         icon: def.icon,
         earned_at:
-          contributor.badges?.find((b) => b.id === badgeId)?.earned_at ||
+          storedBadges.find((b) => b.id === badgeId)?.earned_at ||
           new Date().toISOString(),
       });
     }
