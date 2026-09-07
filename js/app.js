@@ -1410,9 +1410,9 @@ permissions:
     if (lang === currentLang) return;
     currentLang = lang;
 
-    dom.btnZh.classList.toggle("active", lang === "zh");
-    dom.btnEn.classList.toggle("active", lang === "en");
-    dom.btnJa.classList.toggle("active", lang === "ja");
+    if (dom.btnZh) dom.btnZh.classList.toggle("active", lang === "zh");
+    if (dom.btnEn) dom.btnEn.classList.toggle("active", lang === "en");
+    if (dom.btnJa) dom.btnJa.classList.toggle("active", lang === "ja");
 
     dom.subtitle.textContent = t("subtitle");
     dom.searchInput.placeholder = t("searchPlaceholder");
@@ -1437,6 +1437,17 @@ permissions:
     updateAuthUI();
     renderCategoryChips();
     renderCards();
+
+    // Update routing operation buttons
+    document.querySelectorAll("[data-i18n='generateCode']").forEach((el) => {
+      el.textContent = t("generateCode");
+    });
+    document.querySelectorAll("[data-i18n='tryIt']").forEach((el) => {
+      el.textContent = t("tryIt");
+    });
+    document.querySelectorAll("[data-i18n='exportAdapter']").forEach((el) => {
+      el.textContent = t("exportAdapter");
+    });
   }
 
   // --- Event Handlers ---
@@ -1523,25 +1534,31 @@ permissions:
     if (currentUser) {
       dom.authArea.style.display = "none";
       dom.userArea.style.display = "";
-      const span = dom.userArea.querySelector("[data-i18n]");
-      if (span) {
-        span.textContent = t("loginAs").replace(
+      const nameSpan = dom.userArea.querySelector("#user-name-display");
+      if (nameSpan) {
+        nameSpan.textContent = t("loginAs").replace(
           "{name}",
-          currentUser.github_login,
+          currentUser.github_login ||
+            currentUser.login ||
+            currentUser.name ||
+            "",
         );
       }
+      const logoutLink = dom.userArea.querySelector("[data-i18n='logout']");
+      if (logoutLink) logoutLink.textContent = t("logout");
     } else {
       dom.authArea.style.display = "";
       dom.userArea.style.display = "none";
-      const span = dom.authArea.querySelector("[data-i18n]");
-      if (span) span.textContent = t("login");
+      const loginSpan = dom.authArea.querySelector("[data-i18n='login']");
+      if (loginSpan) loginSpan.textContent = t("login");
     }
   }
 
   async function init() {
     currentLang = detectBrowserLang();
-    dom.btnZh.classList.toggle("active", currentLang === "zh");
-    dom.btnEn.classList.toggle("active", currentLang === "en");
+    if (dom.btnZh) dom.btnZh.classList.toggle("active", currentLang === "zh");
+    if (dom.btnEn) dom.btnEn.classList.toggle("active", currentLang === "en");
+    if (dom.btnJa) dom.btnJa.classList.toggle("active", currentLang === "ja");
 
     dom.subtitle.textContent = t("subtitle");
     dom.searchInput.placeholder = t("searchPlaceholder");

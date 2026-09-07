@@ -1,5 +1,5 @@
-var CACHE_NAME = "ccp-v1";
-var URLS_TO_CACHE = ["/", "/index.html", "/health.html", "/health.js", "/health.css", "/api/ccp/v1/capabilities"];
+var CACHE_NAME = "ccp-v2";
+var URLS_TO_CACHE = ["/", "/index.html", "/health.html", "/css/tokens.css?v=20260907", "/css/style.css?v=20260907", "/dark-mode.css?v=20260907", "/dark-mode.js?v=20260907", "/js/i18n.js?v=20260907", "/js/data.js?v=20260907", "/js/app.js?v=20260907"];
 self.addEventListener("install", function(e) { e.waitUntil(caches.open(CACHE_NAME).then(function(c) { return c.addAll(URLS_TO_CACHE); })); });
 self.addEventListener("fetch", function(e) {
     if (e.request.method !== "GET") return;

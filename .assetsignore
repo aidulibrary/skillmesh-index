@@ -5,7 +5,11 @@
 # ============================================
 
 # 开发工作区（不入库也不入站）
-docs/
+# docs/ 整体收口，白名单放行页面公开引用的 3 份文档
+docs/*
+!docs/quickstart.md
+!docs/C4-生态位证伪与理论体系修正.md
+!docs/C5-阶段十规划.md
 temp/
 preview/
 skillmesh-index/
