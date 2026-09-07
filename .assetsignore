@@ -5,11 +5,9 @@
 # ============================================
 
 # 开发工作区（不入库也不入站）
-# docs/ 整体收口，白名单放行页面公开引用的 3 份文档
-docs/*
-!docs/quickstart.md
-!docs/C4-生态位证伪与理论体系修正.md
-!docs/C5-阶段十规划.md
+# docs/ 整体收口：内部文档一律不随站点发布；
+# 页面公开引用的 3 份文档通过仓库根同名副本 + _redirects 200 rewrite 发布
+docs/
 temp/
 preview/
 skillmesh-index/

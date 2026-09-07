@@ -1,0 +1,4 @@
+﻿# 公开文档 rewrite（docs/ 收口后由仓库根同名副本发布，返回 200 而非跳转）
+/docs/quickstart.md /quickstart.md 200
+/docs/C4-%E7%94%9F%E6%80%81%E4%BD%8D%E8%AF%81%E4%BC%AA%E4%B8%8E%E7%90%86%E8%AE%BA%E4%BD%93%E7%B3%BB%E4%BF%AE%E6%AD%A3.md /C4-%E7%94%9F%E6%80%81%E4%BD%8D%E8%AF%81%E4%BC%AA%E4%B8%8E%E7%90%86%E8%AE%BA%E4%BD%93%E7%B3%BB%E4%BF%AE%E6%AD%A3.md 200
+/docs/C5-%E9%98%B6%E6%AE%B5%E5%8D%81%E8%A7%84%E5%88%92.md /C5-%E9%98%B6%E6%AE%B5%E5%8D%81%E8%A7%84%E5%88%92.md 200
