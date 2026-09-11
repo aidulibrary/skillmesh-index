@@ -129,7 +129,7 @@ const App = (() => {
             <span class="federation-node-status ${n.status || "active"}">${statusLabels[n.status] || n.status}</span>
             <span class="federation-node-trust">${((n.trust_weight || 0.5) * 100).toFixed(0)}%</span>
             <span>${n.capabilities_count || 0} ${t("federationCapCount")}</span>
-            <button class="federation-node-remove" data-node-id="${escapeHtml(n.id)}" title="Remove">
+            <button class="federation-node-remove" data-node-id="${escapeHtml(n.id)}" title="Remove" aria-label="Remove ${escapeHtml(n.name || n.id)}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
@@ -665,6 +665,22 @@ const App = (() => {
         dom.emptyTitle.textContent = t("noData");
         dom.emptySub.textContent = "";
         return;
+      }
+
+      // Client-side relevance check: if API returned results but none
+      // match the query locally, show empty state instead of irrelevant results
+      if (filtered.length > 0) {
+        const relevant = filtered.filter(function (c) {
+          return matchCapability(c, query);
+        });
+        if (relevant.length === 0) {
+          dom.cardGrid.innerHTML = "";
+          dom.emptyState.classList.remove("hidden");
+          dom.emptyTitle.textContent = t("empty");
+          dom.emptySub.textContent = t("emptySub");
+          return;
+        }
+        filtered = relevant;
       }
 
       if (filtered.length === 0) {
@@ -1414,6 +1430,36 @@ permissions:
     if (dom.btnEn) dom.btnEn.classList.toggle("active", lang === "en");
     if (dom.btnJa) dom.btnJa.classList.toggle("active", lang === "ja");
 
+    // Update all static [data-i18n] elements on the page
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      var key = el.getAttribute("data-i18n");
+      if (key && I18N[currentLang] && I18N[currentLang][key]) {
+        el.textContent = I18N[currentLang][key];
+      }
+    });
+
+    // Update hero title with HTML (special handling for span highlight)
+    var heroTitle = document.querySelector("#hero-title");
+    if (heroTitle) {
+      heroTitle.innerHTML =
+        (t("heroTitlePart1") || "") +
+        "<br />" +
+        (t("heroTitlePart2") ? t("heroTitlePart2") + " " : "") +
+        "<span>" +
+        (t("heroTitleHighlight") || "") +
+        "</span>";
+    }
+
+    // Update hero subtitle with HTML (strong tag)
+    var heroSubtitle = document.querySelector("#hero-subtitle");
+    if (heroSubtitle) {
+      heroSubtitle.innerHTML = t("heroSubtitle");
+    }
+
+    // Update theme toggle title
+    var themeToggle = document.querySelector(".theme-toggle");
+    if (themeToggle) themeToggle.title = t("themeToggle");
+
     dom.subtitle.textContent = t("subtitle");
     dom.searchInput.placeholder = t("searchPlaceholder");
     dom.searchHint.textContent = t("searchHint");
@@ -1438,16 +1484,13 @@ permissions:
     renderCategoryChips();
     renderCards();
 
-    // Update routing operation buttons
-    document.querySelectorAll("[data-i18n='generateCode']").forEach((el) => {
-      el.textContent = t("generateCode");
-    });
-    document.querySelectorAll("[data-i18n='tryIt']").forEach((el) => {
-      el.textContent = t("tryIt");
-    });
-    document.querySelectorAll("[data-i18n='exportAdapter']").forEach((el) => {
-      el.textContent = t("exportAdapter");
-    });
+    // Update modal content if open
+    if (currentModalId) {
+      var cap = caps.find(function (c) {
+        return c.id === currentModalId;
+      });
+      if (cap) renderModalContent(cap);
+    }
   }
 
   // --- Event Handlers ---

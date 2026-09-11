@@ -6,11 +6,11 @@
     <title>插台 SkillMesh — CCP 能力通约协议</title>
 
     <!-- Design tokens (interactive app) -->
-    <link rel="stylesheet" href="/css/tokens.css?v=20260907" />
+    <link rel="stylesheet" href="/css/tokens.css" />
     <!-- Interactive app styles -->
-    <link rel="stylesheet" href="/css/style.css?v=20260907" />
+    <link rel="stylesheet" href="/css/style.css" />
     <!-- Dark mode (landing page) -->
-    <link rel="stylesheet" href="/dark-mode.css?v=20260907" />
+    <link rel="stylesheet" href="/dark-mode.css" />
 
     <style>
       /* ====== Landing Page Section Styles ====== */
@@ -19,7 +19,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      :root {
+      :root,
+      [data-theme="light"] {
         --bg: #ffffff;
         --bg-secondary: #f8fafc;
         --card-bg: #ffffff;
@@ -35,6 +36,23 @@
         --warning: #ca8a04;
         --radius: 12px;
         --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      [data-theme="dark"] {
+        --bg: #0f172a;
+        --bg-secondary: #1e293b;
+        --card-bg: #1e293b;
+        --border: #334155;
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --accent: #818cf8;
+        --accent-hover: #818cf8;
+        --accent-light: #1e1b4b;
+        --gradient-start: #6366f1;
+        --gradient-end: #8b5cf6;
+        --success: #22c55e;
+        --warning: #eab308;
+        --radius: 12px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
       }
       body {
         font-family:
@@ -741,6 +759,139 @@
         .integrations {
           grid-template-columns: 1fr 1fr;
         }
+        nav {
+          padding: 0 8px;
+        }
+        nav .nav-inner {
+          height: 48px;
+        }
+        nav .brand {
+          font-size: 14px;
+          gap: 6px;
+        }
+        nav .brand .logo-icon {
+          width: 24px;
+          height: 24px;
+          font-size: 12px;
+          border-radius: 6px;
+        }
+        nav .nav-links {
+          display: none;
+        }
+        nav .nav-right {
+          gap: 4px;
+        }
+        .lang-switch button {
+          font-size: 11px;
+          padding: 2px 3px;
+        }
+        .auth-btn {
+          font-size: 11px;
+          padding: 3px 8px;
+        }
+        .auth-btn svg {
+          width: 14px;
+          height: 14px;
+        }
+        .step {
+          min-width: 0;
+          width: 100%;
+        }
+        .step code {
+          font-size: 11px;
+          word-break: break-all;
+        }
+        .hero h1 {
+          font-size: 28px;
+        }
+        .hero .subtitle {
+          font-size: 15px;
+        }
+        .hero-stats {
+          gap: 16px;
+        }
+        .hero-stat .val {
+          font-size: 22px;
+        }
+        .hero-stat .lbl {
+          font-size: 11px;
+        }
+        .btn {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+        .for-grid {
+          grid-template-columns: 1fr;
+        }
+        .steps {
+          grid-template-columns: 1fr;
+        }
+        .about-grid {
+          grid-template-columns: 1fr;
+        }
+        .cta-bottom {
+          padding: 48px 16px;
+        }
+        .cta-bottom h2 {
+          font-size: 22px;
+        }
+        footer {
+          padding: 24px 16px;
+        }
+        .footer-links {
+          gap: 12px;
+        }
+        .footer-links a {
+          font-size: 12px;
+        }
+        .explore-divider {
+          padding: 48px 16px 32px;
+        }
+        .explore-divider h2 {
+          font-size: 1.5rem;
+        }
+        .main-container {
+          padding: 0 12px 60px;
+        }
+        .search-bar {
+          flex-direction: column;
+          gap: 8px;
+        }
+        .search-box {
+          width: 100%;
+        }
+        .category-chips {
+          gap: 4px;
+        }
+        .category-chip {
+          padding: 5px 10px;
+          font-size: 12px;
+        }
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+        .modal-container {
+          width: calc(100vw - 24px);
+          margin: 12px;
+          max-height: calc(100vh - 24px);
+        }
+        .modal-routing-ops {
+          flex-direction: column;
+        }
+        .routing-op-btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .federation-panel {
+          padding: 12px;
+        }
+        .federation-content {
+          flex-direction: column;
+        }
+        .federation-add-form,
+        .federation-nodes {
+          width: 100%;
+        }
       }
     </style>
   </head>
@@ -753,12 +904,12 @@
           插台 SkillMesh
         </a>
         <div class="nav-links">
-          <a href="/">首页</a>
-          <a href="#quickstart">快速开始</a>
-          <a href="#explore">能力探索</a>
-          <a href="/api-docs.html">API 文档</a>
-          <a href="/health.html">健康面板</a>
-          <a href="#about">关于</a>
+          <a href="/" data-i18n="navHome">首页</a>
+          <a href="#quickstart" data-i18n="navQuickstart">快速开始</a>
+          <a href="#explore" data-i18n="navExplore">能力探索</a>
+          <a href="/api-docs.html" data-i18n="navApiDocs">API 文档</a>
+          <a href="/health.html" data-i18n="navHealth">健康面板</a>
+          <a href="#about" data-i18n="navAbout">关于</a>
         </div>
         <div class="nav-right">
           <div class="lang-switch">
@@ -812,60 +963,73 @@
 
     <!-- ====== Hero ====== -->
     <header class="hero">
-      <div class="hero-badge">🚀 CCP 协议 v1.0 · 联邦网络已就绪</div>
-      <h1>让 AI Agent 像调用函数一样<br />发现和使用<span>任意能力</span></h1>
-      <p class="subtitle">
+      <div class="hero-badge" data-i18n="heroBadge">
+        🚀 CCP 协议 v1.0 · 联邦网络已就绪
+      </div>
+      <h1 id="hero-title">
+        让 AI Agent 像调用函数一样<br />发现和使用<span>任意能力</span>
+      </h1>
+      <p class="subtitle" id="hero-subtitle" data-i18n="heroSubtitle">
         CCP（能力通约协议）试图回答一个问题：AI Agent 如何在成千上万个能力中，
         找到<strong>真正靠谱</strong>的那一个？我们正在用联邦共识 +
         真实调用数据，验证这个假设。
       </p>
       <div class="hero-cta">
-        <a href="#quickstart" class="btn btn-primary">⚡ 5 分钟快速开始</a>
-        <a href="#explore" class="btn btn-outline">🔍 在线体验 Playground</a>
+        <a href="#quickstart" class="btn btn-primary" data-i18n="heroBtnQuick"
+          >⚡ 5 分钟快速开始</a
+        >
+        <a href="#explore" class="btn btn-outline" data-i18n="heroBtnPlayground"
+          >🔍 在线体验 Playground</a
+        >
       </div>
       <div class="hero-stats">
         <div class="hero-stat">
           <div class="val" id="stat-cap">--</div>
-          <div class="lbl">能力锚点</div>
+          <div class="lbl" data-i18n="heroStatCap">能力锚点</div>
         </div>
         <div class="hero-stat">
           <div class="val" id="stat-node">--</div>
-          <div class="lbl">联邦节点</div>
+          <div class="lbl" data-i18n="heroStatNode">联邦节点</div>
         </div>
         <div class="hero-stat">
           <div class="val" id="stat-contrib">--</div>
-          <div class="lbl">贡献者</div>
+          <div class="lbl" data-i18n="heroStatContrib">贡献者</div>
         </div>
         <div class="hero-stat">
           <div class="val" id="stat-telem">--</div>
-          <div class="lbl">调用记录</div>
+          <div class="lbl" data-i18n="heroStatTelem">调用记录</div>
         </div>
       </div>
     </header>
 
     <!-- ====== Quick Start ====== -->
     <section class="section" id="quickstart">
-      <h2>三步接入，立即可用</h2>
-      <p class="desc">
+      <h2 data-i18n="quickstartTitle">三步接入，立即可用</h2>
+      <p class="desc" data-i18n="quickstartDesc">
         不管你是开发者、Agent 使用者，还是低代码玩家，都能在 5
         分钟内跑通第一条调用。
       </p>
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
-          <h3>搜索能力</h3>
-          <p>
+          <h3 data-i18n="step1Title">搜索能力</h3>
+          <p data-i18n="step1Desc">
             用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……
           </p>
           <code
             >curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"</code
           >
-          <a href="/api/ccp/v1/search?q=pdf" target="_blank">在线试试 →</a>
+          <a
+            href="/api/ccp/v1/search?q=pdf"
+            target="_blank"
+            data-i18n="step1Link"
+            >在线试试 →</a
+          >
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <h3>获取适配器</h3>
-          <p>
+          <h3 data-i18n="step2Title">获取适配器</h3>
+          <p data-i18n="step2Desc">
             一键生成你所用框架的调用代码：LangChain Tool、MCP Server、DSH
             Plugin……
           </p>
@@ -873,15 +1037,20 @@
           <a
             href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
             target="_blank"
+            data-i18n="step2Link"
             >查看示例 →</a
           >
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>注册你的能力</h3>
-          <p>把你的 AI 能力贡献给联邦网络，让全球 Agent 都能发现和调用。</p>
+          <h3 data-i18n="step3Title">注册你的能力</h3>
+          <p data-i18n="step3Desc">
+            把你的 AI 能力贡献给联邦网络，让全球 Agent 都能发现和调用。
+          </p>
           <code>POST /api/ccp/v1/contribute</code>
-          <a href="/docs/quickstart.md" target="_blank">查看教程 →</a>
+          <a href="/docs/quickstart.md" target="_blank" data-i18n="step3Link"
+            >查看教程 →</a
+          >
         </div>
       </div>
     </section>
@@ -889,13 +1058,15 @@
     <!-- ====== For Whom ====== -->
     <section class="for-whom">
       <div class="section">
-        <h2>无论是谁，都能找到入口</h2>
-        <p class="desc">CCP 为不同角色设计了不同的接入路径，总有一条适合你。</p>
+        <h2 data-i18n="forWhomTitle">无论是谁，都能找到入口</h2>
+        <p class="desc" data-i18n="forWhomDesc">
+          CCP 为不同角色设计了不同的接入路径，总有一条适合你。
+        </p>
         <div class="for-grid">
           <div class="for-card">
             <div class="icon">👨‍💻</div>
-            <h3>我是开发者</h3>
-            <p>
+            <h3 data-i18n="forWhomDevTitle">我是开发者</h3>
+            <p data-i18n="forWhomDevDesc">
               我写代码，想给我的 Agent 接入更多能力，或者发布自己的 AI 服务。
             </p>
             <ul>
@@ -907,8 +1078,8 @@
           </div>
           <div class="for-card">
             <div class="icon">🤖</div>
-            <h3>我是 Agent 使用者</h3>
-            <p>
+            <h3 data-i18n="forWhomUserTitle">我是 Agent 使用者</h3>
+            <p data-i18n="forWhomUserDesc">
               我用 Dify、Coze 等低代码平台搭建 Agent，想拖拽式接入更多能力。
             </p>
             <ul>
@@ -924,8 +1095,8 @@
 
     <!-- ====== 协议生态 ====== -->
     <section class="section" id="ecosystem">
-      <h2>CCP 在 Agent 协议生态中的位置</h2>
-      <p class="desc">
+      <h2 data-i18n="ecoTitle">CCP 在 Agent 协议生态中的位置</h2>
+      <p class="desc" data-i18n="ecoDesc">
         CCP 不替代 MCP、A2A 或 Agent
         Skills——它做的是这三者都没做的事：<strong>能力信任</strong>。
       </p>
@@ -951,7 +1122,11 @@
         >
           <div class="logo">🛡️</div>
           <div class="name">CCP</div>
-          <div class="tag" style="color: var(--accent); font-weight: 600">
+          <div
+            class="tag"
+            style="color: var(--accent); font-weight: 600"
+            data-i18n="ecoTagCCP"
+          >
             SkillMesh · 能力信任
           </div>
         </div>
@@ -963,6 +1138,7 @@
           color: var(--text-muted);
           font-size: 14px;
         "
+        data-i18n="ecoNote"
       >
         CCP 已适配 LangChain · MCP · DSH，Dify 插件即将上线
       </p>
@@ -970,8 +1146,10 @@
 
     <!-- ====== 已支持的框架 ====== -->
     <section class="section">
-      <h2>已支持的框架</h2>
-      <p class="desc">CCP 协议提供 4 条集成通道，覆盖主流 Agent 框架。</p>
+      <h2 data-i18n="frameworksTitle">已支持的框架</h2>
+      <p class="desc" data-i18n="frameworksDesc">
+        CCP 协议提供 4 条集成通道，覆盖主流 Agent 框架。
+      </p>
       <div class="integrations">
         <a
           href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
@@ -1008,19 +1186,19 @@
     <!-- ====== 关于插台与CCP ====== -->
     <section class="about" id="about">
       <div class="section">
-        <h2>关于插台与 CCP</h2>
-        <p class="desc">
+        <h2 data-i18n="aboutTitle">关于插台与 CCP</h2>
+        <p class="desc" data-i18n="aboutDesc">
           这是一个正在进行的开放实验，我们诚实地告诉你当前的状态。
         </p>
         <div class="about-grid">
           <div class="about-card">
-            <h3>🧪 我们正在验证什么</h3>
-            <p>
+            <h3 data-i18n="aboutVerifyTitle">🧪 我们正在验证什么</h3>
+            <p data-i18n="aboutVerifyDesc">
               CCP 试图回答一个问题：<strong
                 >AI Agent 如何在成千上万个能力中，找到真正靠谱的那一个？</strong
               >
             </p>
-            <p style="margin-top: 12px">
+            <p style="margin-top: 12px" data-i18n="aboutVerifyMore">
               我们假设：基于联邦共识 +
               真实调用数据，可以计算出每个能力的"信任向量"——而不需要依赖任何单一平台的背书。
             </p>
@@ -1031,15 +1209,15 @@
             </ul>
           </div>
           <div class="about-card">
-            <h3>📐 CCP 不是什么</h3>
-            <p>
+            <h3 data-i18n="aboutNotTitle">📐 CCP 不是什么</h3>
+            <p data-i18n="aboutNotDesc">
               CCP <strong>不替代</strong> MCP（连接工具），也<strong
                 >不替代</strong
               >
               A2A（Agent 通信），更<strong>不替代</strong> Agent
               Skills（能力描述）。
             </p>
-            <p style="margin-top: 12px">
+            <p style="margin-top: 12px" data-i18n="aboutNotMore">
               它做的是这三者都没做的事：<strong>能力信任</strong>。谁来告诉
               Agent 哪个能力真的靠谱？
             </p>
@@ -1050,8 +1228,8 @@
             </ul>
           </div>
           <div class="about-card">
-            <h3>🔗 联邦治理</h3>
-            <p>
+            <h3 data-i18n="aboutFederationTitle">🔗 联邦治理</h3>
+            <p data-i18n="aboutFederationDesc">
               CCP
               不是一个公司产品，而是一个<strong>联邦协议</strong>。任何节点都可以加入联邦网络，共同参与：
             </p>
@@ -1065,7 +1243,7 @@
             </p>
           </div>
           <div class="about-card">
-            <h3>📖 了解更多</h3>
+            <h3 data-i18n="aboutMoreTitle">📖 了解更多</h3>
             <ul>
               <li>
                 <a href="/docs/C4-生态位证伪与理论体系修正.md">为什么是实验</a>
@@ -1091,17 +1269,19 @@
 
     <!-- ====== Interactive App: 能力探索 ====== -->
     <div class="explore-divider" id="explore">
-      <h2>🔍 探索能力锚点</h2>
-      <p>在下方搜索栏中输入自然语言描述，实时匹配联邦网络中的能力锚点</p>
+      <h2 data-i18n="exploreTitle">🔍 探索能力锚点</h2>
+      <p data-i18n="exploreDesc">
+        在下方搜索栏中输入自然语言描述，实时匹配联邦网络中的能力锚点
+      </p>
     </div>
 
     <div id="app">
       <div class="main-container">
         <!-- App Hero -->
         <div class="hero">
-          <h1 class="hero-title">
+          <h2 class="hero-title">
             发现可靠能力<span class="hero-title-light"> · 信任驱动选择</span>
-          </h1>
+          </h2>
           <p class="hero-subtitle" id="subtitle">
             能力通约网络 — 让任何能力被任何调用方发现、评估和调用
           </p>
@@ -1427,7 +1607,12 @@
                   >生成代码</span
                 >
                 <div class="routing-panel-tabs" id="codeTabs"></div>
-                <button class="routing-copy-btn" onclick="App.copyCode()">
+                <button
+                  class="routing-copy-btn"
+                  onclick="App.copyCode()"
+                  aria-label="复制代码"
+                  title="复制代码"
+                >
                   <svg
                     width="14"
                     height="14"
@@ -1599,9 +1784,9 @@
 
     <!-- ====== Bottom CTA ====== -->
     <section class="cta-bottom">
-      <h2>准备好让你的 Agent 更聪明了吗？</h2>
-      <p>5 分钟，从零到第一条能力调用。不写代码也能玩。</p>
-      <a href="#explore" class="btn">🔍 探索能力锚点</a>
+      <h2 data-i18n="ctaTitle">准备好让你的 Agent 更聪明了吗？</h2>
+      <p data-i18n="ctaDesc">5 分钟，从零到第一条能力调用。不写代码也能玩。</p>
+      <a href="#explore" class="btn" data-i18n="ctaBtn">🔍 探索能力锚点</a>
     </section>
 
     <!-- ====== Footer ====== -->
@@ -1616,46 +1801,49 @@
         <a href="/docs/C4-生态位证伪与理论体系修正.md">为什么是实验</a>
         <a href="/docs/C5-阶段十规划.md">下一步</a>
       </div>
-      <div>插台 SkillMesh · CCP v1.0 · 联邦 · 开源 · 信任实验</div>
+      <div data-i18n="footerTagline">
+        插台 SkillMesh · CCP v1.0 · 联邦 · 开源 · 信任实验
+      </div>
     </footer>
 
     <!-- Theme Toggle -->
-    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+    <button
+      class="theme-toggle"
+      onclick="toggleTheme()"
+      data-i18n="themeToggle"
+      title="切换主题"
+    >
       🌓
     </button>
 
     <!-- ====== Scripts ====== -->
-    <script src="/dark-mode.js?v=20260907"></script>
+    <script src="/dark-mode.js"></script>
     <script>
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js?v=20260907");
+        navigator.serviceWorker.register("/sw.js");
       }
       (async function () {
-        var setStat = function (id, v) {
-          document.getElementById(id).textContent =
-            v === undefined || v === null || isNaN(Number(v)) ? "--" : v;
-        };
         try {
-          var res = await fetch("/api/ccp/v1/health/stats");
-          if (!res.ok) throw new Error("http " + res.status);
+          var res = await fetch("/api/ccp/v1/health");
           var data = await res.json();
-          var s = data && data.stats;
-          if (!s) throw new Error("missing stats");
-          setStat("stat-cap", s.capabilities);
-          setStat("stat-node", s.federation_nodes);
-          setStat("stat-contrib", s.contributors);
-          setStat("stat-telem", s.telemetries);
+          var s = data.stats || data;
+          document.getElementById("stat-cap").textContent =
+            s.capabilities || "--";
+          document.getElementById("stat-node").textContent = s.nodes || "--";
+          document.getElementById("stat-contrib").textContent =
+            s.contributors || "--";
+          document.getElementById("stat-telem").textContent =
+            (s.telemetries && s.telemetries.total) || "--";
         } catch (e) {
-          // API 不可用时使用兜底值（能力 32 / 节点 4 / 贡献者 2 / 调用 1）
-          setStat("stat-cap", "32");
-          setStat("stat-node", "4");
-          setStat("stat-contrib", "2");
-          setStat("stat-telem", "1");
+          document.getElementById("stat-cap").textContent = "32";
+          document.getElementById("stat-node").textContent = "4";
+          document.getElementById("stat-contrib").textContent = "2";
+          document.getElementById("stat-telem").textContent = "1";
         }
       })();
     </script>
-    <script src="/js/i18n.js?v=20260907"></script>
-    <script src="/js/data.js?v=20260907"></script>
-    <script src="/js/app.js?v=20260907"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/data.js"></script>
+    <script src="/js/app.js"></script>
   </body>
 </html>
