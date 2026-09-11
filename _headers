@@ -10,13 +10,13 @@
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /css/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=300, must-revalidate
 
 /js/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=300, must-revalidate
 
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=300, must-revalidate
 
 /docs/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
