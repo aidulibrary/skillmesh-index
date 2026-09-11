@@ -909,6 +909,7 @@ a {
 
 .federation-input {
   flex: 1;
+  min-width: 0;
   padding: 8px 12px;
   font-size: 0.8rem;
   border: 1px solid var(--sm-border-subtle);
@@ -926,6 +927,16 @@ a {
 
 .federation-input-sm {
   max-width: 100px;
+}
+
+@media (max-width: 640px) {
+  .federation-form-row {
+    flex-wrap: wrap;
+  }
+
+  .federation-add-btn {
+    width: 100%;
+  }
 }
 
 .federation-add-btn {

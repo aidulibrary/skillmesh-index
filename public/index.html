@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>插台 SkillMesh — CCP 能力通约协议</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/brand/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/brand/favicon.svg" />
 
     <!-- Design tokens (interactive app) -->
     <link rel="stylesheet" href="/css/tokens.css" />
@@ -1823,23 +1825,68 @@
         navigator.serviceWorker.register("/sw.js");
       }
       (async function () {
-        try {
-          var res = await fetch("/api/ccp/v1/health");
-          var data = await res.json();
-          var s = data.stats || data;
-          document.getElementById("stat-cap").textContent =
-            s.capabilities || "--";
-          document.getElementById("stat-node").textContent = s.nodes || "--";
-          document.getElementById("stat-contrib").textContent =
-            s.contributors || "--";
-          document.getElementById("stat-telem").textContent =
-            (s.telemetries && s.telemetries.total) || "--";
-        } catch (e) {
-          document.getElementById("stat-cap").textContent = "32";
-          document.getElementById("stat-node").textContent = "4";
-          document.getElementById("stat-contrib").textContent = "2";
-          document.getElementById("stat-telem").textContent = "1";
-        }
+        var set = function (id, v) {
+          var el = document.getElementById(id);
+          if (el && v !== undefined && v !== null && v !== "" && !isNaN(v))
+            el.textContent = v;
+        };
+        var getJSON = function (url, tries) {
+          if (tries === undefined) tries = 2;
+          return fetch(url)
+            .then(function (r) {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .catch(function () {
+              if (tries > 1) {
+                return new Promise(function (res) {
+                  setTimeout(res, 700);
+                }).then(function () {
+                  return getJSON(url, tries - 1);
+                });
+              }
+              return null;
+            });
+        };
+        var results = await Promise.all([
+          getJSON("/api/ccp/v1/health"),
+          getJSON("/api/ccp/v1/capabilities"),
+          getJSON("/api/ccp/v1/contributors"),
+          getJSON("/api/ccp/v1/metrics"),
+        ]);
+        var health = results[0] || {},
+          caps = results[1] || {},
+          contribs = results[2] || {},
+          metrics = results[3] || {},
+          hstats = health.stats || {},
+          summary = health.summary || {};
+        set("stat-cap", caps.count !== undefined ? caps.count : hstats.capabilities);
+        set(
+          "stat-node",
+          summary.total_nodes !== undefined
+            ? summary.total_nodes
+            : Array.isArray(health.nodes)
+              ? health.nodes.length
+              : hstats.nodes,
+        );
+        set(
+          "stat-contrib",
+          contribs.total !== undefined ? contribs.total : hstats.contributors,
+        );
+        var telemSamples =
+          metrics.latency && typeof metrics.latency.samples === "number"
+            ? metrics.latency.samples
+            : undefined;
+        set(
+          "stat-telem",
+          metrics.telemetries && metrics.telemetries.total !== undefined
+            ? metrics.telemetries.total
+            : metrics.total_requests !== undefined
+              ? metrics.total_requests
+              : telemSamples !== undefined
+                ? telemSamples
+                : hstats.telemetries && hstats.telemetries.total,
+        );
       })();
     </script>
     <script src="/js/i18n.js"></script>

@@ -61,7 +61,7 @@ const I18N = {
     aboutVerifyDesc:
       "CCP 试图回答一个问题：AI Agent 如何在成千上万个能力中，找到真正靠谱的那一个？",
     aboutVerifyMore:
-      "我们假设：基于联邦共识 + 真实调用数据，可以计算出每个能力的"信任向量"——而不需要依赖任何单一平台的背书。",
+      "我们假设：基于联邦共识 + 真实调用数据，可以计算出每个能力的“信任向量”——而不需要依赖任何单一平台的背书。",
     aboutNotTitle: "📐 CCP 不是什么",
     aboutNotDesc:
       "CCP 不替代 MCP（连接工具），也不替代 A2A（Agent 通信），更不替代 Agent Skills（能力描述）。",

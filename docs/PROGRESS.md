@@ -194,16 +194,16 @@
 
 ### 阶段九成功标准（2026-09-06 观测后更新）
 
-| 指标                         | 当前值 | 阶段九目标 |
-| ---------------------------- | :----: | :--------: |
-| 外部 Agent 框架集成          |   1    |    ≥ 1     |
-| 外部开发者注册能力锚点       |   0    |    ≥ 1     |
-| 真实跨节点联邦交换           |   1    |   ≥ 1 次   |
-| 遥测数据自动更新             |   是   |     是     |
-| 生态位网络效应维度达成度     |  机制就绪*  |   ≥ 50%    |
-| 第三重裂缝（生态裂缝）消解度 |  手段就绪*  |   ≥ 40%    |
+| 指标                         |   当前值   | 阶段九目标 |
+| ---------------------------- | :--------: | :--------: |
+| 外部 Agent 框架集成          |     1      |    ≥ 1     |
+| 外部开发者注册能力锚点       |     0      |    ≥ 1     |
+| 真实跨节点联邦交换           |     1      |   ≥ 1 次   |
+| 遥测数据自动更新             |     是     |     是     |
+| 生态位网络效应维度达成度     | 机制就绪\* |   ≥ 50%    |
+| 第三重裂缝（生态裂缝）消解度 | 手段就绪\* |   ≥ 40%    |
 
-> * 2026-09-06 观测：遥测/版本/联邦/徽章机制层已闭环并产生数据痕迹；"外部开发者注册"与真实网络效应为 0（库内贡献者均为验证 bot），属阶段十及后续观测项。观测明细见 [S9-阶段九指标观测记录](./S9-阶段九指标观测记录.md)
+> - 2026-09-06 观测：遥测/版本/联邦/徽章机制层已闭环并产生数据痕迹；"外部开发者注册"与真实网络效应为 0（库内贡献者均为验证 bot），属阶段十及后续观测项。观测明细见 [S9-阶段九指标观测记录](./S9-阶段九指标观测记录.md)
 
 ### 阶段九核心命题
 
@@ -213,18 +213,18 @@
 
 > 核心命题：验证"信任向量网络效应"是否成立。首页重构为 v1 门户 + 信任实验副标题，向外部开发者开放"可观测的信任证据"（信任雷达 / 排行榜 / OpenAPI / 调用链追踪 / Dify 插件），为真实采用铺路。
 
-| 验收项 | 内容 | 状态 | 线上证据 |
-| ------ | ---- | ---- | -------- |
-| S10-1 | 首页重构（v1 标题+导航+生态+关于+Footer） | ✅ | `/` v1 门户 200（`0a9fb63b` / `0110f4f0` 部署） |
-| S10-2 | 信任向量可视化 trust_radar | ✅ | `GET /api/ccp/v1/capabilities/{id}` 返回 5 维度 + overall |
-| S10-3 | OpenAPI 规范 + Swagger UI | ✅ | `/openapi.json` 20 端点；`/api-docs.html` Swagger UI 200 |
-| S10-4 | 适配器 curl/python/js 示例 | ✅ | `/capabilities/{id}/adapters/langchain` 含 `_examples` |
-| S10-5 | 贡献后 next_steps 引导 + 缓存刷新 | ✅ | 贡献 201 返回四引导；新锚点即时可搜 |
-| S10-6 | Dify 插件 ccp-plugin-dify | ✅ | `packages/ccp-plugin-dify/`（manifest 3 工具 + provider + 3 tools） |
-| S10-9 | W3C Trace Context 调用链追踪 | ✅ | telemetry 携带 traceparent → 响应 trace_id 一致 |
-| S10-10 | 节点信任策略端点 | ✅ | trust-policy GET/PUT；权重和≠1 拒绝 400 |
-| S10-11 | 贡献者排行榜 | ✅ | `/contributors/leaderboard` 支持 3 种排序，含 rank/badges |
-| 迁移 | D1 补列（trace_id / trust_policy） | ✅ | `migrations/0010_s10_trust_trace_columns.sql` 已远程应用 |
+| 验收项 | 内容                                      | 状态 | 线上证据                                                            |
+| ------ | ----------------------------------------- | ---- | ------------------------------------------------------------------- |
+| S10-1  | 首页重构（v1 标题+导航+生态+关于+Footer） | ✅   | `/` v1 门户 200（`0a9fb63b` / `0110f4f0` 部署）                     |
+| S10-2  | 信任向量可视化 trust_radar                | ✅   | `GET /api/ccp/v1/capabilities/{id}` 返回 5 维度 + overall           |
+| S10-3  | OpenAPI 规范 + Swagger UI                 | ✅   | `/openapi.json` 20 端点；`/api-docs.html` Swagger UI 200            |
+| S10-4  | 适配器 curl/python/js 示例                | ✅   | `/capabilities/{id}/adapters/langchain` 含 `_examples`              |
+| S10-5  | 贡献后 next_steps 引导 + 缓存刷新         | ✅   | 贡献 201 返回四引导；新锚点即时可搜                                 |
+| S10-6  | Dify 插件 ccp-plugin-dify                 | ✅   | `packages/ccp-plugin-dify/`（manifest 3 工具 + provider + 3 tools） |
+| S10-9  | W3C Trace Context 调用链追踪              | ✅   | telemetry 携带 traceparent → 响应 trace_id 一致                     |
+| S10-10 | 节点信任策略端点                          | ✅   | trust-policy GET/PUT；权重和≠1 拒绝 400                             |
+| S10-11 | 贡献者排行榜                              | ✅   | `/contributors/leaderboard` 支持 3 种排序，含 rank/badges           |
+| 迁移   | D1 补列（trace_id / trust_policy）        | ✅   | `migrations/0010_s10_trust_trace_columns.sql` 已远程应用            |
 
 ### 阶段七：框架突破
 

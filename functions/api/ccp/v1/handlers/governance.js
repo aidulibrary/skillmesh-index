@@ -134,7 +134,10 @@ async function listProposals(url, db) {
 
   query += " ORDER BY created_at DESC LIMIT 50";
 
-  const { results } = await db.prepare(query).bind(...params).all();
+  const { results } = await db
+    .prepare(query)
+    .bind(...params)
+    .all();
 
   return jsonResponse({
     protocol: "CCP",
@@ -209,9 +212,7 @@ async function updateProposal(request, proposalId, db) {
   if (!validTransitions[proposal.status]?.includes(status)) {
     return structuredError("INVALID_SCHEMA", {
       detail: {
-        errors: [
-          `Cannot transition from ${proposal.status} to ${status}`,
-        ],
+        errors: [`Cannot transition from ${proposal.status} to ${status}`],
       },
     });
   }
@@ -426,7 +427,9 @@ async function getVotes(proposalId, db) {
       approval_ratio: totalWeight > 0 ? approveWeight / totalWeight : 0,
       quorum_met: (votes || []).length >= QUORUM_MIN_NODES,
       threshold_met:
-        totalWeight > 0 ? approveWeight / totalWeight > APPROVAL_THRESHOLD : false,
+        totalWeight > 0
+          ? approveWeight / totalWeight > APPROVAL_THRESHOLD
+          : false,
     },
   });
 }
@@ -447,13 +450,15 @@ export async function handleGovernance(request, db) {
   if (proposalMatch) {
     const proposalId = proposalMatch[1];
     if (request.method === "GET") return getProposal(proposalId, db);
-    if (request.method === "PATCH") return updateProposal(request, proposalId, db);
+    if (request.method === "PATCH")
+      return updateProposal(request, proposalId, db);
   }
 
   const voteMatch = path.match(/^\/proposals\/([^/]+)\/vote$/);
   if (voteMatch) {
     const proposalId = voteMatch[1];
-    if (request.method === "POST") return voteOnProposal(request, proposalId, db);
+    if (request.method === "POST")
+      return voteOnProposal(request, proposalId, db);
   }
 
   const votesMatch = path.match(/^\/proposals\/([^/]+)\/votes$/);

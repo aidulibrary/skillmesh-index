@@ -111,7 +111,30 @@
 
     <script src="/health.js"></script>
     <script src="/dark-mode.js"></script>
-    <button onclick="toggleTheme()" style="position:fixed;bottom:1rem;right:1rem;z-index:9999;background:var(--accent);color:white;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem;" title="切换主题">🌓</button>
-    <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
+    <button
+      onclick="toggleTheme()"
+      style="
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        font-size: 1.2rem;
+      "
+      title="切换主题"
+    >
+      🌓
+    </button>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+      }
+    </script>
   </body>
 </html>
