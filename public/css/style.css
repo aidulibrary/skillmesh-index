@@ -783,7 +783,7 @@ main td a,
 }
 
 .federated-toggle input:checked + .federated-toggle-slider {
-  background: var(--sm-teal-600);
+  background: var(--sm-teal-700);
 }
 
 .federated-toggle input:checked + .federated-toggle-slider::after {
@@ -956,7 +956,7 @@ main td a,
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--sm-zinc-0);
-  background: var(--sm-teal-600);
+  background: var(--sm-teal-700);
   border: none;
   border-radius: var(--sm-radius-xs);
   cursor: pointer;
@@ -965,7 +965,7 @@ main td a,
 }
 
 .federation-add-btn:hover {
-  background: var(--sm-teal-700);
+  background: var(--sm-teal-800);
 }
 
 .federation-add-btn:disabled {

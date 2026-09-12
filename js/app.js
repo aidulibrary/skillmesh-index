@@ -276,7 +276,8 @@ const App = (() => {
 
   // --- Helpers ---
   function t(key) {
-    return I18N[currentLang][key] || key;
+    var _v = I18N[currentLang] ? I18N[currentLang][key] : undefined;
+    return _v === undefined || _v === null ? key : _v;
   }
 
   function getLocalized(cap, field) {
@@ -584,7 +585,6 @@ const App = (() => {
         onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); ${onClick}; }"
         role="button"
         tabindex="0"
-        aria-labelledby="${titleId}"
       >
         ${badge ? `<span class="badge-new">${badge}</span>` : ""}
         <div class="card-header">
@@ -1418,15 +1418,55 @@ permissions:
   }
 
   // --- Language ---
-  function detectBrowserLang() {
-    const lang = navigator.language || navigator.userLanguage || "";
-    if (lang.toLowerCase().startsWith("zh")) return "zh";
-    return "en";
+  const LANG_STORAGE_KEY = "skillmesh_lang";
+
+  function normalizeLang(value) {
+    if (!value) return null;
+    const v = String(value).toLowerCase();
+    if (v === "zh" || v.startsWith("zh-")) return "zh";
+    if (v === "ja" || v.startsWith("ja-")) return "ja";
+    if (v === "en" || v.startsWith("en-")) return "en";
+    return null;
   }
 
-  function setLang(lang) {
-    if (lang === currentLang) return;
+  function readStoredLang() {
+    try {
+      return normalizeLang(localStorage.getItem(LANG_STORAGE_KEY));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function persistLang(lang) {
+    try {
+      localStorage.setItem(LANG_STORAGE_KEY, lang);
+    } catch (_) {}
+  }
+
+  function getUrlLang() {
+    try {
+      return normalizeLang(
+        new URLSearchParams(window.location.search).get("lang"),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function detectBrowserLang() {
+    const lang = navigator.language || navigator.userLanguage || "";
+    return normalizeLang(lang) || "en";
+  }
+
+  // 语言优先级：URL ?lang= > localStorage > 浏览器语言 > 默认 zh
+  function resolveInitialLang() {
+    return getUrlLang() || readStoredLang() || detectBrowserLang() || "zh";
+  }
+
+  function applyLang(lang) {
     currentLang = lang;
+    document.documentElement.lang =
+      lang === "zh" ? "zh-CN" : lang === "ja" ? "ja" : "en";
 
     if (dom.btnZh) dom.btnZh.classList.toggle("active", lang === "zh");
     if (dom.btnEn) dom.btnEn.classList.toggle("active", lang === "en");
@@ -1493,6 +1533,14 @@ permissions:
       });
       if (cap) renderModalContent(cap);
     }
+  }
+
+  function setLang(lang) {
+    const next = normalizeLang(lang) || (I18N[lang] ? lang : null);
+    if (!next || !I18N[next]) return;
+    persistLang(next);
+    if (next === currentLang) return;
+    applyLang(next);
   }
 
   // --- Event Handlers ---
@@ -1600,14 +1648,7 @@ permissions:
   }
 
   async function init() {
-    currentLang = detectBrowserLang();
-    if (dom.btnZh) dom.btnZh.classList.toggle("active", currentLang === "zh");
-    if (dom.btnEn) dom.btnEn.classList.toggle("active", currentLang === "en");
-    if (dom.btnJa) dom.btnJa.classList.toggle("active", currentLang === "ja");
-
-    dom.subtitle.textContent = t("subtitle");
-    dom.searchInput.placeholder = t("searchPlaceholder");
-    dom.searchHint.textContent = t("searchHint");
+    applyLang(resolveInitialLang());
 
     dom.searchInput.addEventListener("input", handleSearch);
     dom.modalOverlay.addEventListener("click", handleOverlayClick);

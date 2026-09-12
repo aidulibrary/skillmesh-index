@@ -57,7 +57,7 @@
      星级是人类视角的降维摘要），故单列，避免与 --sm-trust-time 混淆。 */
   --sm-amber-500: #f59e0b;
 
-  --sm-trust-source: #059669; /* 源码可验证 — emerald */
+  --sm-trust-source: #065f46; /* 源码可验证 — emerald */
   --sm-trust-usage: #2563eb; /* 使用痕迹   — blue    */
   --sm-trust-success: #7c3aed; /* 成功率     — violet  */
   --sm-trust-risk: #e11d48; /* 依赖风险   — rose（负向指标：条越长风险越高） */
@@ -73,11 +73,11 @@
      4. 语义色 — 端点类型（Endpoint Type）
      采用"中性底 + 彩色引导点"形态，避免与信任向量色块冲突。
      ---------------------------------------------------------- */
-  --sm-ep-http: #2563eb; /* HTTP      */
-  --sm-ep-mcp: #059669; /* MCP       */
+  --sm-ep-http: #1d4ed8; /* HTTP      */
+  --sm-ep-mcp: #065f46; /* MCP       */
   --sm-ep-command: #52525b; /* Command   */
-  --sm-ep-prompt: #d97706; /* Prompt    */
-  --sm-ep-workflow: #0d9488; /* Workflow  */
+  --sm-ep-prompt: #92400e; /* Prompt    */
+  --sm-ep-workflow: #0f766e; /* Workflow  */
 
   /* 端点类型 — 浅色底（标签/徽章背景） */
   --sm-ep-http-soft: #dbeafe;

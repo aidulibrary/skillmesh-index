@@ -165,12 +165,21 @@ describe("D4 信任策略 PUT 权重校验", () => {
 
 // ================= D2：页脚国际化 =================
 describe("D2 页脚链接国际化", () => {
-  const i18nLines = read("js/i18n.js").split(/\r?\n/);
+  const i18nSrc = read("js/i18n.js");
+  const i18nLines = i18nSrc.split(/\r?\n/);
   const seg = (s, e) => i18nLines.slice(s, e).join("\n");
-  const keySet = (t) => new Set([...t.matchAll(/^\s+([A-Za-z0-9_]+):\s*"/gm)].map((m) => m[1]));
-  const zh = keySet(seg(5, 194));
-  const en = keySet(seg(194, 385));
-  const ja = keySet(seg(385, i18nLines.length));
+  // 按语言块定位（不再依赖硬编码行号，避免词典增删后切片错位）
+  const langBlock = (lang) => {
+    const st = i18nSrc.search(new RegExp("\\n  " + lang + ":\\s*\\{"));
+    if (st === -1) return "";
+    const rest = i18nSrc.slice(st + 1);
+    const next = rest.search(/\n  (zh|en|ja):\s*\{/);
+    return next === -1 ? rest : rest.slice(0, next);
+  };
+  const keySet = (tx) => new Set([...tx.matchAll(/^\s+([A-Za-z0-9_]+):\s*"/gm)].map((m) => m[1]));
+  const zh = keySet(langBlock("zh"));
+  const en = keySet(langBlock("en"));
+  const ja = keySet(langBlock("ja"));
   const html = read("index.html");
   const htmlKeys = [...new Set([...html.matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1]))];
 
@@ -192,10 +201,10 @@ describe("D2 页脚链接国际化", () => {
     for (const k of keys) {
       expect(zh.has(k) && en.has(k) && ja.has(k), `缺键 ${k}`).toBe(true);
     }
-    const enText = seg(194, 385);
+    const enText = langBlock("en");
     expect(enText).toMatch(/footerNavCapabilities:\s*"Capabilities"/);
     expect(enText).toMatch(/footerNavWhy:\s*"Why an Experiment"/);
-    const jaText = seg(385, i18nLines.length);
+    const jaText = langBlock("ja");
     expect(jaText).toMatch(/footerNavCapabilities:\s*"能力一覧"/);
   });
 
@@ -237,9 +246,13 @@ describe("D5 可访问性修复", () => {
     expect(css).toContain(".footer-links a");
   });
 
-  it("D5-5 能力卡片可访问名与可见标题一致（aria-labelledby + card-title id）", () => {
+  it("D5-5 能力卡片可访问名与可见标题一致（不设 aria-label，由内容文本回退命名 + card-title id 兜底）", () => {
     const app = read("js/app.js");
-    expect(app).toContain("aria-labelledby");
+    const cardTpl = app.slice(app.indexOf('class="card fade-in'), app.indexOf("function renderSkeleton"));
+    // 卡片不得再用 aria-label 覆盖可访问名（否则与可见文本不匹配，axe label-content-name-mismatch）
+    expect(cardTpl).not.toContain("aria-label=");
+    expect(cardTpl).not.toContain("aria-labelledby=");
+    // 可见标题仍保留唯一 id，便于后续如需显式命名时引用
     expect(app).toContain("card-title-");
   });
 

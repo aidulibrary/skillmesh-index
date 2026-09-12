@@ -11,8 +11,12 @@
     "deploy": "npx wrangler pages deploy . --project-name=skillmesh"
   },
   "devDependencies": {
-    "vitest": "^3.0.0",
     "@vitest/coverage-v8": "^3.0.0",
-    "miniflare": "^4.0.0"
+    "axe-core": "^4.13.0",
+    "miniflare": "^4.0.0",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "puppeteer-core": "^23.11.1"
   }
 }
