@@ -266,6 +266,17 @@ async function getStats(db) {
 }
 
 /**
+ * 顶层统计摘要（D3：补齐 GET /api/ccp/v1/stats 端点）
+ * 复用 getStats 的统计口径，供健康面板与第三方调用方使用。
+ */
+export async function handleStats(db) {
+  if (!db) {
+    return structuredError("DB_ERROR");
+  }
+  return getStats(db);
+}
+
+/**
  * 主路由
  */
 export async function handleHealth(request, db) {

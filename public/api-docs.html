@@ -4,10 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CCP 协议 API 文档 — Swagger UI</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
-    />
+    <link rel="stylesheet" href="/swagger/swagger-ui.css" />
     <style>
       html {
         box-sizing: border-box;
@@ -38,25 +35,44 @@
   </head>
   <body>
     <div id="swagger-ui"></div>
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <noscript>需要启用 JavaScript 才能查看 API 文档。</noscript>
+    <script src="/swagger/swagger-ui-bundle.js"></script>
+    <script src="/swagger/swagger-ui-standalone-preset.js"></script>
     <script>
-      SwaggerUIBundle({
-        url: "/openapi.json",
-        dom_id: "#swagger-ui",
-        deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIBundle.SwaggerUIStandalonePreset,
-        ],
-        layout: "BaseLayout",
-        defaultModelsExpandDepth: -1,
-        defaultModelExpandDepth: 1,
-        docExpansion: "list",
-        filter: true,
-        showExtensions: true,
-        showCommonExtensions: true,
-        tryItOutEnabled: true,
-      });
+      // D1：Swagger UI 资源已本地化（public/swagger/），不再依赖 jsdelivr CDN
+      if (typeof SwaggerUIBundle === "undefined") {
+        var el = document.getElementById("swagger-ui");
+        if (el) {
+          el.innerHTML =
+            '<div style="max-width:680px;margin:80px auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;font-family:system-ui,sans-serif;line-height:1.7">' +
+            '<h2 style="margin:0 0 12px">Swagger UI 资源加载失败</h2>' +
+            '<p>本地脚本 <code>/swagger/swagger-ui-bundle.js</code> 未能加载。请确认该文件已随站点部署，或直接查看原始规范：</p>' +
+            '<ul><li><a href="/openapi.json">/openapi.json</a>（OpenAPI 3.0.3 原始文档）</li>' +
+            '<li><a href="/docs/quickstart.md">/docs/quickstart.md</a>（快速开始）</li></ul>' +
+            "</div>";
+        }
+      } else {
+        var standalonePreset =
+          typeof SwaggerUIStandalonePreset !== "undefined"
+            ? SwaggerUIStandalonePreset
+            : SwaggerUIBundle.SwaggerUIStandalonePreset;
+        SwaggerUIBundle({
+          url: "/openapi.json",
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: standalonePreset
+            ? [SwaggerUIBundle.presets.apis, standalonePreset]
+            : [SwaggerUIBundle.presets.apis],
+          layout: "BaseLayout",
+          defaultModelsExpandDepth: -1,
+          defaultModelExpandDepth: 1,
+          docExpansion: "list",
+          filter: true,
+          showExtensions: true,
+          showCommonExtensions: true,
+          tryItOutEnabled: true,
+        });
+      }
     </script>
   </body>
 </html>

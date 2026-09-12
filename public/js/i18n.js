@@ -75,6 +75,10 @@ const I18N = {
     ctaDesc: "5 分钟，从零到第一条能力调用。不写代码也能玩。",
     ctaBtn: "🔍 探索能力锚点",
     // Footer
+    footerNavCapabilities: "能力列表",
+    footerNavNodes: "联邦节点",
+    footerNavWhy: "为什么是实验",
+    footerNavNext: "下一步",
     footerTagline: "插台 SkillMesh · CCP v1.0 · 联邦 · 开源 · 信任实验",
     // Explore Divider
     exploreTitle: "🔍 探索能力锚点",
@@ -259,6 +263,10 @@ const I18N = {
     ctaDesc: "5 minutes, from zero to first capability call. No coding required.",
     ctaBtn: "🔍 Explore Capabilities",
     // Footer
+    footerNavCapabilities: "Capabilities",
+    footerNavNodes: "Federation Nodes",
+    footerNavWhy: "Why an Experiment",
+    footerNavNext: "Next Steps",
     footerTagline: "SkillMesh · CCP v1.0 · Federation · Open Source · Trust Experiment",
     // Explore Divider
     exploreTitle: "🔍 Explore Capability Anchors",
@@ -446,6 +454,10 @@ const I18N = {
     ctaDesc: "5分で、ゼロから最初の能力呼び出しまで。コーディング不要でも遊べます。",
     ctaBtn: "🔍 能力アンカーを探索",
     // Footer
+    footerNavCapabilities: "能力一覧",
+    footerNavNodes: "連邦ノード",
+    footerNavWhy: "なぜ実験なのか",
+    footerNavNext: "次のステップ",
     footerTagline: "SkillMesh · CCP v1.0 · 連邦 · オープンソース · 信頼実験",
     // Explore Divider
     exploreTitle: "🔍 能力アンカーを探索",

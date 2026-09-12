@@ -7,7 +7,13 @@
   Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
 
 /*.html
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/swagger/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 
 /css/*
   Cache-Control: public, max-age=300, must-revalidate

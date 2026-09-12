@@ -72,6 +72,73 @@ export async function handleTrustPolicy(request, db, nodeId) {
       return structuredError("INVALID_JSON");
     }
 
+    // D4：权重键白名单 + 数值合法性校验（非法时返回 400，而非静默忽略）
+    const ALLOWED_WEIGHT_KEYS = ["source", "usage", "success", "risk", "time"];
+    const ALLOWED_THRESHOLD_KEYS = [
+      "min_trust",
+      "min_evidence",
+      "max_uncertainty",
+    ];
+    const rawWeights =
+      body.weights && typeof body.weights === "object" ? body.weights : null;
+    if (rawWeights) {
+      const unknown = Object.keys(rawWeights).filter(
+        (k) => !ALLOWED_WEIGHT_KEYS.includes(k),
+      );
+      if (unknown.length > 0) {
+        return structuredError("VALIDATION_ERROR", {
+          detail: {
+            field: "weights",
+            reason: `Unknown weight key(s): ${unknown.join(", ")}. Allowed: ${ALLOWED_WEIGHT_KEYS.join(", ")}`,
+          },
+        });
+      }
+      const badKey = ALLOWED_WEIGHT_KEYS.find((k) => {
+        const v = rawWeights[k];
+        return (
+          v !== undefined &&
+          (typeof v !== "number" || !Number.isFinite(v) || v < 0 || v > 1)
+        );
+      });
+      if (badKey) {
+        return structuredError("VALIDATION_ERROR", {
+          detail: {
+            field: `weights.${badKey}`,
+            reason: "Weight must be a finite number within [0, 1]",
+          },
+        });
+      }
+    }
+    const rawThresholds =
+      body.thresholds && typeof body.thresholds === "object"
+        ? body.thresholds
+        : null;
+    if (rawThresholds) {
+      const unknownTh = Object.keys(rawThresholds).filter(
+        (k) => !ALLOWED_THRESHOLD_KEYS.includes(k),
+      );
+      if (unknownTh.length > 0) {
+        return structuredError("VALIDATION_ERROR", {
+          detail: {
+            field: "thresholds",
+            reason: `Unknown threshold key(s): ${unknownTh.join(", ")}. Allowed: ${ALLOWED_THRESHOLD_KEYS.join(", ")}`,
+          },
+        });
+      }
+      const badTh = ALLOWED_THRESHOLD_KEYS.find((k) => {
+        const v = rawThresholds[k];
+        return v !== undefined && (typeof v !== "number" || !Number.isFinite(v));
+      });
+      if (badTh) {
+        return structuredError("VALIDATION_ERROR", {
+          detail: {
+            field: `thresholds.${badTh}`,
+            reason: "Threshold must be a finite number",
+          },
+        });
+      }
+    }
+
     const policy = {
       weights: {
         source: body.weights?.source ?? DEFAULT_POLICY.weights.source,

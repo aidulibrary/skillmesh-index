@@ -29,10 +29,10 @@
         --border: #e2e8f0;
         --text: #1e293b;
         --text-muted: #64748b;
-        --accent: #6366f1;
-        --accent-hover: #4f46e5;
+        --accent: #4338ca;
+        --accent-hover: #3730a3;
         --accent-light: #eef2ff;
-        --gradient-start: #4f46e5;
+        --gradient-start: #4338ca;
         --gradient-end: #7c3aed;
         --success: #16a34a;
         --warning: #ca8a04;
@@ -1278,7 +1278,7 @@
       </p>
     </div>
 
-    <div id="app">
+    <main id="app">
       <div class="main-container">
         <!-- App Hero -->
         <div class="hero">
@@ -1426,7 +1426,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <!-- ====== Modal Overlay ====== -->
     <div class="modal-overlay hidden" id="modalOverlay">
@@ -1795,14 +1795,22 @@
     <!-- ====== Footer ====== -->
     <footer>
       <div class="footer-links">
-        <a href="/">首页</a>
-        <a href="/health.html">健康面板</a>
-        <a href="/api/ccp/v1/capabilities">能力列表</a>
-        <a href="/api/ccp/v1/federation/nodes">联邦节点</a>
-        <a href="/api-docs.html">API 文档</a>
-        <a href="/docs/quickstart.md">快速开始</a>
-        <a href="/docs/C4-生态位证伪与理论体系修正.md">为什么是实验</a>
-        <a href="/docs/C5-阶段十规划.md">下一步</a>
+        <a href="/" data-i18n="navHome">首页</a>
+        <a href="/health.html" data-i18n="navHealth">健康面板</a>
+        <a href="/api/ccp/v1/capabilities" data-i18n="footerNavCapabilities"
+          >能力列表</a
+        >
+        <a href="/api/ccp/v1/federation/nodes" data-i18n="footerNavNodes"
+          >联邦节点</a
+        >
+        <a href="/api-docs.html" data-i18n="navApiDocs">API 文档</a>
+        <a href="/docs/quickstart.md" data-i18n="navQuickstart">快速开始</a>
+        <a
+          href="/docs/C4-生态位证伪与理论体系修正.md"
+          data-i18n="footerNavWhy"
+          >为什么是实验</a
+        >
+        <a href="/docs/C5-阶段十规划.md" data-i18n="footerNavNext">下一步</a>
       </div>
       <div data-i18n="footerTagline">
         插台 SkillMesh · CCP v1.0 · 联邦 · 开源 · 信任实验

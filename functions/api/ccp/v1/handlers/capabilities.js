@@ -37,11 +37,47 @@ import {
 
 const CCP_VERSION = "v1.0.0";
 
-export async function handleList(db, env) {
+/**
+ * D3：分类别名表（中/日文展示名 → 英文分类键）
+ * 前端与文档展示的分类名为中文/日文，而数据库 category 字段存英文键，
+ * 此处做归一化，使 ?category=数据处理 与 ?category=data 等价。
+ */
+const CATEGORY_ALIASES = {
+  数据处理: "data",
+  数据: "data",
+  データ処理: "data",
+  人工智能: "ai",
+  智能: "ai",
+  ai: "ai",
+  媒体: "media",
+  多媒体: "media",
+  メディア: "media",
+  语言: "language",
+  自然语言: "language",
+  言語: "language",
+  开发: "dev",
+  开发工具: "dev",
+  開発: "dev",
+};
+
+function normalizeCategory(input) {
+  const v = String(input || "").trim();
+  if (!v) return "";
+  return CATEGORY_ALIASES[v] || CATEGORY_ALIASES[v.toLowerCase()] || v.toLowerCase();
+}
+
+export async function handleList(db, env, options = {}) {
+  const query = (options.q || "").trim();
+  const category = (options.category || "").trim();
+  const hasFilter = query.length > 0 || category.length > 0;
+
   const key = cacheKey("list");
-  const cached = await cacheGet(env, key);
-  if (cached) {
-    return jsonResponse(cached);
+  // D3：仅在无过滤条件时读取/写入全量列表缓存，避免过滤结果污染缓存
+  if (!hasFilter) {
+    const cached = await cacheGet(env, key);
+    if (cached) {
+      return jsonResponse(cached);
+    }
   }
 
   let caps;
@@ -55,14 +91,51 @@ export async function handleList(db, env) {
     caps = (await import("../../../../_data/capabilities")).CAPABILITIES;
   }
 
+  // D3：服务端过滤（?q= 关键词 / ?category= 分类）
+  let list = caps;
+  if (category) {
+    // D3：先做别名归一化（中文/日文分类名 → 英文键），再按分类字段匹配
+    const needle = normalizeCategory(category);
+    list = list.filter((c) =>
+      String(c.category || "")
+        .toLowerCase()
+        .includes(needle),
+    );
+  }
+  if (query) {
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    list = list.filter((c) => {
+      const haystack = [
+        c.id,
+        c.name,
+        c.name_en,
+        c.desc,
+        c.desc_en,
+        c.category,
+        c.endpoint,
+        ...(Array.isArray(c.features) ? c.features : []),
+        ...(Array.isArray(c.features_en) ? c.features_en : []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return terms.every((term) => haystack.includes(term));
+    });
+  }
+
   const data = {
     protocol: "CCP",
     version: CCP_VERSION,
-    count: caps.length,
-    capabilities: caps,
+    count: list.length,
+    total: caps.length,
+    query: query || null,
+    category: category || null,
+    capabilities: list,
   };
 
-  await cacheSet(env, key, data, CACHE_TTL.list);
+  if (!hasFilter) {
+    await cacheSet(env, key, data, CACHE_TTL.list);
+  }
   return jsonResponse(data);
 }
 

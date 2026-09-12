@@ -24,6 +24,18 @@ a {
   text-decoration: none;
 }
 
+/* D5：内容区链接补下划线，满足 WCAG 1.4.1「不仅靠颜色区分」 */
+main p a,
+main li a,
+main td a,
+.footer-links a,
+.modal-body a,
+.modal-content a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
 /* --- Navbar --- */
 .navbar {
   position: sticky;

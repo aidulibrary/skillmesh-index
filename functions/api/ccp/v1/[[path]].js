@@ -48,7 +48,7 @@ import { handleExchange } from "./federation/exchange.js";
 import { handleTrustPolicy } from "./federation/trust-policy.js";
 import { handleGovernance } from "./handlers/governance.js";
 import { handleContributors } from "./handlers/contributors.js";
-import { handleHealth } from "./handlers/health.js";
+import { handleHealth, handleStats } from "./handlers/health.js";
 
 const CCP_VERSION = "v1.0.0";
 
@@ -245,7 +245,15 @@ export async function onRequest(context) {
       response = await handleContributors(request, db);
     } else if (relative.startsWith("health")) {
       response = await handleHealth(request, db);
-    } else if (!relative || relative === "capabilities") {
+    } else if (relative === "stats") {
+      // D3：补齐 /api/ccp/v1/stats 统计摘要端点
+      response = await handleStats(db);
+    } else if (relative === "capabilities" || (!relative && request.method === "GET")) {
+      const q = url.searchParams.get("q") || "";
+      const category =
+        url.searchParams.get("category") || url.searchParams.get("cat") || "";
+      response = await handleList(db, env, { q, category });
+    } else if (!relative) {
       response = await handleList(db, env);
     } else {
       const parts = relative.split("/");

@@ -573,6 +573,8 @@ const App = (() => {
     const onClick = isFederated
       ? `window.open('${cap._source_endpoint}/capabilities/${cap.id}', '_blank')`
       : `App.openModal('${cap.id}')`;
+    // D5：卡片可访问名改为引用可见标题（避免 aria-label 与可见文本不匹配）
+    const titleId = `card-title-${String(cap.id).replace(/[^A-Za-z0-9_-]/g, "-")}`;
 
     return `
       <div
@@ -582,11 +584,11 @@ const App = (() => {
         onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); ${onClick}; }"
         role="button"
         tabindex="0"
-        aria-label="${escapeHtml(name)} — ${t("source")}: ${(trustScore * 5).toFixed(1)}/5${isFederated ? " (" + t("federatedSource") + ")" : ""}"
+        aria-labelledby="${titleId}"
       >
         ${badge ? `<span class="badge-new">${badge}</span>` : ""}
         <div class="card-header">
-          <h3 class="card-title">${escapeHtml(name)}${fedBadge}</h3>
+          <h3 class="card-title" id="${titleId}">${escapeHtml(name)}${fedBadge}</h3>
           <span class="${tagClass}">${icon} ${tagLabel}</span>
         </div>
         <p class="card-desc">${escapeHtml(desc)}</p>
