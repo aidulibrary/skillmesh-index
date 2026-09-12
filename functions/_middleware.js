@@ -74,11 +74,17 @@ function isApi(pathname) {
 
 /**
  * 判断是否为 HTML 入口
+ * 覆盖：根路径、*.html、目录路径（以 / 结尾）、以及无扩展名的页面路由
+ *（如 /health、/api-docs），排除 /api/ 与 /docs/ 前缀。
  */
 function isHtmlEntry(pathname) {
-  return (
-    pathname === "/" || pathname.endsWith(".html") || pathname.endsWith("/")
-  );
+  if (pathname === "/") return true;
+  if (pathname.startsWith("/api/")) return false;
+  if (pathname.startsWith("/docs/")) return false;
+  if (pathname.endsWith(".html")) return true;
+  if (pathname.endsWith("/")) return true;
+  const lastSegment = pathname.split("/").pop() || "";
+  return !lastSegment.includes(".");
 }
 
 export async function onRequest(context) {
@@ -128,10 +134,12 @@ export async function onRequest(context) {
     newResponse.headers.set("X-Trace-Id", traceId);
 
     if (isHtmlEntry(pathname)) {
-      // HTML 入口：短时间新鲜度 + 后台刷新
+      // D6：HTML 入口必须与 _headers 保持一致（max-age=0, must-revalidate）。
+      // 此前此处无条件覆盖为 1 小时公开缓存，会盖掉 _headers 的规则，
+      // 导致用户长时间看到旧版首页（多语言/样式失效的假故障即由此放大）。
       newResponse.headers.set(
         "Cache-Control",
-        "public, max-age=3600, stale-while-revalidate=86400",
+        "public, max-age=0, must-revalidate",
       );
       return newResponse;
     }

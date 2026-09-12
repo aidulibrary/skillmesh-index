@@ -13,6 +13,7 @@ import { handleList } from "../functions/api/ccp/v1/handlers/capabilities.js";
 import { handleStats } from "../functions/api/ccp/v1/handlers/health.js";
 import { handleTrustPolicy } from "../functions/api/ccp/v1/federation/trust-policy.js";
 import { onRequest } from "../functions/api/ccp/v1/[[path]].js";
+import { onRequest as middlewareOnRequest } from "../functions/_middleware.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFileSync(path.join(ROOT, p), "utf8");
@@ -307,6 +308,37 @@ describe("D6/D7 缓存策略与 HSTS", () => {
 
   it("D6-2 /swagger/* 静态资源仍保持长缓存", () => {
     expect(headers).toMatch(/\/swagger\/\*[\s\S]{0,80}max-age=604800/);
+  });
+
+  // 构造中间件调用上下文（next 返回未带 Cache-Control 的 HTML 响应）
+  const runMiddleware = (p) =>
+    middlewareOnRequest({
+      request: new Request("https://skillmesh.pages.dev" + p),
+      next: async () =>
+        new Response("<!doctype html><html><body>x</body></html>", {
+          headers: { "Content-Type": "text/html; charset=utf-8" },
+        }),
+    });
+
+  it("D6-3 _middleware 不再把 HTML 入口覆盖为 1 小时缓存", async () => {
+    for (const p of ["/", "/index.html", "/health", "/health.html", "/api-docs"]) {
+      const res = await runMiddleware(p);
+      expect(res.headers.get("Cache-Control")).toBe("public, max-age=0, must-revalidate");
+    }
+    // 源码层兜底：中间件内不得再出现 1 小时缓存的字面量
+    expect(read("functions/_middleware.js")).not.toContain("max-age=3600");
+    expect(read("index.html")).not.toContain("max-age=3600");
+  });
+
+  it("D6-4 _middleware 未破坏静态资源/文档/API 的缓存分级", async () => {
+    const asset = await runMiddleware("/js/app.js");
+    expect(asset.headers.get("Cache-Control")).toBe("public, max-age=31536000, immutable");
+    const doc = await runMiddleware("/docs/quickstart.md");
+    expect(doc.headers.get("Cache-Control")).toBe("public, max-age=604800, stale-while-revalidate=86400");
+    const api = await runMiddleware("/api/ccp/v1/capabilities");
+    expect(api.headers.get("Cache-Control")).toBe("no-store");
+    const icon = await runMiddleware("/favicon.ico");
+    expect(icon.headers.get("Cache-Control")).toBeNull();
   });
 
   it("D7-1 _headers 已声明 HSTS", () => {
