@@ -1,24 +1,11 @@
-/* CCP 联邦网络健康面板 — 样式 */
+/* CCP 联邦网络健康面板 — 样式
+   色板统一由 /css/tokens.css 的 --sm-* 与旧变量别名提供，
+   本文件仅消费变量，亮/暗色由 tokens.css 统一调度。 */
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-:root {
-  --bg: #0f172a;
-  --card-bg: #1e293b;
-  --border: #334155;
-  --text: #e2e8f0;
-  --text-muted: #94a3b8;
-  --accent: #818cf8;
-  --accent-glow: #a5b4fc;
-  --healthy: #22c55e;
-  --degraded: #eab308;
-  --offline: #ef4444;
-  --gradient-start: #4f46e5;
-  --gradient-end: #7c3aed;
 }
 
 body {
@@ -121,9 +108,9 @@ body {
 .stat-card {
   text-align: center;
   padding: 1rem;
-  background: rgba(99, 102, 241, 0.1);
+  background: var(--sm-brand-soft);
   border-radius: 8px;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  border: 1px solid var(--sm-brand-soft-border);
 }
 
 .stat-value {
@@ -149,7 +136,7 @@ body {
   font-size: 0.85rem;
   padding: 0.25rem 0.75rem;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--sm-bg-subtle);
 }
 
 .node-badge.healthy {
@@ -184,7 +171,7 @@ th {
 td {
   padding: 0.75rem;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  border-bottom: 1px solid var(--sm-border-subtle);
 }
 
 .loading {
@@ -220,7 +207,7 @@ td {
 .coverage-bar {
   position: relative;
   height: 24px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--sm-bg-subtle);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 0.75rem;
@@ -263,7 +250,7 @@ td {
 .telemetry-card {
   text-align: center;
   padding: 0.75rem;
-  background: rgba(99, 102, 241, 0.1);
+  background: var(--sm-brand-soft);
   border-radius: 8px;
 }
 
@@ -287,7 +274,7 @@ td {
 .telemetry-type-tag {
   font-size: 0.8rem;
   padding: 0.2rem 0.6rem;
-  background: rgba(99, 102, 241, 0.15);
+  background: var(--sm-brand-soft);
   border-radius: 6px;
   color: var(--text);
 }
@@ -315,7 +302,7 @@ td {
 .category-track {
   flex: 1;
   height: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--sm-bg-subtle);
   border-radius: 4px;
   overflow: hidden;
 }

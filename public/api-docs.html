@@ -4,6 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CCP 协议 API 文档 — Swagger UI</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/brand/favicon.svg" />
+    <script>
+      // P1-1 首屏主题前置：与站点其它入口保持同一主题源
+      (function () {
+        try {
+          var t = localStorage.getItem("ccp-theme");
+          var d =
+            t === "dark" ||
+            (!t &&
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute(
+            "data-theme",
+            d ? "dark" : "light",
+          );
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="stylesheet" href="/css/tokens.css?v=20260913a" />
+    <link rel="stylesheet" href="/dark-mode.css?v=20260913a" />
     <link rel="stylesheet" href="/swagger/swagger-ui.css" />
     <style>
       html {
@@ -17,7 +37,7 @@
       }
       body {
         margin: 0;
-        background: #fafafa;
+        background: var(--sm-bg-canvas);
       }
       .topbar {
         display: none;
@@ -31,11 +51,37 @@
       .swagger-ui .scheme-container {
         box-shadow: none;
       }
+      /* 主题切换按钮：与其他入口保持同一交互与外观 */
+      .theme-toggle {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1px solid var(--sm-border-subtle);
+        background: var(--sm-bg-surface);
+        color: var(--sm-fg-primary);
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+        box-shadow: var(--sm-shadow-md);
+        z-index: 9999;
+      }
     </style>
   </head>
   <body>
     <div id="swagger-ui"></div>
     <noscript>需要启用 JavaScript 才能查看 API 文档。</noscript>
+    <button
+      class="theme-toggle"
+      onclick="toggleTheme()"
+      title="切换主题"
+      aria-label="切换主题"
+    >
+      🌓
+    </button>
+    <script src="/dark-mode.js?v=20260913a"></script>
     <script src="/swagger/swagger-ui-bundle.js"></script>
     <script src="/swagger/swagger-ui-standalone-preset.js"></script>
     <script>

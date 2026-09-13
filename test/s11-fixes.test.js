@@ -220,10 +220,11 @@ describe("D5 可访问性修复", () => {
   const html = read("index.html");
   const lightHtml = html.slice(0, html.indexOf('[data-theme="dark"]'));
 
-  it("D5-1 浅色主题主色加深（不再使用 #6366f1 / #4f46e5）", () => {
-    expect(lightHtml).not.toContain("#6366f1");
-    expect(lightHtml).not.toContain("#4f46e5");
-    expect(lightHtml).toContain("#4338ca");
+  it("D5-1 浅色主题主色加深（不再使用 #6366f1 / #4f46e5，主色统一由 tokens 提供）", () => {
+    expect(html).not.toContain("#6366f1");
+    expect(html).not.toContain("#4f46e5");
+    // deploy-theme-fix：落地页不再自定义色板，亮色主色收敛为 teal-700（#0f766e，对白底 4.9:1）
+    expect(read("css/tokens.css")).toContain("--sm-brand: var(--sm-teal-700)");
   });
 
   it("D5-2 页面主体地标由 div#app 改为 main#app", () => {
@@ -232,10 +233,11 @@ describe("D5 可访问性修复", () => {
     expect((html.match(/<\/main>/g) || []).length).toBe(1);
   });
 
-  it("D5-3 次要灰/占位符对比度提升（dark-mode.css 浅色块用 #64748b，tokens 用 zinc-500）", () => {
-    const dark = read("dark-mode.css");
-    const lightDark = dark.slice(0, dark.indexOf('[data-theme="dark"]'));
-    expect(lightDark).toContain("--text-muted: #64748b");
+  it("D5-3 次要灰/占位符对比度提升（色板收敛后统一由 tokens 承担）", () => {
+    // deploy-theme-fix：双色板已收敛，dark-mode.css 不再定义 --text-muted，
+    // 浅色次要文字改由 tokens.css 单一色板提供（zinc-700，对白底 9.7:1）
+    expect(read("dark-mode.css")).not.toContain("--text-muted");
+    expect(read("css/tokens.css")).toContain("--sm-fg-secondary: var(--sm-zinc-700)");
     expect(read("css/tokens.css")).toContain("--sm-fg-placeholder: var(--sm-zinc-500)");
   });
 

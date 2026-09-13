@@ -1475,6 +1475,9 @@ permissions:
     // Update all static [data-i18n] elements on the page
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       var key = el.getAttribute("data-i18n");
+      // P2-1 主题按钮以图标表达状态，跳过文本覆写，避免语言切换后图标消失
+      if (key === "themeToggle") return;
+      if (el.classList && el.classList.contains("theme-toggle")) return;
       if (key && I18N[currentLang] && I18N[currentLang][key]) {
         el.textContent = I18N[currentLang][key];
       }

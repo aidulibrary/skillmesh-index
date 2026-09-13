@@ -8,11 +8,11 @@
     <link rel="apple-touch-icon" href="/assets/brand/favicon.svg" />
 
     <!-- Design tokens (interactive app) -->
-    <link rel="stylesheet" href="/css/tokens.css" />
+    <link rel="stylesheet" href="/css/tokens.css?v=20260913a" />
     <!-- Interactive app styles -->
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style.css?v=20260913a" />
     <!-- Dark mode (landing page) -->
-    <link rel="stylesheet" href="/dark-mode.css" />
+    <link rel="stylesheet" href="/dark-mode.css?v=20260913a" />
 
     <style>
       /* ====== Landing Page Section Styles ====== */
@@ -21,41 +21,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      :root,
-      [data-theme="light"] {
-        --bg: #ffffff;
-        --bg-secondary: #f8fafc;
-        --card-bg: #ffffff;
-        --border: #e2e8f0;
-        --text: #1e293b;
-        --text-muted: #64748b;
-        --accent: #4338ca;
-        --accent-hover: #3730a3;
-        --accent-light: #eef2ff;
-        --gradient-start: #4338ca;
-        --gradient-end: #7c3aed;
-        --success: #16a34a;
-        --warning: #ca8a04;
-        --radius: 12px;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-      }
-      [data-theme="dark"] {
-        --bg: #0f172a;
-        --bg-secondary: #1e293b;
-        --card-bg: #1e293b;
-        --border: #334155;
-        --text: #e2e8f0;
-        --text-muted: #94a3b8;
-        --accent: #818cf8;
-        --accent-hover: #818cf8;
-        --accent-light: #1e1b4b;
-        --gradient-start: #6366f1;
-        --gradient-end: #8b5cf6;
-        --success: #22c55e;
-        --warning: #eab308;
-        --radius: 12px;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-      }
+      /* 落地页色板已收敛至 /css/tokens.css（--sm-* 与旧变量别名），
+         本文件不再自行维护亮/暗两套变量。 */
       body {
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
@@ -71,10 +38,20 @@
         position: sticky;
         top: 0;
         z-index: 1000;
-        background: rgba(255, 255, 255, 0.92);
+        background: var(--sm-bg-surface);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border);
         padding: 0 24px;
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
+      }
+      /* 支持 color-mix 时还原毛玻璃半透明层次（P0-2） */
+      @supports (background: color-mix(in srgb, red 50%, transparent)) {
+        nav {
+          background: color-mix(in srgb, var(--sm-bg-surface) 92%, transparent);
+        }
       }
       nav .nav-inner {
         max-width: 1100px;
@@ -204,7 +181,7 @@
         text-decoration: none;
       }
       #user-area .logout-link:hover {
-        color: #dc2626;
+        color: var(--sm-danger);
       }
 
       /* ====== Hero (landing page) ====== */
@@ -320,6 +297,58 @@
         opacity: 0.7;
       }
 
+      /* ====== P0-4 暗色态 Hero / CTA：深底 + 品牌微光晕 ====== */
+      [data-theme="dark"] .hero,
+      [data-theme="dark"] .cta-bottom {
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 50% 0%,
+            color-mix(in srgb, var(--sm-teal-500) 16%, transparent),
+            transparent 62%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 82% 100%,
+            color-mix(in srgb, var(--sm-violet-600) 14%, transparent),
+            transparent 60%
+          ),
+          var(--sm-bg-canvas);
+        color: var(--sm-fg-primary);
+      }
+      [data-theme="dark"] .hero h1,
+      [data-theme="dark"] .cta-bottom h2,
+      [data-theme="dark"] .cta-bottom p {
+        color: var(--sm-fg-primary);
+      }
+      [data-theme="dark"] .hero .subtitle,
+      [data-theme="dark"] .hero-stat {
+        color: var(--sm-fg-secondary);
+      }
+      [data-theme="dark"] .hero-badge {
+        background: var(--sm-bg-muted);
+        color: var(--sm-fg-secondary);
+        backdrop-filter: none;
+      }
+      [data-theme="dark"] .btn-primary {
+        background: var(--sm-brand);
+        color: var(--sm-fg-on-solid);
+        box-shadow: var(--sm-shadow-md);
+      }
+      [data-theme="dark"] .btn-outline {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--sm-border-strong);
+        color: var(--sm-fg-primary);
+      }
+      [data-theme="dark"] .btn-outline:hover {
+        background: var(--sm-bg-muted);
+      }
+      [data-theme="dark"] .cta-bottom .btn {
+        background: var(--sm-brand);
+        color: var(--sm-fg-on-solid);
+      }
+      [data-theme="dark"] .hero::before {
+        content: none;
+      }
+
       /* ====== Sections ====== */
       .section {
         max-width: 1100px;
@@ -356,7 +385,10 @@
         box-shadow: var(--shadow);
         transition:
           transform 0.2s,
-          box-shadow 0.2s;
+          box-shadow 0.2s,
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .step:hover {
         transform: translateY(-4px);
@@ -398,7 +430,8 @@
         font-size: 13px;
         font-family: "SF Mono", "Fira Code", monospace;
         overflow-x: auto;
-        white-space: nowrap;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
         color: var(--text);
       }
       .step a {
@@ -427,6 +460,10 @@
         border-radius: var(--radius);
         padding: 36px 32px;
         box-shadow: var(--shadow);
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .for-card .icon {
         font-size: 36px;
@@ -474,7 +511,9 @@
         box-shadow: var(--shadow);
         transition:
           border-color 0.2s,
-          transform 0.2s;
+          transform 0.2s,
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
         text-decoration: none;
         color: var(--text);
       }
@@ -509,6 +548,10 @@
         border-radius: var(--radius);
         padding: 32px;
         box-shadow: var(--shadow);
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .about-card h3 {
         font-size: 20px;
@@ -538,10 +581,13 @@
       }
       .about-card a {
         color: var(--accent);
-        text-decoration: none;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
       }
       .about-card a:hover {
-        text-decoration: underline;
+        color: var(--accent-hover);
+        text-decoration-thickness: 2px;
       }
 
       .cta-bottom {
@@ -575,6 +621,10 @@
         color: var(--text-muted);
         font-size: 13px;
         border-top: 1px solid var(--border);
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       footer a {
         color: var(--accent);
@@ -617,6 +667,7 @@
         text-align: center;
         padding: 48px 24px 24px;
         background: var(--bg);
+        transition: background-color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .explore-divider h2 {
         font-size: 32px;
@@ -690,7 +741,7 @@
       .dsh-install-code {
         display: block;
         padding: 0.5rem 0.75rem;
-        background: #fff;
+        background: var(--sm-code-bg);
         border: 1px solid var(--sm-border-strong);
         border-radius: 0.375rem;
         font-size: 0.75rem;
@@ -842,6 +893,8 @@
           padding: 24px 16px;
         }
         .footer-links {
+          flex-wrap: wrap;
+          justify-content: center;
           gap: 12px;
         }
         .footer-links a {
@@ -897,6 +950,23 @@
         }
       }
     </style>
+    <script>
+      // P1-1 首屏主题前置：在样式/脚本前确定主题，消除暗色用户白屏闪烁
+      (function () {
+        try {
+          var t = localStorage.getItem("ccp-theme");
+          var d =
+            t === "dark" ||
+            (!t &&
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute(
+            "data-theme",
+            d ? "dark" : "light",
+          );
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- ====== 导航栏 ====== -->
@@ -904,7 +974,7 @@
       <div class="nav-inner">
         <a href="/" class="brand">
           <div class="logo-icon">◆</div>
-          插台 SkillMesh
+          <span data-i18n="brandName">插台 SkillMesh</span>
         </a>
         <div class="nav-links">
           <a href="/" data-i18n="navHome">首页</a>
@@ -1020,6 +1090,7 @@
             用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……
           </p>
           <code
+            data-i18n="step1Curl"
             >curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"</code
           >
           <a
@@ -1073,10 +1144,10 @@
               我写代码，想给我的 Agent 接入更多能力，或者发布自己的 AI 服务。
             </p>
             <ul>
-              <li>LangChain / MCP / DSH / CrewAI 多框架适配</li>
-              <li>5 行代码接入，npm install / pip install 即用</li>
-              <li>能力贡献后自动出现在联邦搜索</li>
-              <li>信任向量自动更新，高质量能力优先展示</li>
+              <li data-i18n="forWhomCard1Li1">LangChain / MCP / DSH / CrewAI 多框架适配</li>
+              <li data-i18n="forWhomCard1Li2">5 行代码接入，npm install / pip install 即用</li>
+              <li data-i18n="forWhomCard1Li3">能力贡献后自动出现在联邦搜索</li>
+              <li data-i18n="forWhomCard1Li4">信任向量自动更新，高质量能力优先展示</li>
             </ul>
           </div>
           <div class="for-card">
@@ -1086,10 +1157,10 @@
               我用 Dify、Coze 等低代码平台搭建 Agent，想拖拽式接入更多能力。
             </p>
             <ul>
-              <li>Dify 插件即将上线（阶段十）</li>
-              <li>MCP 协议一键连接，无需写代码</li>
-              <li>自然语言搜索能力，不用记 ID</li>
-              <li>在线 Playground 直接体验每个能力</li>
+              <li data-i18n="forWhomCard2Li1">Dify 插件即将上线（阶段十）</li>
+              <li data-i18n="forWhomCard2Li2">MCP 协议一键连接，无需写代码</li>
+              <li data-i18n="forWhomCard2Li3">自然语言搜索能力，不用记 ID</li>
+              <li data-i18n="forWhomCard2Li4">在线 Playground 直接体验每个能力</li>
             </ul>
           </div>
         </div>
@@ -1107,17 +1178,17 @@
         <div class="int-card">
           <div class="logo">🔌</div>
           <div class="name">MCP</div>
-          <div class="tag">Anthropic · 工具连接</div>
+          <div class="tag" data-i18n="ecoTagMCP">Anthropic · 工具连接</div>
         </div>
         <div class="int-card">
           <div class="logo">🤝</div>
           <div class="name">A2A</div>
-          <div class="tag">Google · Agent 通信</div>
+          <div class="tag" data-i18n="ecoTagA2A">Google · Agent 通信</div>
         </div>
         <div class="int-card">
           <div class="logo">📋</div>
           <div class="name">Agent Skills</div>
-          <div class="tag">Anthropic · 能力描述</div>
+          <div class="tag" data-i18n="ecoTagSkills">Anthropic · 能力描述</div>
         </div>
         <div
           class="int-card"
@@ -1178,10 +1249,10 @@
           <div class="name">DSH</div>
           <div class="tag">DSH Plugin</div>
         </a>
-        <div class="int-card" style="opacity: 0.6">
+        <div class="int-card" style="border-style: dashed">
           <div class="logo">🧩</div>
           <div class="name">Dify</div>
-          <div class="tag">即将上线</div>
+          <div class="tag" data-i18n="comingSoon">即将上线</div>
         </div>
       </div>
     </section>
@@ -1206,9 +1277,9 @@
               真实调用数据，可以计算出每个能力的"信任向量"——而不需要依赖任何单一平台的背书。
             </p>
             <ul>
-              <li>当前状态：协议就绪，数据积累中</li>
-              <li>成功标准：≥ 5 个真实外部贡献者，≥ 2 个独立联邦节点</li>
-              <li>证伪条件：3 个月内无外部采用</li>
+              <li data-i18n="aboutVerifyLi1">当前状态：协议就绪，数据积累中</li>
+              <li data-i18n="aboutVerifyLi2">成功标准：≥ 5 个真实外部贡献者，≥ 2 个独立联邦节点</li>
+              <li data-i18n="aboutVerifyLi3">证伪条件：3 个月内无外部采用</li>
             </ul>
           </div>
           <div class="about-card">
@@ -1225,9 +1296,9 @@
               Agent 哪个能力真的靠谱？
             </p>
             <ul>
-              <li>互补于 MCP：CCP 搜索 + MCP 连接</li>
-              <li>互补于 A2A：CCP 信任 + A2A 通信</li>
-              <li>互补于 Skills：CCP 信任 + Skills 描述</li>
+              <li data-i18n="aboutNotLi1">互补于 MCP：CCP 搜索 + MCP 连接</li>
+              <li data-i18n="aboutNotLi2">互补于 A2A：CCP 信任 + A2A 通信</li>
+              <li data-i18n="aboutNotLi3">互补于 Skills：CCP 信任 + Skills 描述</li>
             </ul>
           </div>
           <div class="about-card">
@@ -1237,11 +1308,11 @@
               不是一个公司产品，而是一个<strong>联邦协议</strong>。任何节点都可以加入联邦网络，共同参与：
             </p>
             <ul>
-              <li>能力锚点的信任评分计算</li>
-              <li>协议版本的治理提案投票</li>
-              <li>联邦索引的交换与同步</li>
+              <li data-i18n="aboutFedLi1">能力锚点的信任评分计算</li>
+              <li data-i18n="aboutFedLi2">协议版本的治理提案投票</li>
+              <li data-i18n="aboutFedLi3">联邦索引的交换与同步</li>
             </ul>
-            <p style="margin-top: 12px">
+            <p style="margin-top: 12px" data-i18n="aboutFedNodeNote">
               当前联邦节点：4 个（含 3 个模拟节点），外部节点邀请中。
             </p>
           </div>
@@ -1249,20 +1320,35 @@
             <h3 data-i18n="aboutMoreTitle">📖 了解更多</h3>
             <ul>
               <li>
-                <a href="/docs/C4-生态位证伪与理论体系修正.md">为什么是实验</a>
-                — CCP 的生态位分析与理论修正
+                <a
+                  href="/docs/C4-生态位证伪与理论体系修正.md"
+                  data-i18n="aboutMoreLi1Title"
+                  >为什么是实验</a
+                ><span data-i18n="aboutMoreLi1Desc"
+                  > — CCP 的生态位分析与理论修正</span
+                >
               </li>
               <li>
-                <a href="/docs/C5-阶段十规划.md">下一步</a> — 阶段十规划与里程碑
+                <a href="/docs/C5-阶段十规划.md" data-i18n="aboutMoreLi2Title"
+                  >下一步</a
+                ><span data-i18n="aboutMoreLi2Desc"> — 阶段十规划与里程碑</span>
               </li>
               <li>
-                <a href="/api-docs.html">API 文档</a> — OpenAPI 3.0 规范 +
-                Swagger UI
+                <a href="/api-docs.html" data-i18n="aboutMoreLi3Title">API 文档</a
+                ><span data-i18n="aboutMoreLi3Desc"
+                  > — OpenAPI 3.0 规范 + Swagger UI</span
+                >
               </li>
-              <li><a href="/health.html">健康面板</a> — 联邦网络实时状态</li>
               <li>
-                <a href="/api/ccp/v1/contributors/leaderboard">贡献者排行榜</a>
-                — 查看社区贡献者
+                <a href="/health.html" data-i18n="aboutMoreLi4Title">健康面板</a
+                ><span data-i18n="aboutMoreLi4Desc"> — 联邦网络实时状态</span>
+              </li>
+              <li>
+                <a
+                  href="/api/ccp/v1/contributors/leaderboard"
+                  data-i18n="aboutMoreLi5Title"
+                  >贡献者排行榜</a
+                ><span data-i18n="aboutMoreLi5Desc"> — 查看社区贡献者</span>
               </li>
             </ul>
           </div>
@@ -1283,9 +1369,12 @@
         <!-- App Hero -->
         <div class="hero">
           <h2 class="hero-title">
-            发现可靠能力<span class="hero-title-light"> · 信任驱动选择</span>
+            <span data-i18n="appHeroTitle">发现可靠能力</span
+            ><span class="hero-title-light" data-i18n="appHeroTitleLight"
+              > · 信任驱动选择</span
+            >
           </h2>
-          <p class="hero-subtitle" id="subtitle">
+          <p class="hero-subtitle" id="subtitle" data-i18n="subtitle">
             能力通约网络 — 让任何能力被任何调用方发现、评估和调用
           </p>
         </div>
@@ -1311,14 +1400,17 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </div>
-          <p class="search-hint" id="searchHint">
+          <p class="search-hint" id="searchHint" data-i18n="searchHint">
             输入自然语言描述，实时匹配能力锚点
           </p>
           <div class="search-options">
             <label class="federated-toggle">
               <input type="checkbox" id="federatedToggle" />
               <span class="federated-toggle-slider"></span>
-              <span class="federated-toggle-text" id="federatedToggleText"
+              <span
+                class="federated-toggle-text"
+                id="federatedToggleText"
+                data-i18n="federationToggle"
                 >联邦</span
               >
             </label>
@@ -1346,14 +1438,20 @@
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <h3 class="empty-title" id="emptyTitle">未找到匹配的能力锚点</h3>
-          <p class="empty-sub" id="emptySub">尝试更换关键词或切换分类筛选</p>
+          <h3 class="empty-title" id="emptyTitle" data-i18n="empty">
+            未找到匹配的能力锚点
+          </h3>
+          <p class="empty-sub" id="emptySub" data-i18n="emptySub">
+            尝试更换关键词或切换分类筛选
+          </p>
         </div>
 
         <!-- Federation Panel -->
         <div class="federation-panel expanded" id="federationPanel">
           <div class="federation-header">
-            <h3 class="federation-title" id="federationTitle">联邦网络</h3>
+            <h3 class="federation-title" id="federationTitle" data-i18n="federation">
+              联邦网络
+            </h3>
             <button
               class="federation-toggle-btn"
               id="federationToggleBtn"
@@ -1372,7 +1470,11 @@
           </div>
           <div class="federation-body" id="federationBody">
             <div class="federation-add-section">
-              <h4 class="federation-subtitle" id="federationAddNodeTitle">
+              <h4
+                class="federation-subtitle"
+                id="federationAddNodeTitle"
+                data-i18n="federationAddNode"
+              >
                 添加节点
               </h4>
               <div class="federation-add-form">
@@ -1410,16 +1512,28 @@
                   id="fedNodeDesc"
                   placeholder="描述"
                 />
-                <button class="federation-add-btn" id="fedAddBtn">
+                <button
+                  class="federation-add-btn"
+                  id="fedAddBtn"
+                  data-i18n="federationAddBtn"
+                >
                   注册节点
                 </button>
               </div>
             </div>
-            <h4 class="federation-subtitle" id="federationNodesTitle">
+            <h4
+              class="federation-subtitle"
+              id="federationNodesTitle"
+              data-i18n="federationNodes"
+            >
               已知节点
             </h4>
             <div class="federation-nodes-list" id="federationNodesList">
-              <div class="federation-empty" id="federationNoNodes">
+              <div
+                class="federation-empty"
+                id="federationNoNodes"
+                data-i18n="federationNoNodes"
+              >
                 暂无联邦节点
               </div>
             </div>
@@ -1453,25 +1567,25 @@
           </div>
           <div class="modal-body">
             <div>
-              <div class="modal-section-label">描述</div>
+              <div class="modal-section-label" data-i18n="desc">描述</div>
               <p class="modal-section-text" id="modalDesc"></p>
             </div>
             <div class="modal-grid-2">
               <div>
-                <div class="modal-section-label">输入参数</div>
+                <div class="modal-section-label" data-i18n="input">输入参数</div>
                 <p class="modal-section-text" id="modalInput"></p>
               </div>
               <div>
-                <div class="modal-section-label">输出承诺</div>
+                <div class="modal-section-label" data-i18n="output">输出承诺</div>
                 <p class="modal-section-text" id="modalOutput"></p>
               </div>
             </div>
             <div>
-              <div class="modal-section-label">调用端点</div>
+              <div class="modal-section-label" data-i18n="endpoint">调用端点</div>
               <code class="modal-endpoint-code" id="modalEndpoint"></code>
             </div>
             <div>
-              <div class="modal-section-label">来源链接</div>
+              <div class="modal-section-label" data-i18n="provenance">来源链接</div>
               <a
                 class="modal-provenance-link"
                 id="modalProvenance"
@@ -1481,15 +1595,15 @@
               ></a>
             </div>
             <div>
-              <div class="modal-section-label">功能特性</div>
+              <div class="modal-section-label" data-i18n="features">功能特性</div>
               <div class="feature-tags" id="modalFeatures"></div>
             </div>
             <div>
-              <div class="modal-section-label">使用说明</div>
+              <div class="modal-section-label" data-i18n="usageGuide">使用说明</div>
               <p class="modal-section-text" id="modalUsageGuide"></p>
             </div>
             <div>
-              <div class="modal-section-label">调用示例</div>
+              <div class="modal-section-label" data-i18n="codeExample">调用示例</div>
               <pre
                 class="modal-section-text"
                 id="modalCodeExample"
@@ -1508,10 +1622,10 @@
 
             <!-- Trust Vector -->
             <div>
-              <div class="modal-section-label">可信度向量</div>
+              <div class="modal-section-label" data-i18n="trust">可信度向量</div>
               <div class="trust-vector">
                 <div class="trust-row">
-                  <span class="trust-row-label">源码可验证</span>
+                  <span class="trust-row-label" data-i18n="source">源码可验证</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1522,7 +1636,7 @@
                   <span class="trust-row-value" id="trustSourceVal">0.92</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label">使用痕迹</span>
+                  <span class="trust-row-label" data-i18n="usage">使用痕迹</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1533,7 +1647,7 @@
                   <span class="trust-row-value" id="trustUsageVal">0.25</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label">成功率</span>
+                  <span class="trust-row-label" data-i18n="success">成功率</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1544,7 +1658,7 @@
                   <span class="trust-row-value" id="trustSuccessVal">0.97</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label">依赖风险</span>
+                  <span class="trust-row-label" data-i18n="risk">依赖风险</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1555,7 +1669,7 @@
                   <span class="trust-row-value" id="trustRiskVal">0.10</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label">时效性</span>
+                  <span class="trust-row-label" data-i18n="time">时效性</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1606,7 +1720,10 @@
             <!-- Code Generation Panel -->
             <div class="routing-panel hidden" id="codePanel">
               <div class="routing-panel-header">
-                <span class="routing-panel-title" id="codePanelTitle"
+                <span
+                  class="routing-panel-title"
+                  id="codePanelTitle"
+                  data-i18n="generateCode"
                   >生成代码</span
                 >
                 <div class="routing-panel-tabs" id="codeTabs"></div>
@@ -1636,12 +1753,16 @@
 
             <!-- Try-It Panel -->
             <div class="routing-panel hidden" id="tryItPanel">
-              <p class="try-it-note hidden" id="tryItOnlyHttp">
+              <p
+                class="try-it-note hidden"
+                id="tryItOnlyHttp"
+                data-i18n="tryItOnlyHttp"
+              >
                 仅支持 HTTP 类型的能力端点
               </p>
               <div id="tryItForm">
                 <div class="try-it-row">
-                  <label class="try-it-label" for="tryItMethod">请求方法</label>
+                  <label class="try-it-label" for="tryItMethod" data-i18n="tryItMethod">请求方法</label>
                   <select class="try-it-select" id="tryItMethod">
                     <option value="GET">GET</option>
                     <option value="POST" selected>POST</option>
@@ -1649,7 +1770,7 @@
                   </select>
                 </div>
                 <div class="try-it-row">
-                  <label class="try-it-label" for="tryItParams">请求参数</label>
+                  <label class="try-it-label" for="tryItParams" data-i18n="tryItParams">请求参数</label>
                   <textarea
                     class="try-it-textarea"
                     id="tryItParams"
@@ -1657,7 +1778,7 @@
                   ></textarea>
                 </div>
                 <div class="try-it-row">
-                  <label class="try-it-label" for="tryItHeaders">请求头</label>
+                  <label class="try-it-label" for="tryItHeaders" data-i18n="tryItHeaders">请求头</label>
                   <textarea
                     class="try-it-textarea"
                     id="tryItHeaders"
@@ -1676,12 +1797,12 @@
                     <line x1="22" y1="2" x2="11" y2="13" />
                     <polygon points="22 2 15 22 11 13 2 9 22 2" />
                   </svg>
-                  发送请求
+                  <span data-i18n="tryItSend">发送请求</span>
                 </button>
               </div>
               <div class="try-it-result hidden" id="tryItResult">
                 <div class="try-it-result-header">
-                  <span class="try-it-result-label">响应结果</span>
+                  <span class="try-it-result-label" data-i18n="tryItResponse">响应结果</span>
                   <span class="try-it-result-meta" id="tryItMeta"></span>
                 </div>
                 <pre class="routing-code" id="tryItResponse"></pre>
@@ -1710,7 +1831,7 @@
                     value="mcp"
                     onchange="App.generateExport()"
                   />
-                  <span class="export-option-label">MCP 客户端</span>
+                  <span class="export-option-label" data-i18n="exportMCPLabel">MCP 客户端</span>
                   <span class="export-option-desc">mcp.json</span>
                 </label>
                 <label class="export-option">
@@ -1744,7 +1865,7 @@
                     onchange="App.generateExport()"
                   />
                   <span class="export-option-label">Dify</span>
-                  <span class="export-option-desc">工具配置</span>
+                  <span class="export-option-desc" data-i18n="exportDifyDesc">工具配置</span>
                 </label>
               </div>
             </div>
@@ -1760,21 +1881,21 @@
                   class="routing-copy-btn export-copy-btn"
                   onclick="App.copyAll()"
                 >
-                  复制全部
+                  <span data-i18n="copyAll">复制全部</span>
                 </button>
               </div>
               <pre class="routing-code" id="exportCodeContent"></pre>
               <div class="dsh-install-section hidden" id="dshInstallSection">
-                <p class="dsh-install-hint">
+                <p class="dsh-install-hint" data-i18n="dshInstallHint">
                   在 DeepSeek-Harness 环境中执行以下命令安装
                 </p>
                 <div class="dsh-install-commands">
                   <div class="dsh-install-block">
-                    <span class="dsh-install-label">通过 CLI 安装</span>
+                    <span class="dsh-install-label" data-i18n="dshCliInstall">通过 CLI 安装</span>
                     <code class="dsh-install-code" id="dshCliCommand"></code>
                   </div>
                   <div class="dsh-install-block">
-                    <span class="dsh-install-label">通过 URL 安装</span>
+                    <span class="dsh-install-label" data-i18n="dshUrlInstall">通过 URL 安装</span>
                     <code class="dsh-install-code" id="dshUrlCommand"></code>
                   </div>
                 </div>
@@ -1821,14 +1942,14 @@
     <button
       class="theme-toggle"
       onclick="toggleTheme()"
-      data-i18n="themeToggle"
       title="切换主题"
+      aria-label="切换主题"
     >
       🌓
     </button>
 
     <!-- ====== Scripts ====== -->
-    <script src="/dark-mode.js"></script>
+    <script src="/dark-mode.js?v=20260913a"></script>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js");
@@ -1898,8 +2019,8 @@
         );
       })();
     </script>
-    <script src="/js/i18n.js"></script>
-    <script src="/js/data.js"></script>
-    <script src="/js/app.js"></script>
+    <script src="/js/i18n.js?v=20260913a"></script>
+    <script src="/js/data.js?v=20260913a"></script>
+    <script src="/js/app.js?v=20260913a"></script>
   </body>
 </html>

@@ -383,3 +383,72 @@
     --sm-dur-slower: 0ms;
   }
 }
+
+/* ============================================================
+   P0-1 旧变量别名 —— 历史落地页变量 → --sm-* 单一色板
+   ------------------------------------------------------------
+   仅需维护一套色板：暗色态由上方 :root[data-theme="dark"] /
+   prefers-color-scheme 覆盖 --sm-* 后自动生效，别名无需重复定义。
+   ============================================================ */
+:root {
+  --bg: var(--sm-bg-canvas);
+  --bg-secondary: var(--sm-bg-subtle);
+  --card-bg: var(--sm-bg-surface);
+  --border: var(--sm-border-subtle);
+  --text: var(--sm-fg-primary);
+  --text-muted: var(--sm-fg-secondary);
+  --accent: var(--sm-brand);
+  --accent-hover: var(--sm-brand-hover);
+  --accent-glow: var(--sm-brand-hover);
+  --accent-light: var(--sm-brand-soft);
+  --gradient-start: var(--sm-teal-700);
+  --gradient-end: var(--sm-violet-600);
+  --success: var(--sm-success);
+  --warning: var(--sm-warning);
+  --radius: var(--sm-radius-lg);
+  --shadow: var(--sm-shadow-sm);
+  /* health.html / 旧组件兼容别名 */
+  --healthy: var(--sm-success);
+  --degraded: var(--sm-warning);
+  --offline: var(--sm-danger);
+  --bg-primary: var(--sm-bg-surface);
+  --bg-card: var(--sm-bg-surface);
+  --text-primary: var(--sm-fg-primary);
+  --text-secondary: var(--sm-fg-secondary);
+}
+
+/* 渐变起点亮/暗统一使用 teal-700：Hero/CTA 恒为深色渐变面，
+   白字对比度需 >= 4.5:1，故不做暗色提亮。 */
+
+/* ============================================================
+   P0-3 浏览器原生表面接管（color-scheme / 回弹区 / 选区）
+   ============================================================ */
+:root {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
+}
+html {
+  background: var(--sm-bg-canvas);
+}
+::selection {
+  background: var(--sm-brand);
+  color: var(--sm-fg-on-solid);
+}
+
+/* ============================================================
+   P1-2 主题过渡统一（仅根容器；组件动效在各自规则内追加，
+   避免此处覆盖 .step / .int-card 既有 transform 过渡）
+   ============================================================ */
+body,
+html {
+  transition:
+    background-color var(--sm-dur-base) var(--sm-ease-standard),
+    color var(--sm-dur-base) var(--sm-ease-standard);
+}

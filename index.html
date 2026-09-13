@@ -8,11 +8,11 @@
     <link rel="apple-touch-icon" href="/assets/brand/favicon.svg" />
 
     <!-- Design tokens (interactive app) -->
-    <link rel="stylesheet" href="/css/tokens.css?v=20260912b" />
+    <link rel="stylesheet" href="/css/tokens.css?v=20260913a" />
     <!-- Interactive app styles -->
-    <link rel="stylesheet" href="/css/style.css?v=20260912b" />
+    <link rel="stylesheet" href="/css/style.css?v=20260913a" />
     <!-- Dark mode (landing page) -->
-    <link rel="stylesheet" href="/dark-mode.css?v=20260912b" />
+    <link rel="stylesheet" href="/dark-mode.css?v=20260913a" />
 
     <style>
       /* ====== Landing Page Section Styles ====== */
@@ -21,41 +21,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      :root,
-      [data-theme="light"] {
-        --bg: #ffffff;
-        --bg-secondary: #f8fafc;
-        --card-bg: #ffffff;
-        --border: #e2e8f0;
-        --text: #1e293b;
-        --text-muted: #64748b;
-        --accent: #4338ca;
-        --accent-hover: #3730a3;
-        --accent-light: #eef2ff;
-        --gradient-start: #4338ca;
-        --gradient-end: #7c3aed;
-        --success: #16a34a;
-        --warning: #ca8a04;
-        --radius: 12px;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-      }
-      [data-theme="dark"] {
-        --bg: #0f172a;
-        --bg-secondary: #1e293b;
-        --card-bg: #1e293b;
-        --border: #334155;
-        --text: #e2e8f0;
-        --text-muted: #94a3b8;
-        --accent: #818cf8;
-        --accent-hover: #818cf8;
-        --accent-light: #1e1b4b;
-        --gradient-start: #6366f1;
-        --gradient-end: #8b5cf6;
-        --success: #22c55e;
-        --warning: #eab308;
-        --radius: 12px;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-      }
+      /* 落地页色板已收敛至 /css/tokens.css（--sm-* 与旧变量别名），
+         本文件不再自行维护亮/暗两套变量。 */
       body {
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
@@ -71,10 +38,20 @@
         position: sticky;
         top: 0;
         z-index: 1000;
-        background: rgba(255, 255, 255, 0.92);
+        background: var(--sm-bg-surface);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border);
         padding: 0 24px;
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
+      }
+      /* 支持 color-mix 时还原毛玻璃半透明层次（P0-2） */
+      @supports (background: color-mix(in srgb, red 50%, transparent)) {
+        nav {
+          background: color-mix(in srgb, var(--sm-bg-surface) 92%, transparent);
+        }
       }
       nav .nav-inner {
         max-width: 1100px;
@@ -204,7 +181,7 @@
         text-decoration: none;
       }
       #user-area .logout-link:hover {
-        color: #dc2626;
+        color: var(--sm-danger);
       }
 
       /* ====== Hero (landing page) ====== */
@@ -320,6 +297,58 @@
         opacity: 0.7;
       }
 
+      /* ====== P0-4 暗色态 Hero / CTA：深底 + 品牌微光晕 ====== */
+      [data-theme="dark"] .hero,
+      [data-theme="dark"] .cta-bottom {
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 50% 0%,
+            color-mix(in srgb, var(--sm-teal-500) 16%, transparent),
+            transparent 62%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 82% 100%,
+            color-mix(in srgb, var(--sm-violet-600) 14%, transparent),
+            transparent 60%
+          ),
+          var(--sm-bg-canvas);
+        color: var(--sm-fg-primary);
+      }
+      [data-theme="dark"] .hero h1,
+      [data-theme="dark"] .cta-bottom h2,
+      [data-theme="dark"] .cta-bottom p {
+        color: var(--sm-fg-primary);
+      }
+      [data-theme="dark"] .hero .subtitle,
+      [data-theme="dark"] .hero-stat {
+        color: var(--sm-fg-secondary);
+      }
+      [data-theme="dark"] .hero-badge {
+        background: var(--sm-bg-muted);
+        color: var(--sm-fg-secondary);
+        backdrop-filter: none;
+      }
+      [data-theme="dark"] .btn-primary {
+        background: var(--sm-brand);
+        color: var(--sm-fg-on-solid);
+        box-shadow: var(--sm-shadow-md);
+      }
+      [data-theme="dark"] .btn-outline {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--sm-border-strong);
+        color: var(--sm-fg-primary);
+      }
+      [data-theme="dark"] .btn-outline:hover {
+        background: var(--sm-bg-muted);
+      }
+      [data-theme="dark"] .cta-bottom .btn {
+        background: var(--sm-brand);
+        color: var(--sm-fg-on-solid);
+      }
+      [data-theme="dark"] .hero::before {
+        content: none;
+      }
+
       /* ====== Sections ====== */
       .section {
         max-width: 1100px;
@@ -356,7 +385,10 @@
         box-shadow: var(--shadow);
         transition:
           transform 0.2s,
-          box-shadow 0.2s;
+          box-shadow 0.2s,
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .step:hover {
         transform: translateY(-4px);
@@ -428,6 +460,10 @@
         border-radius: var(--radius);
         padding: 36px 32px;
         box-shadow: var(--shadow);
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .for-card .icon {
         font-size: 36px;
@@ -475,7 +511,9 @@
         box-shadow: var(--shadow);
         transition:
           border-color 0.2s,
-          transform 0.2s;
+          transform 0.2s,
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
         text-decoration: none;
         color: var(--text);
       }
@@ -510,6 +548,10 @@
         border-radius: var(--radius);
         padding: 32px;
         box-shadow: var(--shadow);
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .about-card h3 {
         font-size: 20px;
@@ -579,6 +621,10 @@
         color: var(--text-muted);
         font-size: 13px;
         border-top: 1px solid var(--border);
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       footer a {
         color: var(--accent);
@@ -621,6 +667,7 @@
         text-align: center;
         padding: 48px 24px 24px;
         background: var(--bg);
+        transition: background-color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .explore-divider h2 {
         font-size: 32px;
@@ -694,7 +741,7 @@
       .dsh-install-code {
         display: block;
         padding: 0.5rem 0.75rem;
-        background: #fff;
+        background: var(--sm-code-bg);
         border: 1px solid var(--sm-border-strong);
         border-radius: 0.375rem;
         font-size: 0.75rem;
@@ -903,6 +950,23 @@
         }
       }
     </style>
+    <script>
+      // P1-1 首屏主题前置：在样式/脚本前确定主题，消除暗色用户白屏闪烁
+      (function () {
+        try {
+          var t = localStorage.getItem("ccp-theme");
+          var d =
+            t === "dark" ||
+            (!t &&
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute(
+            "data-theme",
+            d ? "dark" : "light",
+          );
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- ====== 导航栏 ====== -->
@@ -1878,14 +1942,14 @@
     <button
       class="theme-toggle"
       onclick="toggleTheme()"
-      data-i18n="themeToggle"
       title="切换主题"
+      aria-label="切换主题"
     >
       🌓
     </button>
 
     <!-- ====== Scripts ====== -->
-    <script src="/dark-mode.js?v=20260912b"></script>
+    <script src="/dark-mode.js?v=20260913a"></script>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js");
@@ -1955,8 +2019,8 @@
         );
       })();
     </script>
-    <script src="/js/i18n.js?v=20260912b"></script>
-    <script src="/js/data.js?v=20260912b"></script>
-    <script src="/js/app.js?v=20260912b"></script>
+    <script src="/js/i18n.js?v=20260913a"></script>
+    <script src="/js/data.js?v=20260913a"></script>
+    <script src="/js/app.js?v=20260913a"></script>
   </body>
 </html>
