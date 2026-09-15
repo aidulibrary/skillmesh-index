@@ -8,11 +8,11 @@
     <link rel="apple-touch-icon" href="/assets/brand/favicon.svg" />
 
     <!-- Design tokens (interactive app) -->
-    <link rel="stylesheet" href="/css/tokens.css?v=20260913a" />
+    <link rel="stylesheet" href="/css/tokens.css?v=20260913b" />
     <!-- Interactive app styles -->
-    <link rel="stylesheet" href="/css/style.css?v=20260913a" />
+    <link rel="stylesheet" href="/css/style.css?v=20260913b" />
     <!-- Dark mode (landing page) -->
-    <link rel="stylesheet" href="/dark-mode.css?v=20260913a" />
+    <link rel="stylesheet" href="/dark-mode.css?v=20260913b" />
 
     <style>
       /* ====== Landing Page Section Styles ====== */
@@ -100,6 +100,10 @@
       nav .nav-links a:hover {
         color: var(--accent);
       }
+      nav .nav-links a.nav-current {
+        color: var(--accent);
+        font-weight: 700;
+      }
       nav .nav-links .nav-cta {
         background: var(--accent);
         color: #fff;
@@ -118,34 +122,107 @@
         align-items: center;
         gap: 12px;
       }
-      .lang-switch {
-        display: flex;
+      /* S12-C：Globe 图标 + 下拉菜单 — 语言切换器 */
+      .lang-dropdown {
+        position: relative;
+        display: inline-flex;
         align-items: center;
-        gap: 2px;
-        font-size: 13px;
       }
-      .lang-switch button {
+      .lang-dropdown .lang-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
         background: none;
-        border: none;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 500;
         color: var(--text-muted);
         cursor: pointer;
-        padding: 2px 6px;
-        font-size: 13px;
-        font-weight: 500;
-        border-radius: 4px;
         transition: all 0.15s;
+        white-space: nowrap;
       }
-      .lang-switch button:hover {
+      .lang-dropdown .lang-trigger:hover {
+        border-color: var(--accent);
         color: var(--accent);
       }
-      .lang-switch button.active {
+      .lang-dropdown .lang-trigger .globe-icon {
+        width: 14px;
+        height: 14px;
+        opacity: 0.7;
+      }
+      .lang-dropdown .lang-trigger .chevron {
+        font-size: 9px;
+        transition: transform 0.15s;
+      }
+      .lang-dropdown.open .lang-trigger .chevron {
+        transform: rotate(180deg);
+      }
+      .lang-dropdown .lang-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        min-width: 150px;
+        background: var(--sm-bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--sm-radius-lg, 8px);
+        box-shadow: var(--sm-shadow-lg, 0 8px 30px rgba(0, 0, 0, 0.12));
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+        transition: all 0.15s var(--sm-ease-standard, ease);
+        z-index: 1100;
+        padding: 4px;
+      }
+      .lang-dropdown.open .lang-menu {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+      .lang-menu .lang-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        border-radius: 6px;
+        transition: background 0.1s;
+      }
+      .lang-menu .lang-option:hover {
+        background: var(--sm-bg-muted, rgba(0, 0, 0, 0.04));
+        color: var(--text);
+      }
+      .lang-menu .lang-option.active {
         color: var(--accent);
         font-weight: 700;
         background: var(--accent-light);
       }
-      .lang-switch .sep {
-        color: var(--border);
-        margin: 0 2px;
+      .lang-menu .lang-option .lang-flag {
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .lang-menu .lang-option .lang-check {
+        margin-left: auto;
+        opacity: 0;
+        font-size: 11px;
+      }
+      .lang-menu .lang-option.active .lang-check {
+        opacity: 1;
+      }
+      /* S12-C：暗色主题下拉适配 */
+      [data-theme="dark"] .lang-dropdown .lang-trigger {
+        border-color: var(--sm-border-subtle, rgba(255, 255, 255, 0.1));
+      }
+      [data-theme="dark"] .lang-menu .lang-option:hover {
+        background: rgba(255, 255, 255, 0.06);
       }
       .auth-btn {
         background: none;
@@ -795,9 +872,9 @@
         nav .nav-right {
           gap: 6px;
         }
-        .lang-switch button {
+        .lang-dropdown .lang-trigger {
           font-size: 11px;
-          padding: 2px 4px;
+          padding: 3px 8px;
         }
         #explore .hero-title {
           font-size: 1.75rem;
@@ -835,9 +912,9 @@
         nav .nav-right {
           gap: 4px;
         }
-        .lang-switch button {
+        .lang-dropdown .lang-trigger {
           font-size: 11px;
-          padding: 2px 3px;
+          padding: 2px 6px;
         }
         .auth-btn {
           font-size: 11px;
@@ -977,7 +1054,7 @@
           <span data-i18n="brandName">插台 SkillMesh</span>
         </a>
         <div class="nav-links">
-          <a href="/" data-i18n="navHome">首页</a>
+          <a href="/" class="nav-current" data-i18n="navHome">首页</a>
           <a href="#quickstart" data-i18n="navQuickstart">快速开始</a>
           <a href="#explore" data-i18n="navExplore">能力探索</a>
           <a href="/api-docs.html" data-i18n="navApiDocs">API 文档</a>
@@ -985,22 +1062,56 @@
           <a href="#about" data-i18n="navAbout">关于</a>
         </div>
         <div class="nav-right">
-          <div class="lang-switch">
+          <div class="lang-dropdown" id="lang-dropdown">
             <button
-              id="btn-zh"
-              class="lang-btn active"
-              onclick="App.setLang('zh')"
+              class="lang-trigger"
+              onclick="App.toggleLangMenu()"
+              aria-label="切换语言"
+              aria-expanded="false"
             >
-              ZH
+              <svg
+                class="globe-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10" />
+                <path d="M2 12h20" />
+              </svg>
+              <span id="lang-current-label">ZH</span>
+              <span class="chevron">▾</span>
             </button>
-            <span class="sep">|</span>
-            <button id="btn-en" class="lang-btn" onclick="App.setLang('en')">
-              EN
-            </button>
-            <span class="sep">|</span>
-            <button id="btn-ja" class="lang-btn" onclick="App.setLang('ja')">
-              JA
-            </button>
+            <div class="lang-menu" id="lang-menu">
+              <button
+                class="lang-option active"
+                data-lang="zh"
+                onclick="App.setLang('zh')"
+              >
+                <span class="lang-flag">🇨🇳</span> 中文
+                <span class="lang-check">✓</span>
+              </button>
+              <button
+                class="lang-option"
+                data-lang="en"
+                onclick="App.setLang('en')"
+              >
+                <span class="lang-flag">🇺🇸</span> English
+                <span class="lang-check">✓</span>
+              </button>
+              <button
+                class="lang-option"
+                data-lang="ja"
+                onclick="App.setLang('ja')"
+              >
+                <span class="lang-flag">🇯🇵</span> 日本語
+                <span class="lang-check">✓</span>
+              </button>
+            </div>
           </div>
           <span id="auth-area">
             <a href="/api/auth/github/login" class="auth-btn">
@@ -1089,8 +1200,7 @@
           <p data-i18n="step1Desc">
             用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……
           </p>
-          <code
-            data-i18n="step1Curl"
+          <code data-i18n="step1Curl"
             >curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"</code
           >
           <a
@@ -1144,10 +1254,16 @@
               我写代码，想给我的 Agent 接入更多能力，或者发布自己的 AI 服务。
             </p>
             <ul>
-              <li data-i18n="forWhomCard1Li1">LangChain / MCP / DSH / CrewAI 多框架适配</li>
-              <li data-i18n="forWhomCard1Li2">5 行代码接入，npm install / pip install 即用</li>
+              <li data-i18n="forWhomCard1Li1">
+                LangChain / MCP / DSH / CrewAI 多框架适配
+              </li>
+              <li data-i18n="forWhomCard1Li2">
+                5 行代码接入，npm install / pip install 即用
+              </li>
               <li data-i18n="forWhomCard1Li3">能力贡献后自动出现在联邦搜索</li>
-              <li data-i18n="forWhomCard1Li4">信任向量自动更新，高质量能力优先展示</li>
+              <li data-i18n="forWhomCard1Li4">
+                信任向量自动更新，高质量能力优先展示
+              </li>
             </ul>
           </div>
           <div class="for-card">
@@ -1160,7 +1276,9 @@
               <li data-i18n="forWhomCard2Li1">Dify 插件即将上线（阶段十）</li>
               <li data-i18n="forWhomCard2Li2">MCP 协议一键连接，无需写代码</li>
               <li data-i18n="forWhomCard2Li3">自然语言搜索能力，不用记 ID</li>
-              <li data-i18n="forWhomCard2Li4">在线 Playground 直接体验每个能力</li>
+              <li data-i18n="forWhomCard2Li4">
+                在线 Playground 直接体验每个能力
+              </li>
             </ul>
           </div>
         </div>
@@ -1278,7 +1396,9 @@
             </p>
             <ul>
               <li data-i18n="aboutVerifyLi1">当前状态：协议就绪，数据积累中</li>
-              <li data-i18n="aboutVerifyLi2">成功标准：≥ 5 个真实外部贡献者，≥ 2 个独立联邦节点</li>
+              <li data-i18n="aboutVerifyLi2">
+                成功标准：≥ 5 个真实外部贡献者，≥ 2 个独立联邦节点
+              </li>
               <li data-i18n="aboutVerifyLi3">证伪条件：3 个月内无外部采用</li>
             </ul>
           </div>
@@ -1298,7 +1418,9 @@
             <ul>
               <li data-i18n="aboutNotLi1">互补于 MCP：CCP 搜索 + MCP 连接</li>
               <li data-i18n="aboutNotLi2">互补于 A2A：CCP 信任 + A2A 通信</li>
-              <li data-i18n="aboutNotLi3">互补于 Skills：CCP 信任 + Skills 描述</li>
+              <li data-i18n="aboutNotLi3">
+                互补于 Skills：CCP 信任 + Skills 描述
+              </li>
             </ul>
           </div>
           <div class="about-card">
@@ -1324,8 +1446,8 @@
                   href="/docs/C4-生态位证伪与理论体系修正.md"
                   data-i18n="aboutMoreLi1Title"
                   >为什么是实验</a
-                ><span data-i18n="aboutMoreLi1Desc"
-                  > — CCP 的生态位分析与理论修正</span
+                ><span data-i18n="aboutMoreLi1Desc">
+                  — CCP 的生态位分析与理论修正</span
                 >
               </li>
               <li>
@@ -1334,9 +1456,10 @@
                 ><span data-i18n="aboutMoreLi2Desc"> — 阶段十规划与里程碑</span>
               </li>
               <li>
-                <a href="/api-docs.html" data-i18n="aboutMoreLi3Title">API 文档</a
-                ><span data-i18n="aboutMoreLi3Desc"
-                  > — OpenAPI 3.0 规范 + Swagger UI</span
+                <a href="/api-docs.html" data-i18n="aboutMoreLi3Title"
+                  >API 文档</a
+                ><span data-i18n="aboutMoreLi3Desc">
+                  — OpenAPI 3.0 规范 + Swagger UI</span
                 >
               </li>
               <li>
@@ -1370,8 +1493,8 @@
         <div class="hero">
           <h2 class="hero-title">
             <span data-i18n="appHeroTitle">发现可靠能力</span
-            ><span class="hero-title-light" data-i18n="appHeroTitleLight"
-              > · 信任驱动选择</span
+            ><span class="hero-title-light" data-i18n="appHeroTitleLight">
+              · 信任驱动选择</span
             >
           </h2>
           <p class="hero-subtitle" id="subtitle" data-i18n="subtitle">
@@ -1449,7 +1572,11 @@
         <!-- Federation Panel -->
         <div class="federation-panel expanded" id="federationPanel">
           <div class="federation-header">
-            <h3 class="federation-title" id="federationTitle" data-i18n="federation">
+            <h3
+              class="federation-title"
+              id="federationTitle"
+              data-i18n="federation"
+            >
               联邦网络
             </h3>
             <button
@@ -1572,20 +1699,28 @@
             </div>
             <div class="modal-grid-2">
               <div>
-                <div class="modal-section-label" data-i18n="input">输入参数</div>
+                <div class="modal-section-label" data-i18n="input">
+                  输入参数
+                </div>
                 <p class="modal-section-text" id="modalInput"></p>
               </div>
               <div>
-                <div class="modal-section-label" data-i18n="output">输出承诺</div>
+                <div class="modal-section-label" data-i18n="output">
+                  输出承诺
+                </div>
                 <p class="modal-section-text" id="modalOutput"></p>
               </div>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="endpoint">调用端点</div>
+              <div class="modal-section-label" data-i18n="endpoint">
+                调用端点
+              </div>
               <code class="modal-endpoint-code" id="modalEndpoint"></code>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="provenance">来源链接</div>
+              <div class="modal-section-label" data-i18n="provenance">
+                来源链接
+              </div>
               <a
                 class="modal-provenance-link"
                 id="modalProvenance"
@@ -1595,15 +1730,21 @@
               ></a>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="features">功能特性</div>
+              <div class="modal-section-label" data-i18n="features">
+                功能特性
+              </div>
               <div class="feature-tags" id="modalFeatures"></div>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="usageGuide">使用说明</div>
+              <div class="modal-section-label" data-i18n="usageGuide">
+                使用说明
+              </div>
               <p class="modal-section-text" id="modalUsageGuide"></p>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="codeExample">调用示例</div>
+              <div class="modal-section-label" data-i18n="codeExample">
+                调用示例
+              </div>
               <pre
                 class="modal-section-text"
                 id="modalCodeExample"
@@ -1622,10 +1763,14 @@
 
             <!-- Trust Vector -->
             <div>
-              <div class="modal-section-label" data-i18n="trust">可信度向量</div>
+              <div class="modal-section-label" data-i18n="trust">
+                可信度向量
+              </div>
               <div class="trust-vector">
                 <div class="trust-row">
-                  <span class="trust-row-label" data-i18n="source">源码可验证</span>
+                  <span class="trust-row-label" data-i18n="source"
+                    >源码可验证</span
+                  >
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1636,7 +1781,9 @@
                   <span class="trust-row-value" id="trustSourceVal">0.92</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label" data-i18n="usage">使用痕迹</span>
+                  <span class="trust-row-label" data-i18n="usage"
+                    >使用痕迹</span
+                  >
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1647,7 +1794,9 @@
                   <span class="trust-row-value" id="trustUsageVal">0.25</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label" data-i18n="success">成功率</span>
+                  <span class="trust-row-label" data-i18n="success"
+                    >成功率</span
+                  >
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1762,7 +1911,12 @@
               </p>
               <div id="tryItForm">
                 <div class="try-it-row">
-                  <label class="try-it-label" for="tryItMethod" data-i18n="tryItMethod">请求方法</label>
+                  <label
+                    class="try-it-label"
+                    for="tryItMethod"
+                    data-i18n="tryItMethod"
+                    >请求方法</label
+                  >
                   <select class="try-it-select" id="tryItMethod">
                     <option value="GET">GET</option>
                     <option value="POST" selected>POST</option>
@@ -1770,7 +1924,12 @@
                   </select>
                 </div>
                 <div class="try-it-row">
-                  <label class="try-it-label" for="tryItParams" data-i18n="tryItParams">请求参数</label>
+                  <label
+                    class="try-it-label"
+                    for="tryItParams"
+                    data-i18n="tryItParams"
+                    >请求参数</label
+                  >
                   <textarea
                     class="try-it-textarea"
                     id="tryItParams"
@@ -1778,7 +1937,12 @@
                   ></textarea>
                 </div>
                 <div class="try-it-row">
-                  <label class="try-it-label" for="tryItHeaders" data-i18n="tryItHeaders">请求头</label>
+                  <label
+                    class="try-it-label"
+                    for="tryItHeaders"
+                    data-i18n="tryItHeaders"
+                    >请求头</label
+                  >
                   <textarea
                     class="try-it-textarea"
                     id="tryItHeaders"
@@ -1802,7 +1966,9 @@
               </div>
               <div class="try-it-result hidden" id="tryItResult">
                 <div class="try-it-result-header">
-                  <span class="try-it-result-label" data-i18n="tryItResponse">响应结果</span>
+                  <span class="try-it-result-label" data-i18n="tryItResponse"
+                    >响应结果</span
+                  >
                   <span class="try-it-result-meta" id="tryItMeta"></span>
                 </div>
                 <pre class="routing-code" id="tryItResponse"></pre>
@@ -1831,7 +1997,9 @@
                     value="mcp"
                     onchange="App.generateExport()"
                   />
-                  <span class="export-option-label" data-i18n="exportMCPLabel">MCP 客户端</span>
+                  <span class="export-option-label" data-i18n="exportMCPLabel"
+                    >MCP 客户端</span
+                  >
                   <span class="export-option-desc">mcp.json</span>
                 </label>
                 <label class="export-option">
@@ -1865,7 +2033,9 @@
                     onchange="App.generateExport()"
                   />
                   <span class="export-option-label">Dify</span>
-                  <span class="export-option-desc" data-i18n="exportDifyDesc">工具配置</span>
+                  <span class="export-option-desc" data-i18n="exportDifyDesc"
+                    >工具配置</span
+                  >
                 </label>
               </div>
             </div>
@@ -1891,11 +2061,15 @@
                 </p>
                 <div class="dsh-install-commands">
                   <div class="dsh-install-block">
-                    <span class="dsh-install-label" data-i18n="dshCliInstall">通过 CLI 安装</span>
+                    <span class="dsh-install-label" data-i18n="dshCliInstall"
+                      >通过 CLI 安装</span
+                    >
                     <code class="dsh-install-code" id="dshCliCommand"></code>
                   </div>
                   <div class="dsh-install-block">
-                    <span class="dsh-install-label" data-i18n="dshUrlInstall">通过 URL 安装</span>
+                    <span class="dsh-install-label" data-i18n="dshUrlInstall"
+                      >通过 URL 安装</span
+                    >
                     <code class="dsh-install-code" id="dshUrlCommand"></code>
                   </div>
                 </div>
@@ -1926,9 +2100,7 @@
         >
         <a href="/api-docs.html" data-i18n="navApiDocs">API 文档</a>
         <a href="/docs/quickstart.md" data-i18n="navQuickstart">快速开始</a>
-        <a
-          href="/docs/C4-生态位证伪与理论体系修正.md"
-          data-i18n="footerNavWhy"
+        <a href="/docs/C4-生态位证伪与理论体系修正.md" data-i18n="footerNavWhy"
           >为什么是实验</a
         >
         <a href="/docs/C5-阶段十规划.md" data-i18n="footerNavNext">下一步</a>
@@ -1949,7 +2121,7 @@
     </button>
 
     <!-- ====== Scripts ====== -->
-    <script src="/dark-mode.js?v=20260913a"></script>
+    <script src="/dark-mode.js?v=20260913b"></script>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js");
@@ -1990,7 +2162,10 @@
           metrics = results[3] || {},
           hstats = health.stats || {},
           summary = health.summary || {};
-        set("stat-cap", caps.count !== undefined ? caps.count : hstats.capabilities);
+        set(
+          "stat-cap",
+          caps.count !== undefined ? caps.count : hstats.capabilities,
+        );
         set(
           "stat-node",
           summary.total_nodes !== undefined
@@ -2019,8 +2194,8 @@
         );
       })();
     </script>
-    <script src="/js/i18n.js?v=20260913a"></script>
-    <script src="/js/data.js?v=20260913a"></script>
-    <script src="/js/app.js?v=20260913a"></script>
+    <script src="/js/i18n.js?v=20260913b"></script>
+    <script src="/js/data.js?v=20260913b"></script>
+    <script src="/js/app.js?v=20260913b"></script>
   </body>
 </html>

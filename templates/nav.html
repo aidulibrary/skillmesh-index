@@ -1,0 +1,81 @@
+<!--
+  ============================================================
+  SkillMesh / 插台 — 共享顶部导航栏模板
+  版本：S12 · 2026-09-13
+  ============================================================
+  使用方式：将此片段复制到各页面的 <body> 开始处。
+  依赖：css/tokens.css + css/style.css（导航 + 语言下拉样式）+
+        dark-mode.css（暗色适配）+ js/i18n.js + js/app.js（setLang/toggleLangMenu）
+  注意：auth-area（GitHub 登录区域）仅出现在首页，health/api-docs 不包含。
+  ============================================================
+-->
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <div class="logo-icon">◆</div>
+      <span data-i18n="brandName">插台 SkillMesh</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" data-i18n="navHome">首页</a>
+      <a href="/#quickstart" data-i18n="navQuickstart">快速开始</a>
+      <a href="/#explore" data-i18n="navExplore">能力探索</a>
+      <a href="/api-docs.html" data-i18n="navApiDocs">API 文档</a>
+      <a href="/health.html" data-i18n="navHealth">健康面板</a>
+      <a href="/#about" data-i18n="navAbout">关于</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-dropdown" id="lang-dropdown">
+        <button
+          class="lang-trigger"
+          onclick="App.toggleLangMenu()"
+          aria-label="切换语言"
+          aria-expanded="false"
+        >
+          <svg
+            class="globe-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10" />
+            <path d="M2 12h20" />
+          </svg>
+          <span id="lang-current-label">ZH</span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="lang-menu" id="lang-menu">
+          <button
+            class="lang-option active"
+            data-lang="zh"
+            onclick="App.setLang('zh')"
+          >
+            <span class="lang-flag">🇨🇳</span> 中文
+            <span class="lang-check">✓</span>
+          </button>
+          <button
+            class="lang-option"
+            data-lang="en"
+            onclick="App.setLang('en')"
+          >
+            <span class="lang-flag">🇺🇸</span> English
+            <span class="lang-check">✓</span>
+          </button>
+          <button
+            class="lang-option"
+            data-lang="ja"
+            onclick="App.setLang('ja')"
+          >
+            <span class="lang-flag">🇯🇵</span> 日本語
+            <span class="lang-check">✓</span>
+          </button>
+        </div>
+      </div>
+      <!-- auth-area 由各页面按需插入 -->
+    </div>
+  </div>
+</nav>

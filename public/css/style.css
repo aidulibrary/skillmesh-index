@@ -1118,6 +1118,8 @@ main td a,
 
 .footer-links {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.5rem;
 }
 
@@ -1583,5 +1585,291 @@ main td a,
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+
+/* ================================================================
+   S12-FIX：导航栏 + 语言切换器统一样式（health / api-docs 页原缺失）
+   来源：index.html 内联 <style> 对应片段，保持三页外观一致
+   ================================================================ */
+/* ====== Navigation ====== */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: var(--sm-bg-surface);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+        transition:
+          background-color var(--sm-dur-base) var(--sm-ease-standard),
+          border-color var(--sm-dur-base) var(--sm-ease-standard),
+          color var(--sm-dur-base) var(--sm-ease-standard);
+      }
+      /* 支持 color-mix 时还原毛玻璃半透明层次（P0-2） */
+      @supports (background: color-mix(in srgb, red 50%, transparent)) {
+        nav {
+          background: color-mix(in srgb, var(--sm-bg-surface) 92%, transparent);
+        }
+      }
+      nav .nav-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      nav .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 700;
+        font-size: 18px;
+      }
+      nav .brand .logo-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 16px;
+      }
+      nav .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      nav .nav-links a {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      nav .nav-links a:hover {
+        color: var(--accent);
+      }
+      nav .nav-links a.nav-current {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      nav .nav-links .nav-cta {
+        background: var(--accent);
+        color: #fff;
+        padding: 6px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+      nav .nav-links .nav-cta:hover {
+        background: var(--accent-hover);
+        color: #fff;
+      }
+
+      /* Language + Auth area in nav */
+      nav .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      /* S12-C：Globe 图标 + 下拉菜单 — 语言切换器 */
+      .lang-dropdown {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+      .lang-dropdown .lang-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .lang-dropdown .lang-trigger:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .lang-dropdown .lang-trigger .globe-icon {
+        width: 14px;
+        height: 14px;
+        opacity: 0.7;
+      }
+      .lang-dropdown .lang-trigger .chevron {
+        font-size: 9px;
+        transition: transform 0.15s;
+      }
+      .lang-dropdown.open .lang-trigger .chevron {
+        transform: rotate(180deg);
+      }
+      .lang-dropdown .lang-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        min-width: 150px;
+        background: var(--sm-bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--sm-radius-lg, 8px);
+        box-shadow: var(--sm-shadow-lg, 0 8px 30px rgba(0, 0, 0, 0.12));
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+        transition: all 0.15s var(--sm-ease-standard, ease);
+        z-index: 1100;
+        padding: 4px;
+      }
+      .lang-dropdown.open .lang-menu {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+      .lang-menu .lang-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        border-radius: 6px;
+        transition: background 0.1s;
+      }
+      .lang-menu .lang-option:hover {
+        background: var(--sm-bg-muted, rgba(0, 0, 0, 0.04));
+        color: var(--text);
+      }
+      .lang-menu .lang-option.active {
+        color: var(--accent);
+        font-weight: 700;
+        background: var(--accent-light);
+      }
+      .lang-menu .lang-option .lang-flag {
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .lang-menu .lang-option .lang-check {
+        margin-left: auto;
+        opacity: 0;
+        font-size: 11px;
+      }
+      .lang-menu .lang-option.active .lang-check {
+        opacity: 1;
+      }
+      /* S12-C：暗色主题下拉适配 */
+      [data-theme="dark"] .lang-dropdown .lang-trigger {
+        border-color: var(--sm-border-subtle, rgba(255, 255, 255, 0.1));
+      }
+      [data-theme="dark"] .lang-menu .lang-option:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .auth-btn {
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 4px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 999px;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .auth-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      #user-area {
+        display: none;
+      }
+      #user-area .user-name {
+        font-size: 13px;
+        color: var(--text);
+        font-weight: 500;
+      }
+      #user-area .logout-link {
+        font-size: 12px;
+        color: var(--text-muted);
+        cursor: pointer;
+        margin-left: 8px;
+        text-decoration: none;
+      }
+      #user-area .logout-link:hover {
+        color: var(--sm-danger);
+      }
+
+@media (max-width: 768px) {
+  nav .nav-links {
+    gap: 10px;
+  }
+  nav .nav-links a {
+    font-size: 12px;
+  }
+  nav .nav-right {
+    gap: 6px;
+  }
+  .lang-dropdown .lang-trigger {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  nav {
+    padding: 0 8px;
+  }
+  nav .nav-inner {
+    height: 48px;
+  }
+  nav .brand {
+    font-size: 14px;
+    gap: 6px;
+  }
+  nav .brand .logo-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  nav .nav-links {
+    display: none;
+  }
+  nav .nav-right {
+    gap: 4px;
+  }
+  .lang-dropdown .lang-trigger {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+  .auth-btn {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  .auth-btn svg {
+    width: 14px;
+    height: 14px;
   }
 }
