@@ -1,16 +1,16 @@
-var CACHE_NAME = "ccp-v6";
+var CACHE_NAME = "ccp-v7";
 // 2026-09-13 主题全屏一致性修复：bump 缓存版本，令新 SW 安装时清除旧 ccp-v4 缓存
 var PRECACHE = [
   "/",
   "/index.html",
   "/health.html",
-  "/css/tokens.css?v=20260913b",
-  "/css/style.css?v=20260913b",
-  "/dark-mode.css?v=20260913b",
-  "/dark-mode.js?v=20260913b",
-  "/js/i18n.js?v=20260913b",
-  "/js/data.js?v=20260913b",
-  "/js/app.js?v=20260913b",
+  "/css/tokens.css?v=20260913c",
+  "/css/style.css?v=20260913c",
+  "/dark-mode.css?v=20260913c",
+  "/dark-mode.js?v=20260913c",
+  "/js/i18n.js?v=20260913c",
+  "/js/data.js?v=20260913c",
+  "/js/app.js?v=20260913c",
 ];
 self.addEventListener("install", function (e) {
   e.waitUntil(
