@@ -43,23 +43,30 @@ function mockDB(node) {
   return { prepare: (sql) => stmt(sql) };
 }
 
-const ctx = (method, url, body, env = {}) =>
-  ({
-    request: new Request(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    }),
-    env,
-    waitUntil: () => {},
-  });
+const ctx = (method, url, body, env = {}) => ({
+  request: new Request(url, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  }),
+  env,
+  waitUntil: () => {},
+});
 
 // ================= D3：接口契约（/stats + 过滤）=================
 describe("D3 接口契约与文档一致", () => {
-  const NODE = { id: "bioinfo-ccp.lab.ac.cn", name: "BioInfo CCP Lab", trust_policy: null };
+  const NODE = {
+    id: "bioinfo-ccp.lab.ac.cn",
+    name: "BioInfo CCP Lab",
+    trust_policy: null,
+  };
 
   it("D3-1 路由 /api/ccp/v1/stats 返回 200 且统计字段齐全（不再是 404）", async () => {
-    const res = await onRequest(ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/stats", undefined, { skillmesh_db: mockDB(NODE) }));
+    const res = await onRequest(
+      ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/stats", undefined, {
+        skillmesh_db: mockDB(NODE),
+      }),
+    );
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.stats).toMatchObject({
@@ -79,7 +86,9 @@ describe("D3 接口契约与文档一致", () => {
   });
 
   it("D3-2 ?q=pdf 过滤生效（返回子集而非全量 33）", async () => {
-    const res = await onRequest(ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/capabilities?q=pdf"));
+    const res = await onRequest(
+      ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/capabilities?q=pdf"),
+    );
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
@@ -87,7 +96,12 @@ describe("D3 接口契约与文档一致", () => {
   });
 
   it("D3-3 ?category=数据处理 过滤生效", async () => {
-    const res = await onRequest(ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"));
+    const res = await onRequest(
+      ctx(
+        "GET",
+        "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86",
+      ),
+    );
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
@@ -95,21 +109,41 @@ describe("D3 接口契约与文档一致", () => {
   });
 
   it("D3-4 不存在的分类返回 0（不再返回全量 33）", async () => {
-    const res = await onRequest(ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=%E4%B8%8D%E5%AD%98%E5%9C%A8%E5%88%86%E7%B1%BBXYZ"));
+    const res = await onRequest(
+      ctx(
+        "GET",
+        "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=%E4%B8%8D%E5%AD%98%E5%9C%A8%E5%88%86%E7%B1%BBXYZ",
+      ),
+    );
     const body = await res.json();
     expect(body.count).toBe(0);
   });
 
   it("D3-3b ?category=data 与中文别名等价", async () => {
-    const cn = await (await onRequest(ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"))).json();
-    const en = await (await onRequest(ctx("GET", "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=data"))).json();
+    const cn = await (
+      await onRequest(
+        ctx(
+          "GET",
+          "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86",
+        ),
+      )
+    ).json();
+    const en = await (
+      await onRequest(
+        ctx(
+          "GET",
+          "https://skillmesh.pages.dev/api/ccp/v1/capabilities?category=data",
+        ),
+      )
+    ).json();
     expect(en.count).toBe(cn.count);
     expect(en.count).toBeGreaterThan(0);
   });
 
   it("D3-5 无过滤时返回全量（本地无 DB 走静态回退；DB 路径的全量 33 见 D3-1）", async () => {
     const body = await (await handleList(null, {}, {})).json();
-    const staticCount = (await import("../functions/_data/capabilities.js")).CAPABILITIES.length;
+    const staticCount = (await import("../functions/_data/capabilities.js"))
+      .CAPABILITIES.length;
     expect(body.count).toBe(staticCount);
     expect(body.total).toBe(staticCount);
     expect(body.query).toBeNull();
@@ -119,7 +153,11 @@ describe("D3 接口契约与文档一致", () => {
 
 // ================= D4：信任策略 PUT 校验 =================
 describe("D4 信任策略 PUT 权重校验", () => {
-  const NODE = { id: "bioinfo-ccp.lab.ac.cn", name: "BioInfo CCP Lab", trust_policy: null };
+  const NODE = {
+    id: "bioinfo-ccp.lab.ac.cn",
+    name: "BioInfo CCP Lab",
+    trust_policy: null,
+  };
   const put = (body) =>
     onRequest(
       ctx(
@@ -137,17 +175,23 @@ describe("D4 信任策略 PUT 权重校验", () => {
   });
 
   it("D4-2 权重和 ≠ 1 → 400", async () => {
-    const res = await put({ weights: { source: 0.5, usage: 0.5, success: 0.5, risk: 0.5, time: 0.5 } });
+    const res = await put({
+      weights: { source: 0.5, usage: 0.5, success: 0.5, risk: 0.5, time: 0.5 },
+    });
     expect(res.status).toBe(400);
   });
 
   it("D4-3 权重越界（>1）→ 400", async () => {
-    const res = await put({ weights: { source: 1.5, usage: 0, success: 0, risk: 0, time: -0.5 } });
+    const res = await put({
+      weights: { source: 1.5, usage: 0, success: 0, risk: 0, time: -0.5 },
+    });
     expect(res.status).toBe(400);
   });
 
   it("D4-4 权重为负 → 400", async () => {
-    const res = await put({ weights: { source: -0.2, usage: 0.2, success: 0.4, risk: 0.3, time: 0.3 } });
+    const res = await put({
+      weights: { source: -0.2, usage: 0.2, success: 0.4, risk: 0.3, time: 0.3 },
+    });
     expect(res.status).toBe(400);
   });
 
@@ -157,9 +201,50 @@ describe("D4 信任策略 PUT 权重校验", () => {
   });
 
   it("D4-6 合法权重（和=1）→ 200 updated:true", async () => {
-    const res = await put({ weights: { source: 0.3, usage: 0.2, success: 0.3, risk: 0.1, time: 0.1 } });
+    const res = await put({
+      weights: { source: 0.3, usage: 0.2, success: 0.3, risk: 0.1, time: 0.1 },
+    });
     expect(res.status).toBe(200);
     expect((await res.json()).updated).toBe(true);
+  });
+});
+
+// ================= D8：顶层未知字段校验 =================
+describe("D8 顶层未知字段校验", () => {
+  const NODE = {
+    id: "bioinfo-ccp.lab.ac.cn",
+    name: "BioInfo CCP Lab",
+    trust_policy: null,
+  };
+  const put = (body) =>
+    onRequest(
+      ctx(
+        "PUT",
+        "https://skillmesh.pages.dev/api/ccp/v1/federation/nodes/bioinfo-ccp.lab.ac.cn/trust-policy",
+        body,
+        { skillmesh_db: mockDB(NODE) },
+      ),
+    );
+
+  it("D8-1 未知顶层键 threshold（拼写错误）→ 400 VALIDATION_ERROR", async () => {
+    const res = await put({ threshold: { min_trust: 0.3 } });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("D8-2 多个未知顶层键 → 400", async () => {
+    const res = await put({ threshold: {}, bogus: 1, extra: "x" });
+    expect(res.status).toBe(400);
+  });
+
+  it("D8-3 已知键 + 未知键混合 → 400（拒绝整个请求）", async () => {
+    const res = await put({ weights: { source: 0.5 }, threshold: {} });
+    expect(res.status).toBe(400);
+  });
+
+  it("D8-4 仅已知顶层键 → 200（回归守卫）", async () => {
+    const res = await put({ auto_accept: false, description: "Custom policy" });
+    expect(res.status).toBe(200);
   });
 });
 
@@ -176,12 +261,15 @@ describe("D2 页脚链接国际化", () => {
     const next = rest.search(/\n  (zh|en|ja):\s*\{/);
     return next === -1 ? rest : rest.slice(0, next);
   };
-  const keySet = (tx) => new Set([...tx.matchAll(/^\s+([A-Za-z0-9_]+):\s*"/gm)].map((m) => m[1]));
+  const keySet = (tx) =>
+    new Set([...tx.matchAll(/^\s+([A-Za-z0-9_]+):\s*"/gm)].map((m) => m[1]));
   const zh = keySet(langBlock("zh"));
   const en = keySet(langBlock("en"));
   const ja = keySet(langBlock("ja"));
   const html = read("index.html");
-  const htmlKeys = [...new Set([...html.matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1]))];
+  const htmlKeys = [
+    ...new Set([...html.matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1])),
+  ];
 
   it("D2-1 zh/en/ja 键值数量一致", () => {
     expect(en.size).toBe(zh.size);
@@ -197,7 +285,12 @@ describe("D2 页脚链接国际化", () => {
   });
 
   it("D2-3 页脚 4 个新增专用键在三语中均存在且非中文残留", () => {
-    const keys = ["footerNavCapabilities", "footerNavNodes", "footerNavWhy", "footerNavNext"];
+    const keys = [
+      "footerNavCapabilities",
+      "footerNavNodes",
+      "footerNavWhy",
+      "footerNavNext",
+    ];
     for (const k of keys) {
       expect(zh.has(k) && en.has(k) && ja.has(k), `缺键 ${k}`).toBe(true);
     }
@@ -237,8 +330,12 @@ describe("D5 可访问性修复", () => {
     // deploy-theme-fix：双色板已收敛，dark-mode.css 不再定义 --text-muted，
     // 浅色次要文字改由 tokens.css 单一色板提供（zinc-700，对白底 9.7:1）
     expect(read("dark-mode.css")).not.toContain("--text-muted");
-    expect(read("css/tokens.css")).toContain("--sm-fg-secondary: var(--sm-zinc-700)");
-    expect(read("css/tokens.css")).toContain("--sm-fg-placeholder: var(--sm-zinc-500)");
+    expect(read("css/tokens.css")).toContain(
+      "--sm-fg-secondary: var(--sm-zinc-700)",
+    );
+    expect(read("css/tokens.css")).toContain(
+      "--sm-fg-placeholder: var(--sm-zinc-500)",
+    );
   });
 
   it("D5-4 正文链接不再仅靠颜色区分（增加下划线规则）", () => {
@@ -250,7 +347,10 @@ describe("D5 可访问性修复", () => {
 
   it("D5-5 能力卡片可访问名与可见标题一致（不设 aria-label，由内容文本回退命名 + card-title id 兜底）", () => {
     const app = read("js/app.js");
-    const cardTpl = app.slice(app.indexOf('class="card fade-in'), app.indexOf("function renderSkeleton"));
+    const cardTpl = app.slice(
+      app.indexOf('class="card fade-in'),
+      app.indexOf("function renderSkeleton"),
+    );
     // 卡片不得再用 aria-label 覆盖可访问名（否则与可见文本不匹配，axe label-content-name-mismatch）
     expect(cardTpl).not.toContain("aria-label=");
     expect(cardTpl).not.toContain("aria-labelledby=");
@@ -260,8 +360,11 @@ describe("D5 可访问性修复", () => {
 
   const lum = (hex) => {
     const c = hex.replace("#", "");
-    const [r, g, b] = [0, 2, 4].map((i) => parseInt(c.slice(i, i + 2), 16) / 255);
-    const f = (v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+    const [r, g, b] = [0, 2, 4].map(
+      (i) => parseInt(c.slice(i, i + 2), 16) / 255,
+    );
+    const f = (v) =>
+      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
     return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
   };
   const ratio = (a, b) => {
@@ -317,7 +420,9 @@ describe("D6/D7 缓存策略与 HSTS", () => {
 
   it("D6-1 HTML 与根路径不再缓存 1 小时，改为 max-age=0, must-revalidate", () => {
     expect(headers).toMatch(/\/\*\.html[\s\S]{0,80}max-age=0, must-revalidate/);
-    expect(headers).toMatch(/^\/\s*\n\s*Cache-Control: public, max-age=0, must-revalidate/m);
+    expect(headers).toMatch(
+      /^\/\s*\n\s*Cache-Control: public, max-age=0, must-revalidate/m,
+    );
     expect(headers).not.toMatch(/\/\*\.html[\s\S]{0,80}max-age=3600/);
   });
 
@@ -336,9 +441,17 @@ describe("D6/D7 缓存策略与 HSTS", () => {
     });
 
   it("D6-3 _middleware 不再把 HTML 入口覆盖为 1 小时缓存", async () => {
-    for (const p of ["/", "/index.html", "/health", "/health.html", "/api-docs"]) {
+    for (const p of [
+      "/",
+      "/index.html",
+      "/health",
+      "/health.html",
+      "/api-docs",
+    ]) {
       const res = await runMiddleware(p);
-      expect(res.headers.get("Cache-Control")).toBe("public, max-age=0, must-revalidate");
+      expect(res.headers.get("Cache-Control")).toBe(
+        "public, max-age=0, must-revalidate",
+      );
     }
     // 源码层兜底：中间件内不得再出现 1 小时缓存的字面量
     expect(read("functions/_middleware.js")).not.toContain("max-age=3600");
@@ -347,9 +460,13 @@ describe("D6/D7 缓存策略与 HSTS", () => {
 
   it("D6-4 _middleware 未破坏静态资源/文档/API 的缓存分级", async () => {
     const asset = await runMiddleware("/js/app.js");
-    expect(asset.headers.get("Cache-Control")).toBe("public, max-age=31536000, immutable");
+    expect(asset.headers.get("Cache-Control")).toBe(
+      "public, max-age=31536000, immutable",
+    );
     const doc = await runMiddleware("/docs/quickstart.md");
-    expect(doc.headers.get("Cache-Control")).toBe("public, max-age=604800, stale-while-revalidate=86400");
+    expect(doc.headers.get("Cache-Control")).toBe(
+      "public, max-age=604800, stale-while-revalidate=86400",
+    );
     const api = await runMiddleware("/api/ccp/v1/capabilities");
     expect(api.headers.get("Cache-Control")).toBe("no-store");
     const icon = await runMiddleware("/favicon.ico");
@@ -373,7 +490,9 @@ describe("回归基线", () => {
   it("trust-policy GET 仍返回五维权重（和=1）", async () => {
     const NODE = { id: "n1", name: "Node 1", trust_policy: null };
     const res = await handleTrustPolicy(
-      new Request("https://x/api/ccp/v1/federation/nodes/n1/trust-policy", { method: "GET" }),
+      new Request("https://x/api/ccp/v1/federation/nodes/n1/trust-policy", {
+        method: "GET",
+      }),
       mockDB(NODE),
       "n1",
     );

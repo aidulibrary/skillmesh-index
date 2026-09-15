@@ -72,6 +72,25 @@ export async function handleTrustPolicy(request, db, nodeId) {
       return structuredError("INVALID_JSON");
     }
 
+    // D8：顶层未知字段校验（非法顶层键返回 400，防止静默重写策略）
+    const ALLOWED_TOP_KEYS = [
+      "weights",
+      "thresholds",
+      "auto_accept",
+      "description",
+    ];
+    const unknownTopKeys = Object.keys(body).filter(
+      (k) => !ALLOWED_TOP_KEYS.includes(k),
+    );
+    if (unknownTopKeys.length > 0) {
+      return structuredError("VALIDATION_ERROR", {
+        detail: {
+          field: unknownTopKeys[0],
+          reason: `Unknown top-level key(s): ${unknownTopKeys.join(", ")}. Allowed: ${ALLOWED_TOP_KEYS.join(", ")}`,
+        },
+      });
+    }
+
     // D4：权重键白名单 + 数值合法性校验（非法时返回 400，而非静默忽略）
     const ALLOWED_WEIGHT_KEYS = ["source", "usage", "success", "risk", "time"];
     const ALLOWED_THRESHOLD_KEYS = [
@@ -127,7 +146,9 @@ export async function handleTrustPolicy(request, db, nodeId) {
       }
       const badTh = ALLOWED_THRESHOLD_KEYS.find((k) => {
         const v = rawThresholds[k];
-        return v !== undefined && (typeof v !== "number" || !Number.isFinite(v));
+        return (
+          v !== undefined && (typeof v !== "number" || !Number.isFinite(v))
+        );
       });
       if (badTh) {
         return structuredError("VALIDATION_ERROR", {
