@@ -1,7 +1,10 @@
 /**
- * S13-2: DSH 短 URL 端点测试
- * ===========================
+ * S13-2: DSH 短 URL 端点测试（catch-all 路由）
+ * =============================================
  * `/api/ccp/{id}/dsh.yaml` — DSH CLI 可直接安装的能力插台插件端点
+ *
+ * 路由使用 [[path]] catch-all 解析路径段数组，
+ * 避免与 v1/[[path]].js 的路由歧义。
  *
  * 测试覆盖：
  *   - 200 现有能力 → 返回 YAML
@@ -14,31 +17,43 @@
  *   - CORS / 缓存 / 协议头
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 
 const BASE = "https://skillmesh.pages.dev";
 let onRequest;
 
 beforeEach(async () => {
   vi.restoreAllMocks();
-  const mod = await import("../functions/api/ccp/[capId].js");
+  const mod = await import("../functions/api/ccp/[[path]].js");
   onRequest = mod.onRequest;
 });
 
-function ctx(params, method = "GET", urlPath = null) {
-  const capId = params?.capId;
-  const path = urlPath || `/api/ccp/${capId}/dsh.yaml`;
+function pathSegments(urlPath) {
+  const p = new URL(BASE + urlPath).pathname;
+  const parts = p.split("/").filter(Boolean);
+  return parts.slice(2);
+}
+
+function ctx(urlPath, method = "GET") {
+  const segs = pathSegments(urlPath);
   return {
-    request: new Request(`${BASE}${path}`, { method }),
-    params: params || {},
+    request: new Request(`${BASE}${urlPath}`, { method }),
+    params: { path: segs },
   };
+}
+
+function dshCtx(capId) {
+  return ctx(`/api/ccp/${capId}/dsh.yaml`);
+}
+
+function adapterCtx(capId) {
+  return ctx(`/api/ccp/${capId}/adapters/dsh`);
 }
 
 // ================= 200 成功 =================
 describe("200 成功返回 DSH YAML", () => {
   it("已知能力 pdf-extract-text-001 → 返回 YAML", async () => {
-    const c = ctx({ capId: "pdf-extract-text-001" });
-    const res = await onRequest(c);
+    const res = await onRequest(dshCtx("pdf-extract-text-001"));
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toContain("application/x-yaml");
@@ -53,12 +68,7 @@ describe("200 成功返回 DSH YAML", () => {
   });
 
   it("兼容路由 /adapters/dsh → 同样返回 YAML", async () => {
-    const c = ctx(
-      { capId: "pdf-extract-text-001" },
-      "GET",
-      "/api/ccp/pdf-extract-text-001/adapters/dsh",
-    );
-    const res = await onRequest(c);
+    const res = await onRequest(adapterCtx("pdf-extract-text-001"));
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toContain("application/x-yaml");
@@ -67,8 +77,12 @@ describe("200 成功返回 DSH YAML", () => {
   });
 
   it("HEAD 请求 → 200（无 body 但有头）", async () => {
-    const c = ctx({ capId: "pdf-extract-text-001" }, "HEAD");
-    const res = await onRequest(c);
+    const res = await onRequest({
+      request: new Request(`${BASE}/api/ccp/pdf-extract-text-001/dsh.yaml`, {
+        method: "HEAD",
+      }),
+      params: { path: ["pdf-extract-text-001", "dsh.yaml"] },
+    });
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toContain("application/x-yaml");
@@ -76,8 +90,7 @@ describe("200 成功返回 DSH YAML", () => {
   });
 
   it("另一个能力 web-scrape-003 → 返回 YAML", async () => {
-    const c = ctx({ capId: "web-scrape-003" });
-    const res = await onRequest(c);
+    const res = await onRequest(dshCtx("web-scrape-003"));
 
     expect(res.status).toBe(200);
     const text = await res.text();
@@ -89,8 +102,7 @@ describe("200 成功返回 DSH YAML", () => {
 // ================= 404 不存在 =================
 describe("404 不存在的能力", () => {
   it("不存在的 ID → 404", async () => {
-    const c = ctx({ capId: "nonexistent-cap-999" });
-    const res = await onRequest(c);
+    const res = await onRequest(dshCtx("nonexistent-cap-999"));
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -98,9 +110,11 @@ describe("404 不存在的能力", () => {
     expect(body.error.detail.id).toBe("nonexistent-cap-999");
   });
 
-  it("空参数 → 400", async () => {
-    const c = ctx({ capId: "" });
-    const res = await onRequest(c);
+  it("空路径段 → 400", async () => {
+    const res = await onRequest({
+      request: new Request(`${BASE}/api/ccp?`, { method: "GET" }),
+      params: { path: [] },
+    });
     expect(res.status).toBe(400);
   });
 });
@@ -108,22 +122,17 @@ describe("404 不存在的能力", () => {
 // ================= 404 路径 =================
 describe("404 未知路径", () => {
   it("/api/ccp/{id}/unknown → 404", async () => {
-    const c = ctx(
-      { capId: "pdf-extract-text-001" },
-      "GET",
-      "/api/ccp/pdf-extract-text-001/unknown",
-    );
-    const res = await onRequest(c);
+    const res = await onRequest(ctx("/api/ccp/pdf-extract-text-001/unknown"));
     expect(res.status).toBe(404);
   });
 
   it("/api/ccp/{id} → 404（仅 /dsh.yaml 和 /adapters/dsh 有效）", async () => {
-    const c = ctx(
-      { capId: "pdf-extract-text-001" },
-      "GET",
-      "/api/ccp/pdf-extract-text-001",
-    );
-    const res = await onRequest(c);
+    const res = await onRequest({
+      request: new Request(`${BASE}/api/ccp/pdf-extract-text-001`, {
+        method: "GET",
+      }),
+      params: { path: ["pdf-extract-text-001"] },
+    });
     expect(res.status).toBe(404);
   });
 });
@@ -131,20 +140,23 @@ describe("404 未知路径", () => {
 // ================= 405 方法 =================
 describe("405 方法不允许", () => {
   it("POST → 405", async () => {
-    const c = ctx({ capId: "pdf-extract-text-001" }, "POST");
-    const res = await onRequest(c);
+    const res = await onRequest(
+      ctx("/api/ccp/pdf-extract-text-001/dsh.yaml", "POST"),
+    );
     expect(res.status).toBe(405);
   });
 
   it("PUT → 405", async () => {
-    const c = ctx({ capId: "pdf-extract-text-001" }, "PUT");
-    const res = await onRequest(c);
+    const res = await onRequest(
+      ctx("/api/ccp/pdf-extract-text-001/dsh.yaml", "PUT"),
+    );
     expect(res.status).toBe(405);
   });
 
   it("DELETE → 405", async () => {
-    const c = ctx({ capId: "pdf-extract-text-001" }, "DELETE");
-    const res = await onRequest(c);
+    const res = await onRequest(
+      ctx("/api/ccp/pdf-extract-text-001/dsh.yaml", "DELETE"),
+    );
     expect(res.status).toBe(405);
   });
 });
@@ -154,8 +166,7 @@ describe("YAML 结构完整性", () => {
   let yaml;
 
   beforeAll(async () => {
-    const c = ctx({ capId: "pdf-extract-text-001" });
-    const res = await onRequest(c);
+    const res = await onRequest(dshCtx("pdf-extract-text-001"));
     yaml = await res.text();
   });
 
@@ -190,8 +201,7 @@ describe("YAML 结构完整性", () => {
   });
 
   it("Content-Disposition 含正确文件名", async () => {
-    const c = ctx({ capId: "pdf-extract-text-001" });
-    const res = await onRequest(c);
+    const res = await onRequest(dshCtx("pdf-extract-text-001"));
     expect(res.headers.get("Content-Disposition")).toContain(
       "pdf-extract-text-001.yaml",
     );

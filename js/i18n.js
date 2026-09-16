@@ -70,7 +70,7 @@ const I18N = {
     step1Desc:
       "用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……",
     step1Link: "在线试试 →",
-    step1Curl: 'curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"',
+    step1Curl: "curl \"https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf\"",
     step2Title: "获取适配器",
     step2Desc:
       "一键生成你所用框架的调用代码：LangChain Tool、MCP Server、DSH Plugin……",
@@ -318,7 +318,7 @@ const I18N = {
     step1Desc:
       "Use natural language to search for AI capabilities—PDF parsing, code explanation, translation, math...",
     step1Link: "Try it online →",
-    step1Curl: 'curl "https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf"',
+    step1Curl: "curl \"https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf\"",
     step2Title: "Get Adapter",
     step2Desc:
       "One-click generate call code for your framework: LangChain Tool, MCP Server, DSH Plugin...",
@@ -355,7 +355,7 @@ const I18N = {
     aboutVerifyDesc:
       "CCP tries to answer one question: how can AI agents find the truly reliable one among thousands of capabilities?",
     aboutVerifyMore:
-      'Our hypothesis: based on federated consensus + real invocation data, we can compute a "trust vector" for each capability—without relying on any single platform\'s endorsement.',
+      "Our hypothesis: based on federated consensus + real invocation data, we can compute a \"trust vector\" for each capability—without relying on any single platform's endorsement.",
     aboutNotTitle: "📐 What CCP Is Not",
     aboutNotDesc:
       "CCP does not replace MCP (tool connection), nor A2A (Agent communication), nor Agent Skills (capability description).",
@@ -413,9 +413,9 @@ const I18N = {
     // Empty / Loading
     empty: "No matching capability anchors found",
     emptySub: "Try different keywords or switch category filters",
-    emptyQueryHint: 'No capabilities match "{query}", try different keywords?',
-    emptyCatHint: 'No match for "{query}" in "{category}" category',
-    emptyCatOnly: 'No capabilities in "{category}" category, try switching?',
+    emptyQueryHint: "No capabilities match "{query}", try different keywords?",
+    emptyCatHint: "No match for "{query}" in "{category}" category",
+    emptyCatOnly: "No capabilities in "{category}" category, try switching?",
     noData: "No capability data available",
     loading: "Loading capabilities…",
 
@@ -570,7 +570,7 @@ const I18N = {
     step1Desc:
       "自然言語で必要なAI能力を検索—PDF解析、コード説明、翻訳、数学計算…",
     step1Link: "オンラインで試す →",
-    step1Curl: 'curl "https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf"',
+    step1Curl: "curl \"https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf\"",
     step2Title: "アダプターを取得",
     step2Desc:
       "お使いのフレームワーク用のコードをワンクリック生成：LangChain Tool、MCP Server、DSH Plugin…",

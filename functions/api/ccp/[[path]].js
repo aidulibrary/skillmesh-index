@@ -1,16 +1,11 @@
 /**
- * S13-2: DSH 短 URL 端点
- * ======================
- * 协议定义 `/api/ccp/{id}/dsh.yaml` 端点，使 DSH CLI 可通过
- * `dsh plugin add https://skillmesh.礼字号.中国/api/ccp/{id}/dsh.yaml`
- * 直接安装能力插台提供的插件。
+ * S13-2: DSH 短 URL 端点（catch-all 路由）
+ * =========================================
+ * 使用 [[path]] catch-all 匹配 `/api/ccp/{capId}/dsh.yaml`
+ * 和 `/api/ccp/{capId}/adapters/dsh`。
  *
- * 实现策略：
- * - 路径 `/api/ccp/{capId}/dsh.yaml` → YAML 响应
- * - 路径 `/api/ccp/{capId}/adapters/dsh` → 同义兼容路由
- * - 仅 GET，返回 Content-Type: application/x-yaml
- * - 能力不存在 → 404
- * - 其他路径 → 404
+ * 路由优先级：Cloudflare Pages 自动将 v1/[[path]].js 视为
+ * 更具体的匹配，因此 `/api/ccp/v1/*` 不会被本处理器拦截。
  *
  * 版本：v1.0
  * 协议：CCP v1.0.0
@@ -26,16 +21,17 @@ const ALLOWED_SUFFIXES = ["/dsh.yaml", "/adapters/dsh"];
 export async function onRequest(context) {
   try {
     const { request, params } = context;
-    const capId = params.capId;
 
-    if (!capId) {
-      return new Response(JSON.stringify({ error: "Missing capability ID" }), {
+    // catch-all params.path 是数组，如 ["pdf-extract-text-001", "dsh.yaml"]
+    const segments = params.path || [];
+    if (segments.length === 0) {
+      return new Response(JSON.stringify({ error: "Missing path segments" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // 仅支持 GET
+    // 仅支持 GET/HEAD
     if (request.method !== "GET" && request.method !== "HEAD") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
@@ -46,16 +42,31 @@ export async function onRequest(context) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // 验证路径后缀为 /dsh.yaml 或 /adapters/dsh
+    // 验证路径后缀
     const suffix = ALLOWED_SUFFIXES.find((s) => path.endsWith(s));
     if (!suffix) {
       return new Response(
         JSON.stringify({
           error: "Unknown path",
-          hint: `Available: /api/ccp/{id}/dsh.yaml or /api/ccp/{id}/adapters/dsh`,
+          hint: "Available: /api/ccp/{id}/dsh.yaml or /api/ccp/{id}/adapters/dsh",
         }),
         { status: 404, headers: { "Content-Type": "application/json" } },
       );
+    }
+
+    // 从路径段提取 capId（去掉后缀部分）
+    const suffixSegments = suffix.split("/").filter(Boolean); // ["dsh.yaml"] or ["adapters", "dsh"]
+    const capSegments = segments.slice(
+      0,
+      segments.length - suffixSegments.length,
+    );
+    const capId = capSegments.join("/") || segments[0];
+
+    if (!capId) {
+      return new Response(JSON.stringify({ error: "Missing capability ID" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // 查找能力锚点
@@ -92,6 +103,9 @@ export async function onRequest(context) {
       },
     });
   } catch (err) {
-    return safeErrorResponse(err, `ccp-dsh-yaml:${params?.capId || "unknown"}`);
+    return safeErrorResponse(
+      err,
+      `ccp-dsh-yaml:${params?.path?.join("/") || "unknown"}`,
+    );
   }
 }

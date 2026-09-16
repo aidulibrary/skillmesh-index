@@ -248,7 +248,10 @@ export async function onRequest(context) {
     } else if (relative === "stats") {
       // D3：补齐 /api/ccp/v1/stats 统计摘要端点
       response = await handleStats(db);
-    } else if (relative === "capabilities" || (!relative && request.method === "GET")) {
+    } else if (
+      relative === "capabilities" ||
+      (!relative && request.method === "GET")
+    ) {
       const q = url.searchParams.get("q") || "";
       const category =
         url.searchParams.get("category") || url.searchParams.get("cat") || "";

@@ -63,7 +63,9 @@ const CATEGORY_ALIASES = {
 function normalizeCategory(input) {
   const v = String(input || "").trim();
   if (!v) return "";
-  return CATEGORY_ALIASES[v] || CATEGORY_ALIASES[v.toLowerCase()] || v.toLowerCase();
+  return (
+    CATEGORY_ALIASES[v] || CATEGORY_ALIASES[v.toLowerCase()] || v.toLowerCase()
+  );
 }
 
 export async function handleList(db, env, options = {}) {
