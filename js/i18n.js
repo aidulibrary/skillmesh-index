@@ -67,11 +67,13 @@ const I18N = {
     quickstartDesc:
       "不管你是开发者、Agent 使用者，还是低代码玩家，都能在 5 分钟内跑通第一条调用。",
     step1Title: "搜索能力",
-    step1Desc: "用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……",
+    step1Desc:
+      "用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……",
     step1Link: "在线试试 →",
-    step1Curl: "curl \"https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf\"",
+    step1Curl: 'curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"',
     step2Title: "获取适配器",
-    step2Desc: "一键生成你所用框架的调用代码：LangChain Tool、MCP Server、DSH Plugin……",
+    step2Desc:
+      "一键生成你所用框架的调用代码：LangChain Tool、MCP Server、DSH Plugin……",
     step2Link: "查看示例 →",
     step3Title: "注册你的能力",
     step3Desc: "把你的 AI 能力贡献给联邦网络，让全球 Agent 都能发现和调用。",
@@ -80,9 +82,11 @@ const I18N = {
     forWhomTitle: "无论是谁，都能找到入口",
     forWhomDesc: "CCP 为不同角色设计了不同的接入路径，总有一条适合你。",
     forWhomDevTitle: "我是开发者",
-    forWhomDevDesc: "我写代码，想给我的 Agent 接入更多能力，或者发布自己的 AI 服务。",
+    forWhomDevDesc:
+      "我写代码，想给我的 Agent 接入更多能力，或者发布自己的 AI 服务。",
     forWhomUserTitle: "我是 Agent 使用者",
-    forWhomUserDesc: "我用 Dify、Coze 等低代码平台搭建 Agent，想拖拽式接入更多能力。",
+    forWhomUserDesc:
+      "我用 Dify、Coze 等低代码平台搭建 Agent，想拖拽式接入更多能力。",
     // Ecosystem
     ecoTitle: "CCP 在 Agent 协议生态中的位置",
     ecoDesc:
@@ -103,7 +107,8 @@ const I18N = {
     aboutNotTitle: "📐 CCP 不是什么",
     aboutNotDesc:
       "CCP 不替代 MCP（连接工具），也不替代 A2A（Agent 通信），更不替代 Agent Skills（能力描述）。",
-    aboutNotMore: "它做的是这三者都没做的事：能力信任。谁来告诉 Agent 哪个能力真的靠谱？",
+    aboutNotMore:
+      "它做的是这三者都没做的事：能力信任。谁来告诉 Agent 哪个能力真的靠谱？",
     aboutFederationTitle: "🔗 联邦治理",
     aboutFederationDesc:
       "CCP 不是一个公司产品，而是一个联邦协议。任何节点都可以加入联邦网络，共同参与：",
@@ -131,6 +136,13 @@ const I18N = {
     searchPlaceholder: "描述你需要的能力，例如：提取PDF表格",
     searchHint: "输入自然语言描述，实时匹配能力锚点",
     searching: "语义检索中…",
+    semanticLoading: "正在加载语义模型…",
+    semanticReady: "语义搜索已就绪 ✓",
+    searchSuggestions: "试试这些：",
+    suggestionPdf: "PDF表格提取",
+    suggestionTranslate: "中英翻译",
+    suggestionScrape: "网页抓取",
+    suggestionSentiment: "情感分析",
 
     // Category
     categoryAll: "全部",
@@ -143,7 +155,10 @@ const I18N = {
     // Empty / Loading
     empty: "未找到匹配的能力锚点",
     emptySub: "尝试更换关键词或切换分类筛选",
-    noData: "暂无能力数据",
+    emptyQueryHint: "没有与「{query}」匹配的能力，试试其他关键词？",
+    emptyCatHint: "「{category}」分类中没有与「{query}」匹配的能力",
+    emptyCatOnly: "「{category}」分类暂无能力锚点，试试切换分类？",
+    noData: "暂无能力锚点数据",
     loading: "正在加载能力数据…",
 
     // Card
@@ -238,15 +253,20 @@ const I18N = {
     ecoTagSkills: "Anthropic · Capability Description",
     comingSoon: "Coming Soon",
     forWhomCard1Li1: "Multi-framework adapters: LangChain / MCP / DSH / CrewAI",
-    forWhomCard1Li2: "Integrate in 5 lines of code; npm install / pip install and go",
-    forWhomCard1Li3: "Capabilities show up in federated search once contributed",
-    forWhomCard1Li4: "Trust vectors update automatically; high-quality capabilities rank first",
+    forWhomCard1Li2:
+      "Integrate in 5 lines of code; npm install / pip install and go",
+    forWhomCard1Li3:
+      "Capabilities show up in federated search once contributed",
+    forWhomCard1Li4:
+      "Trust vectors update automatically; high-quality capabilities rank first",
     forWhomCard2Li1: "Dify plugin coming soon (Stage 10)",
     forWhomCard2Li2: "One-click MCP connection, no coding required",
-    forWhomCard2Li3: "Natural-language capability search—no need to remember IDs",
+    forWhomCard2Li3:
+      "Natural-language capability search—no need to remember IDs",
     forWhomCard2Li4: "Try every capability directly in the online Playground",
     aboutVerifyLi1: "Current status: protocol ready, data accumulating",
-    aboutVerifyLi2: "Success criteria: ≥ 5 real external contributors, ≥ 2 independent federation nodes",
+    aboutVerifyLi2:
+      "Success criteria: ≥ 5 real external contributors, ≥ 2 independent federation nodes",
     aboutVerifyLi3: "Falsification: no external adoption within 3 months",
     aboutNotLi1: "Complements MCP: CCP search + MCP connection",
     aboutNotLi2: "Complements A2A: CCP trust + A2A communication",
@@ -254,9 +274,11 @@ const I18N = {
     aboutFedLi1: "Trust score computation for capability anchors",
     aboutFedLi2: "Governance proposal voting on protocol versions",
     aboutFedLi3: "Exchange and synchronization of federated indexes",
-    aboutFedNodeNote: "Current federation nodes: 4 (including 3 simulated), external nodes invited.",
+    aboutFedNodeNote:
+      "Current federation nodes: 4 (including 3 simulated), external nodes invited.",
     aboutMoreLi1Title: "Why an Experiment",
-    aboutMoreLi1Desc: " — CCP's ecological niche analysis and theoretical revision",
+    aboutMoreLi1Desc:
+      " — CCP's ecological niche analysis and theoretical revision",
     aboutMoreLi2Title: "Next Steps",
     aboutMoreLi2Desc: " — Stage 10 plan and milestones",
     aboutMoreLi3Title: "API Docs",
@@ -293,22 +315,28 @@ const I18N = {
     quickstartDesc:
       "Whether you're a developer, Agent user, or low-code enthusiast, you can run your first call in 5 minutes.",
     step1Title: "Search Capabilities",
-    step1Desc: "Use natural language to search for AI capabilities—PDF parsing, code explanation, translation, math...",
+    step1Desc:
+      "Use natural language to search for AI capabilities—PDF parsing, code explanation, translation, math...",
     step1Link: "Try it online →",
-    step1Curl: "curl \"https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf\"",
+    step1Curl: 'curl "https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf"',
     step2Title: "Get Adapter",
-    step2Desc: "One-click generate call code for your framework: LangChain Tool, MCP Server, DSH Plugin...",
+    step2Desc:
+      "One-click generate call code for your framework: LangChain Tool, MCP Server, DSH Plugin...",
     step2Link: "View example →",
     step3Title: "Register Your Capability",
-    step3Desc: "Contribute your AI capability to the federation network so global Agents can discover and invoke it.",
+    step3Desc:
+      "Contribute your AI capability to the federation network so global Agents can discover and invoke it.",
     step3Link: "View tutorial →",
     // For Whom
     forWhomTitle: "An Entry Point for Everyone",
-    forWhomDesc: "CCP designs different access paths for different roles—there's always one that fits you.",
+    forWhomDesc:
+      "CCP designs different access paths for different roles—there's always one that fits you.",
     forWhomDevTitle: "I'm a Developer",
-    forWhomDevDesc: "I write code and want to give my Agent more capabilities, or publish my own AI services.",
+    forWhomDevDesc:
+      "I write code and want to give my Agent more capabilities, or publish my own AI services.",
     forWhomUserTitle: "I'm an Agent User",
-    forWhomUserDesc: "I build agents with Dify, Coze, and other low-code platforms, and want drag-and-drop access to more capabilities.",
+    forWhomUserDesc:
+      "I build agents with Dify, Coze, and other low-code platforms, and want drag-and-drop access to more capabilities.",
     // Ecosystem
     ecoTitle: "CCP in the Agent Protocol Ecosystem",
     ecoDesc:
@@ -317,36 +345,42 @@ const I18N = {
     ecoTagCCP: "SkillMesh · Capability Trust",
     // Frameworks
     frameworksTitle: "Supported Frameworks",
-    frameworksDesc: "CCP protocol provides 4 integration channels covering mainstream Agent frameworks.",
+    frameworksDesc:
+      "CCP protocol provides 4 integration channels covering mainstream Agent frameworks.",
     // About
     aboutTitle: "About SkillMesh & CCP",
-    aboutDesc: "This is an ongoing open experiment. We honestly tell you the current state.",
+    aboutDesc:
+      "This is an ongoing open experiment. We honestly tell you the current state.",
     aboutVerifyTitle: "🧪 What We're Testing",
     aboutVerifyDesc:
       "CCP tries to answer one question: how can AI agents find the truly reliable one among thousands of capabilities?",
     aboutVerifyMore:
-      "Our hypothesis: based on federated consensus + real invocation data, we can compute a \"trust vector\" for each capability—without relying on any single platform's endorsement.",
+      'Our hypothesis: based on federated consensus + real invocation data, we can compute a "trust vector" for each capability—without relying on any single platform\'s endorsement.',
     aboutNotTitle: "📐 What CCP Is Not",
     aboutNotDesc:
       "CCP does not replace MCP (tool connection), nor A2A (Agent communication), nor Agent Skills (capability description).",
-    aboutNotMore: "It does what none of them do: capability trust. Who tells the Agent which capability is truly reliable?",
+    aboutNotMore:
+      "It does what none of them do: capability trust. Who tells the Agent which capability is truly reliable?",
     aboutFederationTitle: "🔗 Federation Governance",
     aboutFederationDesc:
       "CCP is not a company product, but a federation protocol. Any node can join the federation network and participate in:",
     aboutMoreTitle: "📖 Learn More",
     // Bottom CTA
     ctaTitle: "Ready to Make Your Agent Smarter?",
-    ctaDesc: "5 minutes, from zero to first capability call. No coding required.",
+    ctaDesc:
+      "5 minutes, from zero to first capability call. No coding required.",
     ctaBtn: "🔍 Explore Capabilities",
     // Footer
     footerNavCapabilities: "Capabilities",
     footerNavNodes: "Federation Nodes",
     footerNavWhy: "Why an Experiment",
     footerNavNext: "Next Steps",
-    footerTagline: "SkillMesh · CCP v1.0 · Federation · Open Source · Trust Experiment",
+    footerTagline:
+      "SkillMesh · CCP v1.0 · Federation · Open Source · Trust Experiment",
     // Explore Divider
     exploreTitle: "🔍 Explore Capability Anchors",
-    exploreDesc: "Enter natural language descriptions below to match capability anchors in the federation network in real time",
+    exploreDesc:
+      "Enter natural language descriptions below to match capability anchors in the federation network in real time",
     // Theme Toggle
     themeToggle: "Toggle Theme",
 
@@ -360,6 +394,13 @@ const I18N = {
     searchHint:
       "Enter natural language description to match capability anchors",
     searching: "Searching semantically…",
+    semanticLoading: "Loading semantic model…",
+    semanticReady: "Semantic search ready ✓",
+    searchSuggestions: "Try these:",
+    suggestionPdf: "PDF table extraction",
+    suggestionTranslate: "CN⇄EN translation",
+    suggestionScrape: "Web scraping",
+    suggestionSentiment: "Sentiment analysis",
 
     // Category
     categoryAll: "All",
@@ -371,7 +412,10 @@ const I18N = {
 
     // Empty / Loading
     empty: "No matching capability anchors found",
-    emptySub: "Try different keywords or switch category filter",
+    emptySub: "Try different keywords or switch category filters",
+    emptyQueryHint: 'No capabilities match "{query}", try different keywords?',
+    emptyCatHint: 'No match for "{query}" in "{category}" category',
+    emptyCatOnly: 'No capabilities in "{category}" category, try switching?',
     noData: "No capability data available",
     loading: "Loading capabilities…",
 
@@ -483,7 +527,8 @@ const I18N = {
     aboutFedLi1: "能力アンカーの信頼スコア計算",
     aboutFedLi2: "プロトコル版のガバナンス提案投票",
     aboutFedLi3: "連邦インデックスの交換と同期",
-    aboutFedNodeNote: "現在の連邦ノード：4（シミュレーション3を含む）、外部ノード募集中。",
+    aboutFedNodeNote:
+      "現在の連邦ノード：4（シミュレーション3を含む）、外部ノード募集中。",
     aboutMoreLi1Title: "なぜ実験なのか",
     aboutMoreLi1Desc: " — CCPの生態学的ニッチ分析と理論修正",
     aboutMoreLi2Title: "次のステップ",
@@ -522,22 +567,28 @@ const I18N = {
     quickstartDesc:
       "開発者、Agentユーザー、ローコードユーザー問わず、5分で最初の呼び出しを実行できます。",
     step1Title: "能力を検索",
-    step1Desc: "自然言語で必要なAI能力を検索—PDF解析、コード説明、翻訳、数学計算…",
+    step1Desc:
+      "自然言語で必要なAI能力を検索—PDF解析、コード説明、翻訳、数学計算…",
     step1Link: "オンラインで試す →",
-    step1Curl: "curl \"https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf\"",
+    step1Curl: 'curl "https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf"',
     step2Title: "アダプターを取得",
-    step2Desc: "お使いのフレームワーク用のコードをワンクリック生成：LangChain Tool、MCP Server、DSH Plugin…",
+    step2Desc:
+      "お使いのフレームワーク用のコードをワンクリック生成：LangChain Tool、MCP Server、DSH Plugin…",
     step2Link: "例を見る →",
     step3Title: "あなたの能力を登録",
-    step3Desc: "あなたのAI能力を連邦ネットワークに貢献し、世界中のAgentが発見・呼び出せるように。",
+    step3Desc:
+      "あなたのAI能力を連邦ネットワークに貢献し、世界中のAgentが発見・呼び出せるように。",
     step3Link: "チュートリアルを見る →",
     // For Whom
     forWhomTitle: "誰でも参加できる入口",
-    forWhomDesc: "CCPは様々な役割に合わせたアクセスパスを設計しています。必ずあなたに合ったものがあります。",
+    forWhomDesc:
+      "CCPは様々な役割に合わせたアクセスパスを設計しています。必ずあなたに合ったものがあります。",
     forWhomDevTitle: "私は開発者です",
-    forWhomDevDesc: "コードを書いて、Agentにもっと多くの能力を追加したい、または自分のAIサービスを公開したい。",
+    forWhomDevDesc:
+      "コードを書いて、Agentにもっと多くの能力を追加したい、または自分のAIサービスを公開したい。",
     forWhomUserTitle: "私はAgentユーザーです",
-    forWhomUserDesc: "Dify、CozeなどのローコードプラットフォームでAgentを構築し、より多くの能力をドラッグ＆ドロップで追加したい。",
+    forWhomUserDesc:
+      "Dify、CozeなどのローコードプラットフォームでAgentを構築し、より多くの能力をドラッグ＆ドロップで追加したい。",
     // Ecosystem
     ecoTitle: "AgentプロトコルエコシステムにおけるCCPの位置",
     ecoDesc:
@@ -546,10 +597,12 @@ const I18N = {
     ecoTagCCP: "SkillMesh · 能力信頼",
     // Frameworks
     frameworksTitle: "対応フレームワーク",
-    frameworksDesc: "CCPプロトコルは4つの統合チャネルを提供し、主要なAgentフレームワークをカバーします。",
+    frameworksDesc:
+      "CCPプロトコルは4つの統合チャネルを提供し、主要なAgentフレームワークをカバーします。",
     // About
     aboutTitle: "SkillMesh & CCPについて",
-    aboutDesc: "これは進行中のオープンな実験です。現在の状態を正直にお伝えします。",
+    aboutDesc:
+      "これは進行中のオープンな実験です。現在の状態を正直にお伝えします。",
     aboutVerifyTitle: "🧪 検証していること",
     aboutVerifyDesc:
       "CCPは問いかける：AIエージェントは何千もの能力の中から、本当に信頼できるものを見つけられるのか？",
@@ -558,14 +611,16 @@ const I18N = {
     aboutNotTitle: "📐 CCPではないもの",
     aboutNotDesc:
       "CCPはMCP（ツール接続）を代替せず、A2A（Agent通信）も、Agent Skills（能力記述）も代替しません。",
-    aboutNotMore: "これら三者がやっていないことを行う：能力の信頼。どの能力が本当に信頼できるかをAgentに伝えるのは誰か？",
+    aboutNotMore:
+      "これら三者がやっていないことを行う：能力の信頼。どの能力が本当に信頼できるかをAgentに伝えるのは誰か？",
     aboutFederationTitle: "🔗 連邦ガバナンス",
     aboutFederationDesc:
       "CCPは企業製品ではなく、連邦プロトコルです。どのノードも連邦ネットワークに参加し、以下に共同参加できます：",
     aboutMoreTitle: "📖 さらに詳しく",
     // Bottom CTA
     ctaTitle: "あなたのAgentをもっと賢くする準備はできましたか？",
-    ctaDesc: "5分で、ゼロから最初の能力呼び出しまで。コーディング不要でも遊べます。",
+    ctaDesc:
+      "5分で、ゼロから最初の能力呼び出しまで。コーディング不要でも遊べます。",
     ctaBtn: "🔍 能力アンカーを探索",
     // Footer
     footerNavCapabilities: "能力一覧",
@@ -575,7 +630,8 @@ const I18N = {
     footerTagline: "SkillMesh · CCP v1.0 · 連邦 · オープンソース · 信頼実験",
     // Explore Divider
     exploreTitle: "🔍 能力アンカーを探索",
-    exploreDesc: "下の検索バーに自然言語で説明を入力すると、連邦ネットワーク内の能力アンカーをリアルタイムでマッチングします",
+    exploreDesc:
+      "下の検索バーに自然言語で説明を入力すると、連邦ネットワーク内の能力アンカーをリアルタイムでマッチングします",
     // Theme Toggle
     themeToggle: "テーマ切替",
 
@@ -585,6 +641,13 @@ const I18N = {
     searchHint:
       "自然言語で説明すると、能力アンカーをリアルタイムでマッチングします",
     searching: "意味検索中…",
+    semanticLoading: "意味モデル読込中…",
+    semanticReady: "意味検索準備完了 ✓",
+    searchSuggestions: "お試し：",
+    suggestionPdf: "PDFテーブル抽出",
+    suggestionTranslate: "中日翻訳",
+    suggestionScrape: "Webスクレイピング",
+    suggestionSentiment: "感情分析",
 
     categoryAll: "すべて",
     categoryAI: "AI",
@@ -595,6 +658,10 @@ const I18N = {
 
     empty: "一致する能力アンカーが見つかりません",
     emptySub: "キーワードを変更するか、カテゴリフィルターを切り替えてください",
+    emptyQueryHint:
+      "「{query}」に一致する能力がありません。別のキーワードをお試しください",
+    emptyCatHint: "「{category}」カテゴリに「{query}」はありません",
+    emptyCatOnly: "「{category}」カテゴリに能力がありません",
     noData: "能力データがありません",
     loading: "能力データを読み込み中…",
 
