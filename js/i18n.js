@@ -413,9 +413,9 @@ const I18N = {
     // Empty / Loading
     empty: "No matching capability anchors found",
     emptySub: "Try different keywords or switch category filters",
-    emptyQueryHint: "No capabilities match "{query}", try different keywords?",
-    emptyCatHint: "No match for "{query}" in "{category}" category",
-    emptyCatOnly: "No capabilities in "{category}" category, try switching?",
+    emptyQueryHint: 'No capabilities match "{query}", try different keywords?',
+    emptyCatHint: 'No match for "{query}" in "{category}" category',
+    emptyCatOnly: 'No capabilities in "{category}" category, try switching?',
     noData: "No capability data available",
     loading: "Loading capabilities…",
 

@@ -262,7 +262,7 @@ describe("D2 页脚链接国际化", () => {
     return next === -1 ? rest : rest.slice(0, next);
   };
   const keySet = (tx) =>
-    new Set([...tx.matchAll(/^\s+([A-Za-z0-9_]+):\s*"/gm)].map((m) => m[1]));
+    new Set([...tx.matchAll(/^\s+([A-Za-z0-9_]+):\s*["\x27]/gm)].map((m) => m[1]));
   const zh = keySet(langBlock("zh"));
   const en = keySet(langBlock("en"));
   const ja = keySet(langBlock("ja"));
