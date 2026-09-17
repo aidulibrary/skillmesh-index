@@ -49,10 +49,7 @@ export async function onRequest(context) {
 
     // 仅支持 GET/HEAD
     if (request.method !== "GET" && request.method !== "HEAD") {
-      return new Response(JSON.stringify({ error: "Method not allowed" }), {
-        status: 405,
-        headers: { "Content-Type": "application/json" },
-      });
+      return structuredError("METHOD_NOT_ALLOWED");
     }
 
     const url = new URL(request.url);
