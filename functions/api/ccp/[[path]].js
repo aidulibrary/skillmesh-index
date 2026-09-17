@@ -16,7 +16,23 @@ import { generateAdapter } from "./v1/handlers/adapters.js";
 import { structuredError } from "./v1/lib/errors.js";
 import { safeErrorResponse } from "./v1/lib/error-boundary.js";
 
-const ALLOWED_SUFFIXES = ["/dsh.yaml", "/adapters/dsh"];
+const ALLOWED_SUFFIXES = [
+  "/dsh.yaml",
+  "/adapters/dsh",
+  "/adapters/mcp",
+  "/adapters/langchain",
+  "/adapters/crewai",
+  "/adapters/dify",
+];
+
+const SUFFIX_TO_FRAMEWORK = {
+  "/dsh.yaml": "dsh",
+  "/adapters/dsh": "dsh",
+  "/adapters/mcp": "mcp",
+  "/adapters/langchain": "langchain",
+  "/adapters/crewai": "crewai",
+  "/adapters/dify": "dify",
+};
 
 export async function onRequest(context) {
   try {
@@ -48,7 +64,7 @@ export async function onRequest(context) {
       return new Response(
         JSON.stringify({
           error: "Unknown path",
-          hint: "Available: /api/ccp/{id}/dsh.yaml or /api/ccp/{id}/adapters/dsh",
+          hint: "Available: /api/ccp/{id}/dsh.yaml or /api/ccp/{id}/adapters/{dsh|mcp|langchain|crewai|dify}",
         }),
         { status: 404, headers: { "Content-Type": "application/json" } },
       );
@@ -81,25 +97,33 @@ export async function onRequest(context) {
       });
     }
 
-    const adapter = generateAdapter(cap, "dsh");
+    const framework = SUFFIX_TO_FRAMEWORK[suffix] || "dsh";
+    const adapter = generateAdapter(cap, framework);
     if (!adapter) {
       return structuredError("CAPABILITY_NOT_FOUND", {
         detail: {
           id: capId,
-          message: `Unable to generate DSH adapter for: ${capId}`,
+          message: `Unable to generate ${framework} adapter for: ${capId}`,
         },
       });
     }
 
+    const contentType =
+      adapter.type === "json"
+        ? "application/json; charset=utf-8"
+        : "application/x-yaml; charset=utf-8";
+    const fileExt = adapter.type === "json" ? "json" : "yaml";
+
     return new Response(adapter.content, {
       status: 200,
       headers: {
-        "Content-Type": "application/x-yaml; charset=utf-8",
-        "Content-Disposition": `inline; filename="${capId}.yaml"`,
+        "Content-Type": contentType,
+        "Content-Disposition": `inline; filename="${capId}.${fileExt}"`,
         "Cache-Control": "public, max-age=3600",
         "Access-Control-Allow-Origin": "*",
         "X-CCP-Version": "v1.0.0",
         "X-CCP-Capability-Id": capId,
+        "X-CCP-Adapter-Framework": framework,
       },
     });
   } catch (err) {

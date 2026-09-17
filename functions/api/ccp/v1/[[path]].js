@@ -44,6 +44,7 @@ import {
   addNode,
   removeNode,
 } from "./federation/node.js";
+import openapiSpec from "../../../../openapi.json";
 import { handleExchange } from "./federation/exchange.js";
 import { handleTrustPolicy } from "./federation/trust-policy.js";
 import { handleGovernance } from "./handlers/governance.js";
@@ -189,8 +190,7 @@ export async function onRequest(context) {
     } else if (relative === "metrics") {
       response = jsonResponse(getMetrics());
     } else if (relative === "openapi" || relative === "openapi.json") {
-      const spec = await import("./openapi.json");
-      response = jsonResponse(spec.default || spec);
+      response = jsonResponse(openapiSpec.default || openapiSpec);
     } else if (relative === "search" || relative.startsWith("search?")) {
       const q = url.searchParams.get("q") || "";
       const federated = url.searchParams.get("federated") === "true";
