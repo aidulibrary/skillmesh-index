@@ -29,7 +29,12 @@ function renderOverallStatus(data) {
   const el = document.getElementById("overall-status");
   const ts = document.getElementById("timestamp");
 
-  el.textContent = data.status === "healthy" ? "🟢 健康" : "🟡 降级";
+  el.textContent =
+    data.status === "healthy"
+      ? "🟢 健康"
+      : data.status === "empty"
+        ? "⚪ empty"
+        : "🟡 降级";
   el.className = `status-indicator ${data.status}`;
   ts.textContent = new Date(data.timestamp).toLocaleString("zh-CN");
 }

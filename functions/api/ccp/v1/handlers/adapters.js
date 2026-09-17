@@ -91,6 +91,21 @@ permissions:
 }
 
 function generateMCPAdapter(cap) {
+  const tools = (cap.features || []).map((f) => ({
+    name: f.toLowerCase().replace(/\s+/g, "-"),
+    description: f,
+  }));
+  tools.push({
+    name: cap.id.replace(/-/g, "_"),
+    description: cap.desc,
+    inputSchema: {
+      type: "object",
+      properties: {
+        input: { type: "string", description: cap.input },
+      },
+      required: ["input"],
+    },
+  });
   return JSON.stringify(
     {
       mcpServers: {
@@ -98,6 +113,7 @@ function generateMCPAdapter(cap) {
           type: cap.endpointType === "mcp" ? "stdio" : "http",
           url: cap.endpoint,
           description: cap.desc,
+          tools,
           trust: {
             source: cap.trustSource,
             success: cap.trustSuccess,
@@ -125,6 +141,12 @@ function generateLangChainAdapter(cap) {
           },
           required: ["input"],
         },
+        _examples: [
+          {
+            input: cap.input,
+            description: "示例调用：传入能力输入（URL 或本地路径）",
+          },
+        ],
       },
       endpoint: cap.endpoint,
       endpointType: cap.endpointType,
