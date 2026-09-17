@@ -116,7 +116,9 @@
   --sm-fg-primary: var(--sm-zinc-900); /* 主文字 / 标题 */
   --sm-fg-secondary: var(--sm-zinc-700); /* 正文 */
   --sm-fg-tertiary: var(--sm-zinc-500); /* 辅助 / 说明 */
-  --sm-fg-placeholder: var(--sm-zinc-500); /* 占位符（D5：原 zinc-400 对比度仅 2.3:1，提升至 4.8:1） */
+  --sm-fg-placeholder: var(
+    --sm-zinc-500
+  ); /* 占位符（D5：原 zinc-400 对比度仅 2.3:1，提升至 4.8:1） */
   --sm-fg-disabled: var(--sm-zinc-400);
   --sm-fg-on-inverse: var(--sm-zinc-50);
   --sm-fg-accent: var(--sm-teal-700); /* 链接 / 品牌文字 */

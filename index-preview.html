@@ -4,15 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>插台 SkillMesh — CCP 能力通约协议</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/brand/favicon.svg" />
-    <link rel="apple-touch-icon" href="/assets/brand/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg" />
+    <link rel="apple-touch-icon" href="assets/brand/favicon.svg" />
 
     <!-- Design tokens (interactive app) -->
-    <link rel="stylesheet" href="/css/tokens.css?v=20260913c" />
+    <link rel="stylesheet" href="css/tokens.css" />
     <!-- Interactive app styles -->
-    <link rel="stylesheet" href="/css/style.css?v=20260913c" />
+    <link rel="stylesheet" href="css/style.css" />
     <!-- Dark mode (landing page) -->
-    <link rel="stylesheet" href="/dark-mode.css?v=20260913c" />
+    <link rel="stylesheet" href="dark-mode.css" />
 
     <style>
       /* ====== Landing Page Section Styles ====== */
@@ -21,8 +21,41 @@
         padding: 0;
         box-sizing: border-box;
       }
-      /* 落地页色板已收敛至 /css/tokens.css（--sm-* 与旧变量别名），
-         本文件不再自行维护亮/暗两套变量。 */
+      :root,
+      [data-theme="light"] {
+        --bg: #ffffff;
+        --bg-secondary: #f8fafc;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --accent: #4338ca;
+        --accent-hover: #3730a3;
+        --accent-light: #eef2ff;
+        --gradient-start: #4338ca;
+        --gradient-end: #7c3aed;
+        --success: #16a34a;
+        --warning: #ca8a04;
+        --radius: 12px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      [data-theme="dark"] {
+        --bg: #0f172a;
+        --bg-secondary: #1e293b;
+        --card-bg: #1e293b;
+        --border: #334155;
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --accent: #818cf8;
+        --accent-hover: #818cf8;
+        --accent-light: #1e1b4b;
+        --gradient-start: #6366f1;
+        --gradient-end: #8b5cf6;
+        --success: #22c55e;
+        --warning: #eab308;
+        --radius: 12px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
       body {
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
@@ -38,20 +71,10 @@
         position: sticky;
         top: 0;
         z-index: 1000;
-        background: var(--sm-bg-surface);
+        background: rgba(255, 255, 255, 0.92);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border);
         padding: 0 24px;
-        transition:
-          background-color var(--sm-dur-base) var(--sm-ease-standard),
-          border-color var(--sm-dur-base) var(--sm-ease-standard),
-          color var(--sm-dur-base) var(--sm-ease-standard);
-      }
-      /* 支持 color-mix 时还原毛玻璃半透明层次（P0-2） */
-      @supports (background: color-mix(in srgb, red 50%, transparent)) {
-        nav {
-          background: color-mix(in srgb, var(--sm-bg-surface) 92%, transparent);
-        }
       }
       nav .nav-inner {
         max-width: 1100px;
@@ -100,10 +123,6 @@
       nav .nav-links a:hover {
         color: var(--accent);
       }
-      nav .nav-links a.nav-current {
-        color: var(--accent);
-        font-weight: 700;
-      }
       nav .nav-links .nav-cta {
         background: var(--accent);
         color: #fff;
@@ -122,107 +141,34 @@
         align-items: center;
         gap: 12px;
       }
-      /* S12-C：Globe 图标 + 下拉菜单 — 语言切换器 */
-      .lang-dropdown {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-      }
-      .lang-dropdown .lang-trigger {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: none;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 4px 10px;
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--text-muted);
-        cursor: pointer;
-        transition: all 0.15s;
-        white-space: nowrap;
-      }
-      .lang-dropdown .lang-trigger:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-      .lang-dropdown .lang-trigger .globe-icon {
-        width: 14px;
-        height: 14px;
-        opacity: 0.7;
-      }
-      .lang-dropdown .lang-trigger .chevron {
-        font-size: 9px;
-        transition: transform 0.15s;
-      }
-      .lang-dropdown.open .lang-trigger .chevron {
-        transform: rotate(180deg);
-      }
-      .lang-dropdown .lang-menu {
-        position: absolute;
-        top: calc(100% + 6px);
-        right: 0;
-        min-width: 150px;
-        background: var(--sm-bg-surface);
-        border: 1px solid var(--border);
-        border-radius: var(--sm-radius-lg, 8px);
-        box-shadow: var(--sm-shadow-lg, 0 8px 30px rgba(0, 0, 0, 0.12));
-        opacity: 0;
-        transform: translateY(-4px);
-        pointer-events: none;
-        transition: all 0.15s var(--sm-ease-standard, ease);
-        z-index: 1100;
-        padding: 4px;
-      }
-      .lang-dropdown.open .lang-menu {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-      }
-      .lang-menu .lang-option {
+      .lang-switch {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 7px 12px;
+        gap: 2px;
         font-size: 13px;
-        font-weight: 500;
+      }
+      .lang-switch button {
+        background: none;
+        border: none;
         color: var(--text-muted);
         cursor: pointer;
-        border: none;
-        background: none;
-        width: 100%;
-        text-align: left;
-        border-radius: 6px;
-        transition: background 0.1s;
+        padding: 2px 6px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 4px;
+        transition: all 0.15s;
       }
-      .lang-menu .lang-option:hover {
-        background: var(--sm-bg-muted, rgba(0, 0, 0, 0.04));
-        color: var(--text);
+      .lang-switch button:hover {
+        color: var(--accent);
       }
-      .lang-menu .lang-option.active {
+      .lang-switch button.active {
         color: var(--accent);
         font-weight: 700;
         background: var(--accent-light);
       }
-      .lang-menu .lang-option .lang-flag {
-        font-size: 15px;
-        flex-shrink: 0;
-      }
-      .lang-menu .lang-option .lang-check {
-        margin-left: auto;
-        opacity: 0;
-        font-size: 11px;
-      }
-      .lang-menu .lang-option.active .lang-check {
-        opacity: 1;
-      }
-      /* S12-C：暗色主题下拉适配 */
-      [data-theme="dark"] .lang-dropdown .lang-trigger {
-        border-color: var(--sm-border-subtle, rgba(255, 255, 255, 0.1));
-      }
-      [data-theme="dark"] .lang-menu .lang-option:hover {
-        background: rgba(255, 255, 255, 0.06);
+      .lang-switch .sep {
+        color: var(--border);
+        margin: 0 2px;
       }
       .auth-btn {
         background: none;
@@ -258,7 +204,7 @@
         text-decoration: none;
       }
       #user-area .logout-link:hover {
-        color: var(--sm-danger);
+        color: #dc2626;
       }
 
       /* ====== Hero (landing page) ====== */
@@ -374,58 +320,6 @@
         opacity: 0.7;
       }
 
-      /* ====== P0-4 暗色态 Hero / CTA：深底 + 品牌微光晕 ====== */
-      [data-theme="dark"] .hero,
-      [data-theme="dark"] .cta-bottom {
-        background:
-          radial-gradient(
-            ellipse 80% 60% at 50% 0%,
-            color-mix(in srgb, var(--sm-teal-500) 16%, transparent),
-            transparent 62%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 82% 100%,
-            color-mix(in srgb, var(--sm-violet-600) 14%, transparent),
-            transparent 60%
-          ),
-          var(--sm-bg-canvas);
-        color: var(--sm-fg-primary);
-      }
-      [data-theme="dark"] .hero h1,
-      [data-theme="dark"] .cta-bottom h2,
-      [data-theme="dark"] .cta-bottom p {
-        color: var(--sm-fg-primary);
-      }
-      [data-theme="dark"] .hero .subtitle,
-      [data-theme="dark"] .hero-stat {
-        color: var(--sm-fg-secondary);
-      }
-      [data-theme="dark"] .hero-badge {
-        background: var(--sm-bg-muted);
-        color: var(--sm-fg-secondary);
-        backdrop-filter: none;
-      }
-      [data-theme="dark"] .btn-primary {
-        background: var(--sm-brand);
-        color: var(--sm-fg-on-solid);
-        box-shadow: var(--sm-shadow-md);
-      }
-      [data-theme="dark"] .btn-outline {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: var(--sm-border-strong);
-        color: var(--sm-fg-primary);
-      }
-      [data-theme="dark"] .btn-outline:hover {
-        background: var(--sm-bg-muted);
-      }
-      [data-theme="dark"] .cta-bottom .btn {
-        background: var(--sm-brand);
-        color: var(--sm-fg-on-solid);
-      }
-      [data-theme="dark"] .hero::before {
-        content: none;
-      }
-
       /* ====== Sections ====== */
       .section {
         max-width: 1100px;
@@ -462,10 +356,7 @@
         box-shadow: var(--shadow);
         transition:
           transform 0.2s,
-          box-shadow 0.2s,
-          background-color var(--sm-dur-base) var(--sm-ease-standard),
-          border-color var(--sm-dur-base) var(--sm-ease-standard),
-          color var(--sm-dur-base) var(--sm-ease-standard);
+          box-shadow 0.2s;
       }
       .step:hover {
         transform: translateY(-4px);
@@ -537,10 +428,6 @@
         border-radius: var(--radius);
         padding: 36px 32px;
         box-shadow: var(--shadow);
-        transition:
-          background-color var(--sm-dur-base) var(--sm-ease-standard),
-          border-color var(--sm-dur-base) var(--sm-ease-standard),
-          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .for-card .icon {
         font-size: 36px;
@@ -588,9 +475,7 @@
         box-shadow: var(--shadow);
         transition:
           border-color 0.2s,
-          transform 0.2s,
-          background-color var(--sm-dur-base) var(--sm-ease-standard),
-          color var(--sm-dur-base) var(--sm-ease-standard);
+          transform 0.2s;
         text-decoration: none;
         color: var(--text);
       }
@@ -625,10 +510,6 @@
         border-radius: var(--radius);
         padding: 32px;
         box-shadow: var(--shadow);
-        transition:
-          background-color var(--sm-dur-base) var(--sm-ease-standard),
-          border-color var(--sm-dur-base) var(--sm-ease-standard),
-          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .about-card h3 {
         font-size: 20px;
@@ -698,10 +579,6 @@
         color: var(--text-muted);
         font-size: 13px;
         border-top: 1px solid var(--border);
-        transition:
-          background-color var(--sm-dur-base) var(--sm-ease-standard),
-          border-color var(--sm-dur-base) var(--sm-ease-standard),
-          color var(--sm-dur-base) var(--sm-ease-standard);
       }
       footer a {
         color: var(--accent);
@@ -744,7 +621,6 @@
         text-align: center;
         padding: 48px 24px 24px;
         background: var(--bg);
-        transition: background-color var(--sm-dur-base) var(--sm-ease-standard);
       }
       .explore-divider h2 {
         font-size: 32px;
@@ -818,7 +694,7 @@
       .dsh-install-code {
         display: block;
         padding: 0.5rem 0.75rem;
-        background: var(--sm-code-bg);
+        background: #fff;
         border: 1px solid var(--sm-border-strong);
         border-radius: 0.375rem;
         font-size: 0.75rem;
@@ -872,9 +748,9 @@
         nav .nav-right {
           gap: 6px;
         }
-        .lang-dropdown .lang-trigger {
+        .lang-switch button {
           font-size: 11px;
-          padding: 3px 8px;
+          padding: 2px 4px;
         }
         #explore .hero-title {
           font-size: 1.75rem;
@@ -912,9 +788,9 @@
         nav .nav-right {
           gap: 4px;
         }
-        .lang-dropdown .lang-trigger {
+        .lang-switch button {
           font-size: 11px;
-          padding: 2px 6px;
+          padding: 2px 3px;
         }
         .auth-btn {
           font-size: 11px;
@@ -1027,19 +903,26 @@
         }
       }
     </style>
+
+    <!-- ====== [PREVIEW ONLY] 主题修复层：落地页旧变量统一到 --sm-* 单一色板 ====== -->
+    <link
+      id="themeFixCss"
+      rel="stylesheet"
+      href="preview/theme-fix.css"
+    />
+    <!-- ====== [PREVIEW ONLY] P1：主题前置初始化，消除首屏闪白 ====== -->
     <script>
-      // P1-1 首屏主题前置：在样式/脚本前确定主题，消除暗色用户白屏闪烁
       (function () {
         try {
-          var t = localStorage.getItem("ccp-theme");
-          var d =
-            t === "dark" ||
-            (!t &&
+          var s = localStorage.getItem("ccp-theme");
+          var dark =
+            s === "dark" ||
+            (!s &&
               window.matchMedia &&
               window.matchMedia("(prefers-color-scheme: dark)").matches);
           document.documentElement.setAttribute(
             "data-theme",
-            d ? "dark" : "light",
+            dark ? "dark" : "light"
           );
         } catch (e) {}
       })();
@@ -1049,72 +932,38 @@
     <!-- ====== 导航栏 ====== -->
     <nav>
       <div class="nav-inner">
-        <a href="/" class="brand">
+        <a href="" class="brand">
           <div class="logo-icon">◆</div>
           <span data-i18n="brandName">插台 SkillMesh</span>
         </a>
         <div class="nav-links">
-          <a href="/" class="nav-current" data-i18n="navHome">首页</a>
+          <a href="" data-i18n="navHome">首页</a>
           <a href="#quickstart" data-i18n="navQuickstart">快速开始</a>
           <a href="#explore" data-i18n="navExplore">能力探索</a>
-          <a href="/api-docs.html" data-i18n="navApiDocs">API 文档</a>
-          <a href="/health.html" data-i18n="navHealth">健康面板</a>
+          <a href="api-docs.html" data-i18n="navApiDocs">API 文档</a>
+          <a href="health.html" data-i18n="navHealth">健康面板</a>
           <a href="#about" data-i18n="navAbout">关于</a>
         </div>
         <div class="nav-right">
-          <div class="lang-dropdown" id="lang-dropdown">
+          <div class="lang-switch">
             <button
-              class="lang-trigger"
-              onclick="App.toggleLangMenu()"
-              aria-label="切换语言"
-              aria-expanded="false"
+              id="btn-zh"
+              class="lang-btn active"
+              onclick="App.setLang('zh')"
             >
-              <svg
-                class="globe-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10" />
-                <path d="M2 12h20" />
-              </svg>
-              <span id="lang-current-label">ZH</span>
-              <span class="chevron">▾</span>
+              ZH
             </button>
-            <div class="lang-menu" id="lang-menu">
-              <button
-                class="lang-option active"
-                data-lang="zh"
-                onclick="App.setLang('zh')"
-              >
-                <span class="lang-flag">🇨🇳</span> 中文
-                <span class="lang-check">✓</span>
-              </button>
-              <button
-                class="lang-option"
-                data-lang="en"
-                onclick="App.setLang('en')"
-              >
-                <span class="lang-flag">🇺🇸</span> English
-                <span class="lang-check">✓</span>
-              </button>
-              <button
-                class="lang-option"
-                data-lang="ja"
-                onclick="App.setLang('ja')"
-              >
-                <span class="lang-flag">🇯🇵</span> 日本語
-                <span class="lang-check">✓</span>
-              </button>
-            </div>
+            <span class="sep">|</span>
+            <button id="btn-en" class="lang-btn" onclick="App.setLang('en')">
+              EN
+            </button>
+            <span class="sep">|</span>
+            <button id="btn-ja" class="lang-btn" onclick="App.setLang('ja')">
+              JA
+            </button>
           </div>
           <span id="auth-area">
-            <a href="/api/auth/github/login" class="auth-btn">
+            <a href="api/auth/github/login" class="auth-btn">
               <svg
                 width="16"
                 height="16"
@@ -1135,7 +984,7 @@
               data-i18n="loginAs"
             ></span>
             <a
-              href="/api/auth/github/logout"
+              href="api/auth/github/logout"
               class="logout-link"
               data-i18n="logout"
               >退出</a
@@ -1200,11 +1049,12 @@
           <p data-i18n="step1Desc">
             用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……
           </p>
-          <code data-i18n="step1Curl"
+          <code
+            data-i18n="step1Curl"
             >curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"</code
           >
           <a
-            href="/api/ccp/v1/search?q=pdf"
+            href="api/ccp/v1/search?q=pdf"
             target="_blank"
             data-i18n="step1Link"
             >在线试试 →</a
@@ -1219,7 +1069,7 @@
           </p>
           <code>GET /capabilities/pdf-extract-001/adapters/langchain</code>
           <a
-            href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
+            href="api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
             target="_blank"
             data-i18n="step2Link"
             >查看示例 →</a
@@ -1232,7 +1082,7 @@
             把你的 AI 能力贡献给联邦网络，让全球 Agent 都能发现和调用。
           </p>
           <code>POST /api/ccp/v1/contribute</code>
-          <a href="/docs/quickstart.md" target="_blank" data-i18n="step3Link"
+          <a href="docs/quickstart.md" target="_blank" data-i18n="step3Link"
             >查看教程 →</a
           >
         </div>
@@ -1254,16 +1104,10 @@
               我写代码，想给我的 Agent 接入更多能力，或者发布自己的 AI 服务。
             </p>
             <ul>
-              <li data-i18n="forWhomCard1Li1">
-                LangChain / MCP / DSH / CrewAI 多框架适配
-              </li>
-              <li data-i18n="forWhomCard1Li2">
-                5 行代码接入，npm install / pip install 即用
-              </li>
+              <li data-i18n="forWhomCard1Li1">LangChain / MCP / DSH / CrewAI 多框架适配</li>
+              <li data-i18n="forWhomCard1Li2">5 行代码接入，npm install / pip install 即用</li>
               <li data-i18n="forWhomCard1Li3">能力贡献后自动出现在联邦搜索</li>
-              <li data-i18n="forWhomCard1Li4">
-                信任向量自动更新，高质量能力优先展示
-              </li>
+              <li data-i18n="forWhomCard1Li4">信任向量自动更新，高质量能力优先展示</li>
             </ul>
           </div>
           <div class="for-card">
@@ -1276,9 +1120,7 @@
               <li data-i18n="forWhomCard2Li1">Dify 插件即将上线（阶段十）</li>
               <li data-i18n="forWhomCard2Li2">MCP 协议一键连接，无需写代码</li>
               <li data-i18n="forWhomCard2Li3">自然语言搜索能力，不用记 ID</li>
-              <li data-i18n="forWhomCard2Li4">
-                在线 Playground 直接体验每个能力
-              </li>
+              <li data-i18n="forWhomCard2Li4">在线 Playground 直接体验每个能力</li>
             </ul>
           </div>
         </div>
@@ -1344,7 +1186,7 @@
       </p>
       <div class="integrations">
         <a
-          href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
+          href="api/ccp/v1/capabilities/pdf-extract-text-001/adapters/langchain"
           class="int-card"
         >
           <div class="logo">🦜</div>
@@ -1352,7 +1194,7 @@
           <div class="tag">Python / JS</div>
         </a>
         <a
-          href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/mcp"
+          href="api/ccp/v1/capabilities/pdf-extract-text-001/adapters/mcp"
           class="int-card"
         >
           <div class="logo">🔌</div>
@@ -1360,7 +1202,7 @@
           <div class="tag">Model Context Protocol</div>
         </a>
         <a
-          href="/api/ccp/v1/capabilities/pdf-extract-text-001/adapters/dsh"
+          href="api/ccp/v1/capabilities/pdf-extract-text-001/adapters/dsh"
           class="int-card"
         >
           <div class="logo">⚙️</div>
@@ -1396,9 +1238,7 @@
             </p>
             <ul>
               <li data-i18n="aboutVerifyLi1">当前状态：协议就绪，数据积累中</li>
-              <li data-i18n="aboutVerifyLi2">
-                成功标准：≥ 5 个真实外部贡献者，≥ 2 个独立联邦节点
-              </li>
+              <li data-i18n="aboutVerifyLi2">成功标准：≥ 5 个真实外部贡献者，≥ 2 个独立联邦节点</li>
               <li data-i18n="aboutVerifyLi3">证伪条件：3 个月内无外部采用</li>
             </ul>
           </div>
@@ -1418,9 +1258,7 @@
             <ul>
               <li data-i18n="aboutNotLi1">互补于 MCP：CCP 搜索 + MCP 连接</li>
               <li data-i18n="aboutNotLi2">互补于 A2A：CCP 信任 + A2A 通信</li>
-              <li data-i18n="aboutNotLi3">
-                互补于 Skills：CCP 信任 + Skills 描述
-              </li>
+              <li data-i18n="aboutNotLi3">互补于 Skills：CCP 信任 + Skills 描述</li>
             </ul>
           </div>
           <div class="about-card">
@@ -1443,32 +1281,31 @@
             <ul>
               <li>
                 <a
-                  href="/docs/C4-生态位证伪与理论体系修正.md"
+                  href="docs/C4-生态位证伪与理论体系修正.md"
                   data-i18n="aboutMoreLi1Title"
                   >为什么是实验</a
-                ><span data-i18n="aboutMoreLi1Desc">
-                  — CCP 的生态位分析与理论修正</span
+                ><span data-i18n="aboutMoreLi1Desc"
+                  > — CCP 的生态位分析与理论修正</span
                 >
               </li>
               <li>
-                <a href="/docs/C5-阶段十规划.md" data-i18n="aboutMoreLi2Title"
+                <a href="docs/C5-阶段十规划.md" data-i18n="aboutMoreLi2Title"
                   >下一步</a
                 ><span data-i18n="aboutMoreLi2Desc"> — 阶段十规划与里程碑</span>
               </li>
               <li>
-                <a href="/api-docs.html" data-i18n="aboutMoreLi3Title"
-                  >API 文档</a
-                ><span data-i18n="aboutMoreLi3Desc">
-                  — OpenAPI 3.0 规范 + Swagger UI</span
+                <a href="api-docs.html" data-i18n="aboutMoreLi3Title">API 文档</a
+                ><span data-i18n="aboutMoreLi3Desc"
+                  > — OpenAPI 3.0 规范 + Swagger UI</span
                 >
               </li>
               <li>
-                <a href="/health.html" data-i18n="aboutMoreLi4Title">健康面板</a
+                <a href="health.html" data-i18n="aboutMoreLi4Title">健康面板</a
                 ><span data-i18n="aboutMoreLi4Desc"> — 联邦网络实时状态</span>
               </li>
               <li>
                 <a
-                  href="/api/ccp/v1/contributors/leaderboard"
+                  href="api/ccp/v1/contributors/leaderboard"
                   data-i18n="aboutMoreLi5Title"
                   >贡献者排行榜</a
                 ><span data-i18n="aboutMoreLi5Desc"> — 查看社区贡献者</span>
@@ -1493,8 +1330,8 @@
         <div class="hero">
           <h2 class="hero-title">
             <span data-i18n="appHeroTitle">发现可靠能力</span
-            ><span class="hero-title-light" data-i18n="appHeroTitleLight">
-              · 信任驱动选择</span
+            ><span class="hero-title-light" data-i18n="appHeroTitleLight"
+              > · 信任驱动选择</span
             >
           </h2>
           <p class="hero-subtitle" id="subtitle" data-i18n="subtitle">
@@ -1572,11 +1409,7 @@
         <!-- Federation Panel -->
         <div class="federation-panel expanded" id="federationPanel">
           <div class="federation-header">
-            <h3
-              class="federation-title"
-              id="federationTitle"
-              data-i18n="federation"
-            >
+            <h3 class="federation-title" id="federationTitle" data-i18n="federation">
               联邦网络
             </h3>
             <button
@@ -1699,28 +1532,20 @@
             </div>
             <div class="modal-grid-2">
               <div>
-                <div class="modal-section-label" data-i18n="input">
-                  输入参数
-                </div>
+                <div class="modal-section-label" data-i18n="input">输入参数</div>
                 <p class="modal-section-text" id="modalInput"></p>
               </div>
               <div>
-                <div class="modal-section-label" data-i18n="output">
-                  输出承诺
-                </div>
+                <div class="modal-section-label" data-i18n="output">输出承诺</div>
                 <p class="modal-section-text" id="modalOutput"></p>
               </div>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="endpoint">
-                调用端点
-              </div>
+              <div class="modal-section-label" data-i18n="endpoint">调用端点</div>
               <code class="modal-endpoint-code" id="modalEndpoint"></code>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="provenance">
-                来源链接
-              </div>
+              <div class="modal-section-label" data-i18n="provenance">来源链接</div>
               <a
                 class="modal-provenance-link"
                 id="modalProvenance"
@@ -1730,21 +1555,15 @@
               ></a>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="features">
-                功能特性
-              </div>
+              <div class="modal-section-label" data-i18n="features">功能特性</div>
               <div class="feature-tags" id="modalFeatures"></div>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="usageGuide">
-                使用说明
-              </div>
+              <div class="modal-section-label" data-i18n="usageGuide">使用说明</div>
               <p class="modal-section-text" id="modalUsageGuide"></p>
             </div>
             <div>
-              <div class="modal-section-label" data-i18n="codeExample">
-                调用示例
-              </div>
+              <div class="modal-section-label" data-i18n="codeExample">调用示例</div>
               <pre
                 class="modal-section-text"
                 id="modalCodeExample"
@@ -1763,14 +1582,10 @@
 
             <!-- Trust Vector -->
             <div>
-              <div class="modal-section-label" data-i18n="trust">
-                可信度向量
-              </div>
+              <div class="modal-section-label" data-i18n="trust">可信度向量</div>
               <div class="trust-vector">
                 <div class="trust-row">
-                  <span class="trust-row-label" data-i18n="source"
-                    >源码可验证</span
-                  >
+                  <span class="trust-row-label" data-i18n="source">源码可验证</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1781,9 +1596,7 @@
                   <span class="trust-row-value" id="trustSourceVal">0.92</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label" data-i18n="usage"
-                    >使用痕迹</span
-                  >
+                  <span class="trust-row-label" data-i18n="usage">使用痕迹</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1794,9 +1607,7 @@
                   <span class="trust-row-value" id="trustUsageVal">0.25</span>
                 </div>
                 <div class="trust-row">
-                  <span class="trust-row-label" data-i18n="success"
-                    >成功率</span
-                  >
+                  <span class="trust-row-label" data-i18n="success">成功率</span>
                   <div class="trust-row-bar">
                     <div
                       class="trust-row-fill"
@@ -1911,12 +1722,7 @@
               </p>
               <div id="tryItForm">
                 <div class="try-it-row">
-                  <label
-                    class="try-it-label"
-                    for="tryItMethod"
-                    data-i18n="tryItMethod"
-                    >请求方法</label
-                  >
+                  <label class="try-it-label" for="tryItMethod" data-i18n="tryItMethod">请求方法</label>
                   <select class="try-it-select" id="tryItMethod">
                     <option value="GET">GET</option>
                     <option value="POST" selected>POST</option>
@@ -1924,12 +1730,7 @@
                   </select>
                 </div>
                 <div class="try-it-row">
-                  <label
-                    class="try-it-label"
-                    for="tryItParams"
-                    data-i18n="tryItParams"
-                    >请求参数</label
-                  >
+                  <label class="try-it-label" for="tryItParams" data-i18n="tryItParams">请求参数</label>
                   <textarea
                     class="try-it-textarea"
                     id="tryItParams"
@@ -1937,12 +1738,7 @@
                   ></textarea>
                 </div>
                 <div class="try-it-row">
-                  <label
-                    class="try-it-label"
-                    for="tryItHeaders"
-                    data-i18n="tryItHeaders"
-                    >请求头</label
-                  >
+                  <label class="try-it-label" for="tryItHeaders" data-i18n="tryItHeaders">请求头</label>
                   <textarea
                     class="try-it-textarea"
                     id="tryItHeaders"
@@ -1966,9 +1762,7 @@
               </div>
               <div class="try-it-result hidden" id="tryItResult">
                 <div class="try-it-result-header">
-                  <span class="try-it-result-label" data-i18n="tryItResponse"
-                    >响应结果</span
-                  >
+                  <span class="try-it-result-label" data-i18n="tryItResponse">响应结果</span>
                   <span class="try-it-result-meta" id="tryItMeta"></span>
                 </div>
                 <pre class="routing-code" id="tryItResponse"></pre>
@@ -1997,9 +1791,7 @@
                     value="mcp"
                     onchange="App.generateExport()"
                   />
-                  <span class="export-option-label" data-i18n="exportMCPLabel"
-                    >MCP 客户端</span
-                  >
+                  <span class="export-option-label" data-i18n="exportMCPLabel">MCP 客户端</span>
                   <span class="export-option-desc">mcp.json</span>
                 </label>
                 <label class="export-option">
@@ -2033,9 +1825,7 @@
                     onchange="App.generateExport()"
                   />
                   <span class="export-option-label">Dify</span>
-                  <span class="export-option-desc" data-i18n="exportDifyDesc"
-                    >工具配置</span
-                  >
+                  <span class="export-option-desc" data-i18n="exportDifyDesc">工具配置</span>
                 </label>
               </div>
             </div>
@@ -2061,15 +1851,11 @@
                 </p>
                 <div class="dsh-install-commands">
                   <div class="dsh-install-block">
-                    <span class="dsh-install-label" data-i18n="dshCliInstall"
-                      >通过 CLI 安装</span
-                    >
+                    <span class="dsh-install-label" data-i18n="dshCliInstall">通过 CLI 安装</span>
                     <code class="dsh-install-code" id="dshCliCommand"></code>
                   </div>
                   <div class="dsh-install-block">
-                    <span class="dsh-install-label" data-i18n="dshUrlInstall"
-                      >通过 URL 安装</span
-                    >
+                    <span class="dsh-install-label" data-i18n="dshUrlInstall">通过 URL 安装</span>
                     <code class="dsh-install-code" id="dshUrlCommand"></code>
                   </div>
                 </div>
@@ -2090,20 +1876,22 @@
     <!-- ====== Footer ====== -->
     <footer>
       <div class="footer-links">
-        <a href="/" data-i18n="navHome">首页</a>
-        <a href="/health.html" data-i18n="navHealth">健康面板</a>
-        <a href="/api/ccp/v1/capabilities" data-i18n="footerNavCapabilities"
+        <a href="" data-i18n="navHome">首页</a>
+        <a href="health.html" data-i18n="navHealth">健康面板</a>
+        <a href="api/ccp/v1/capabilities" data-i18n="footerNavCapabilities"
           >能力列表</a
         >
-        <a href="/api/ccp/v1/federation/nodes" data-i18n="footerNavNodes"
+        <a href="api/ccp/v1/federation/nodes" data-i18n="footerNavNodes"
           >联邦节点</a
         >
-        <a href="/api-docs.html" data-i18n="navApiDocs">API 文档</a>
-        <a href="/docs/quickstart.md" data-i18n="navQuickstart">快速开始</a>
-        <a href="/docs/C4-生态位证伪与理论体系修正.md" data-i18n="footerNavWhy"
+        <a href="api-docs.html" data-i18n="navApiDocs">API 文档</a>
+        <a href="docs/quickstart.md" data-i18n="navQuickstart">快速开始</a>
+        <a
+          href="docs/C4-生态位证伪与理论体系修正.md"
+          data-i18n="footerNavWhy"
           >为什么是实验</a
         >
-        <a href="/docs/C5-阶段十规划.md" data-i18n="footerNavNext">下一步</a>
+        <a href="docs/C5-阶段十规划.md" data-i18n="footerNavNext">下一步</a>
       </div>
       <div data-i18n="footerTagline">
         插台 SkillMesh · CCP v1.0 · 联邦 · 开源 · 信任实验
@@ -2115,13 +1903,12 @@
       class="theme-toggle"
       onclick="toggleTheme()"
       title="切换主题"
-      aria-label="切换主题"
     >
       🌓
     </button>
 
     <!-- ====== Scripts ====== -->
-    <script src="/dark-mode.js?v=20260913c"></script>
+    <script src="dark-mode.js"></script>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js");
@@ -2162,10 +1949,7 @@
           metrics = results[3] || {},
           hstats = health.stats || {},
           summary = health.summary || {};
-        set(
-          "stat-cap",
-          caps.count !== undefined ? caps.count : hstats.capabilities,
-        );
+        set("stat-cap", caps.count !== undefined ? caps.count : hstats.capabilities);
         set(
           "stat-node",
           summary.total_nodes !== undefined
@@ -2194,8 +1978,102 @@
         );
       })();
     </script>
-    <script src="/js/i18n.js?v=20260913c"></script>
-    <script src="/js/data.js?v=20260913c"></script>
-    <script src="/js/app.js?v=20260913c"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- ====== [PREVIEW ONLY] 一键预览控制台（不会进入生产） ====== -->
+    <style>
+      #pvBar {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        z-index: 10000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        max-width: min(92vw, 560px);
+        padding: 10px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(128, 128, 128, 0.35);
+        background: rgba(24, 24, 27, 0.9);
+        color: #fafafa;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        font:
+          500 13px/1.5 -apple-system,
+          "Segoe UI",
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+      #pvBar .pvBtn {
+        all: unset;
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        color: #fff;
+        background: #0d9488;
+      }
+      #pvBar .pvBtn.alt {
+        background: #4b5563;
+      }
+      #pvBar .pvBtn.off {
+        background: #b91c1c;
+      }
+      #pvTips {
+        display: none;
+        width: 100%;
+        margin: 4px 0 0;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        font-size: 12.5px;
+        line-height: 1.7;
+        opacity: 0.92;
+      }
+      #pvTips.show {
+        display: block;
+      }
+      #pvTips b {
+        color: #5eead4;
+      }
+    </style>
+    <div id="pvBar">
+      <span>主题修复预览</span>
+      <button id="pvFix" class="pvBtn">修复后（ON）</button>
+      <button id="pvTheme" class="pvBtn alt">切换明暗</button>
+      <button id="pvHelp" class="pvBtn alt">看什么？</button>
+      <p id="pvTips">
+        1）顶部<b>吸顶导航</b>：点 ON/OFF 对比，修复前暗色下是白条，修复后随主题变深。<br />
+        2）页面<b>上半部分（落地页）与下半部分（能力探索区）</b>：修复前底色/卡片/主色是两套色板（一深一浅、蓝绿不一），修复后完全统一。<br />
+        3）<b>滚动条、文字选区、页面上下回弹区</b>：修复后跟随主题。<br />
+        4）<b>刷新页面</b>：修复前会“先白后黑”闪一下，修复后不再闪。<br />
+        5）点右上角 <b>ZH / EN / JA</b> 切语言：修复前右下角主题按钮会变成文字，修复后保持图标。<br />
+        提示：右下角 <b>🌓</b> 是页面原本的主题按钮，同样可用。
+      </p>
+    </div>
+    <script>
+      (function () {
+        var css = document.getElementById("themeFixCss");
+        var bFix = document.getElementById("pvFix");
+        function paint() {
+          bFix.textContent = css.disabled ? "修复前（OFF）" : "修复后（ON）";
+          bFix.className = "pvBtn" + (css.disabled ? " off" : "");
+        }
+        paint();
+        bFix.onclick = function () {
+          css.disabled = !css.disabled;
+          paint();
+        };
+        document.getElementById("pvTheme").onclick = function () {
+          if (window.toggleTheme) window.toggleTheme();
+        };
+        var tips = document.getElementById("pvTips");
+        document.getElementById("pvHelp").onclick = function () {
+          tips.classList.toggle("show");
+        };
+      })();
+    </script>
   </body>
 </html>

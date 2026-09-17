@@ -28,7 +28,7 @@ const I18N = {
     aboutFedLi1: "能力锚点的信任评分计算",
     aboutFedLi2: "协议版本的治理提案投票",
     aboutFedLi3: "联邦索引的交换与同步",
-    aboutFedNodeNote: "当前联邦节点：4 个（含 3 个模拟节点），外部节点邀请中。",
+    aboutFedNodeNote: "当前联邦节点：0 个（演示节点已移除），外部节点邀请中。",
     aboutMoreLi1Title: "为什么是实验",
     aboutMoreLi1Desc: " — CCP 的生态位分析与理论体系修正",
     aboutMoreLi2Title: "下一步",
@@ -49,6 +49,8 @@ const I18N = {
     navApiDocs: "API 文档",
     navHealth: "健康面板",
     navAbout: "关于",
+    healthTitle: "CCP 联邦网络健康面板",
+    healthSubtitle: "SkillMesh — 能力通约协议 联邦网络可观测性仪表盘",
     // Hero
     heroBadge: "🚀 CCP 协议 v1.0 · 联邦网络已就绪",
     heroTitlePart1: "让 AI Agent 像调用函数一样",
@@ -70,7 +72,7 @@ const I18N = {
     step1Desc:
       "用自然语言搜索你需要的 AI 能力——PDF 解析、代码解释、翻译、数学计算……",
     step1Link: "在线试试 →",
-    step1Curl: "curl \"https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf\"",
+    step1Curl: 'curl "https://skillmesh.礼字号.中国/api/ccp/v1/search?q=pdf"',
     step2Title: "获取适配器",
     step2Desc:
       "一键生成你所用框架的调用代码：LangChain Tool、MCP Server、DSH Plugin……",
@@ -275,7 +277,7 @@ const I18N = {
     aboutFedLi2: "Governance proposal voting on protocol versions",
     aboutFedLi3: "Exchange and synchronization of federated indexes",
     aboutFedNodeNote:
-      "Current federation nodes: 4 (including 3 simulated), external nodes invited.",
+      "Current federation nodes: 0 (demo nodes removed), external nodes invited.",
     aboutMoreLi1Title: "Why an Experiment",
     aboutMoreLi1Desc:
       " — CCP's ecological niche analysis and theoretical revision",
@@ -297,6 +299,9 @@ const I18N = {
     navApiDocs: "API Docs",
     navHealth: "Health",
     navAbout: "About",
+    healthTitle: "CCP Federation Health Dashboard",
+    healthSubtitle:
+      "SkillMesh — Capability Commensurability Protocol Federation Observability Dashboard",
     // Hero
     heroBadge: "🚀 CCP Protocol v1.0 · Federation Ready",
     heroTitlePart1: "Let AI Agents Discover and Use",
@@ -318,7 +323,7 @@ const I18N = {
     step1Desc:
       "Use natural language to search for AI capabilities—PDF parsing, code explanation, translation, math...",
     step1Link: "Try it online →",
-    step1Curl: "curl \"https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf\"",
+    step1Curl: 'curl "https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf"',
     step2Title: "Get Adapter",
     step2Desc:
       "One-click generate call code for your framework: LangChain Tool, MCP Server, DSH Plugin...",
@@ -355,7 +360,7 @@ const I18N = {
     aboutVerifyDesc:
       "CCP tries to answer one question: how can AI agents find the truly reliable one among thousands of capabilities?",
     aboutVerifyMore:
-      "Our hypothesis: based on federated consensus + real invocation data, we can compute a \"trust vector\" for each capability—without relying on any single platform's endorsement.",
+      'Our hypothesis: based on federated consensus + real invocation data, we can compute a "trust vector" for each capability—without relying on any single platform\'s endorsement.',
     aboutNotTitle: "📐 What CCP Is Not",
     aboutNotDesc:
       "CCP does not replace MCP (tool connection), nor A2A (Agent communication), nor Agent Skills (capability description).",
@@ -528,7 +533,7 @@ const I18N = {
     aboutFedLi2: "プロトコル版のガバナンス提案投票",
     aboutFedLi3: "連邦インデックスの交換と同期",
     aboutFedNodeNote:
-      "現在の連邦ノード：4（シミュレーション3を含む）、外部ノード募集中。",
+      "現在の連邦ノード：0（デモノード削除済み）、外部ノード募集中。",
     aboutMoreLi1Title: "なぜ実験なのか",
     aboutMoreLi1Desc: " — CCPの生態学的ニッチ分析と理論修正",
     aboutMoreLi2Title: "次のステップ",
@@ -549,6 +554,9 @@ const I18N = {
     navApiDocs: "API ドキュメント",
     navHealth: "ヘルス",
     navAbout: "概要",
+    healthTitle: "CCP 連邦ネットワーク ヘルスダッシュボード",
+    healthSubtitle:
+      "SkillMesh — 能力通約プロトコル 連邦ネットワーク可観測性ダッシュボード",
     // Hero
     heroBadge: "🚀 CCP プロトコル v1.0 · 連邦ネットワーク準備完了",
     heroTitlePart1: "AIエージェントが関数のように",
@@ -570,7 +578,7 @@ const I18N = {
     step1Desc:
       "自然言語で必要なAI能力を検索—PDF解析、コード説明、翻訳、数学計算…",
     step1Link: "オンラインで試す →",
-    step1Curl: "curl \"https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf\"",
+    step1Curl: 'curl "https://skillmesh.pages.dev/api/ccp/v1/search?q=pdf"',
     step2Title: "アダプターを取得",
     step2Desc:
       "お使いのフレームワーク用のコードをワンクリック生成：LangChain Tool、MCP Server、DSH Plugin…",

@@ -188,6 +188,9 @@ export async function onRequest(context) {
       response = structuredError("METHOD_NOT_ALLOWED");
     } else if (relative === "metrics") {
       response = jsonResponse(getMetrics());
+    } else if (relative === "openapi" || relative === "openapi.json") {
+      const spec = await import("./openapi.json");
+      response = jsonResponse(spec.default || spec);
     } else if (relative === "search" || relative.startsWith("search?")) {
       const q = url.searchParams.get("q") || "";
       const federated = url.searchParams.get("federated") === "true";
@@ -313,7 +316,17 @@ export async function onRequest(context) {
           } else {
             const examples = buildAdapterExamples(cap, parts[2]);
             if (result.type === "yaml") {
-              response = yamlResponse(result.content);
+              const exampleBlock = [
+                result.content,
+                "",
+                "# ──────────── 使用示例 ────────────",
+                `# curl`,
+                `#   ${examples.curl.split("\n").join("\n#   ")}`,
+                `#`,
+                `# Node.js`,
+                `#   ${examples.javascript.split("\n").join("\n#   ")}`,
+              ].join("\n");
+              response = yamlResponse(exampleBlock);
             } else {
               const adapterData = JSON.parse(result.content);
               adapterData._examples = examples;

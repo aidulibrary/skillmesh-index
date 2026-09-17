@@ -1887,22 +1887,6 @@ nav .nav-right {
 }
 
 @media (max-width: 768px) {
-  nav .nav-links {
-    gap: 10px;
-  }
-  nav .nav-links a {
-    font-size: 12px;
-  }
-  nav .nav-right {
-    gap: 6px;
-  }
-  .lang-dropdown .lang-trigger {
-    font-size: 11px;
-    padding: 3px 8px;
-  }
-}
-
-@media (max-width: 480px) {
   nav {
     padding: 0 8px;
   }
@@ -1922,6 +1906,16 @@ nav .nav-right {
   nav .nav-links {
     display: none;
   }
+  nav .nav-right {
+    gap: 6px;
+  }
+  .lang-dropdown .lang-trigger {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+@media (max-width: 480px) {
   nav .nav-right {
     gap: 4px;
   }

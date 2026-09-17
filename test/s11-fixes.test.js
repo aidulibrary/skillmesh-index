@@ -25,7 +25,7 @@ function mockDB(node) {
     first: async () => {
       if (/COUNT\(\*\)/i.test(sql)) {
         if (/FROM capabilities/i.test(sql)) return { total: 33 };
-        if (/FROM federation_nodes/i.test(sql)) return { total: 4 };
+        if (/FROM federation_nodes/i.test(sql)) return { total: 0 };
         if (/FROM contributors/i.test(sql)) return { total: 2 };
         if (/FROM telemetry_records/i.test(sql)) return { total: 5 };
         if (/FROM governance_proposals/i.test(sql)) return { total: 3 };
@@ -71,7 +71,7 @@ describe("D3 接口契约与文档一致", () => {
     const body = await res.json();
     expect(body.stats).toMatchObject({
       capabilities: 33,
-      federation_nodes: 4,
+      federation_nodes: 0,
       contributors: 2,
       telemetries: 5,
       governance_proposals: 3,
@@ -262,7 +262,9 @@ describe("D2 页脚链接国际化", () => {
     return next === -1 ? rest : rest.slice(0, next);
   };
   const keySet = (tx) =>
-    new Set([...tx.matchAll(/^\s+([A-Za-z0-9_]+):\s*["\x27]/gm)].map((m) => m[1]));
+    new Set(
+      [...tx.matchAll(/^\s+([A-Za-z0-9_]+):\s*["\x27]/gm)].map((m) => m[1]),
+    );
   const zh = keySet(langBlock("zh"));
   const en = keySet(langBlock("en"));
   const ja = keySet(langBlock("ja"));
