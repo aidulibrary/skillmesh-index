@@ -37,6 +37,8 @@ const App = (() => {
 
   const API_BASE = "/api/ccp/v1";
 
+  const SEARCH_TIMEOUT_MS = 8000;
+
   async function loadCapabilities() {
     if (capsLoaded && caps.length > 0) return caps;
 
@@ -66,12 +68,20 @@ const App = (() => {
   async function searchCapabilities(query) {
     if (!query) return loadCapabilities();
 
+    const controller = new AbortController();
+
+    const timer = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
+
     try {
       const params = new URLSearchParams({ q: query });
 
       if (federated) params.set("federated", "true");
 
-      const res = await fetch(`${API_BASE}/search?${params}`);
+      const res = await fetch(`${API_BASE}/search?${params}`, {
+        signal: controller.signal,
+      });
+
+      clearTimeout(timer);
 
       if (res.ok) {
         const data = await res.json();
@@ -81,7 +91,8 @@ const App = (() => {
         return data.results || data.capabilities || [];
       }
     } catch (_) {
-      /* API unavailable, fallback to local search */
+      clearTimeout(timer);
+      /* API unavailable or timed out, fallback to local search */
     }
 
     return caps.filter((c) => matchCapability(c, query));
@@ -975,9 +986,8 @@ const App = (() => {
       try {
         filtered = await searchCapabilities(query);
       } catch (_) {
-        filtered = semanticReady
-          ? await filterCapabilitiesAsync()
-          : filterCapabilities();
+        // 超时或网络错误 → 同步本地搜索，避免二次异步挂起
+        filtered = filterCapabilities();
       }
 
       dom.loadingSkeleton.classList.add("hidden");
