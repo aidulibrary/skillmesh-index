@@ -719,4 +719,41 @@ export const CAPABILITIES = [
     codeExample:
       '{\n  "method": "tools/call",\n  "params": {\n    "name": "exec",\n    "arguments": { "code": "print(sum(range(1, 101)))", "lang": "python", "timeout": 10 }\n  }\n}',
   },
+  {
+    id: "http-ip-geo-021",
+    name: "IP地理位置查询",
+    name_en: "IP Geolocation Lookup",
+    desc: "通过REST API查询任意IP地址的地理位置信息（国家、城市、ISP）",
+    desc_en:
+      "Query geolocation info (country, city, ISP) for any IP via REST API",
+    input: "IP地址（可选，默认为请求方IP）",
+    input_en: "IP address (optional, defaults to requester IP)",
+    output: "国家、城市、ISP、经纬度、时区",
+    output_en: "Country, city, ISP, coordinates, timezone",
+    endpoint: "https://ipapi.co/json/?ip={ip}",
+    endpointType: "http",
+    category: "data",
+    provenance: "https://github.com/ipapi-co/ipapi",
+    trustSource: 0.94,
+    trustUsage: 9500,
+    trustUsageRate: 0.98,
+    trustSuccess: 0.98,
+    trustRisk: 0.05,
+    trustTime: 0.95,
+    lastUpdated: "2026-08-28",
+    evidence: { count: 9500, uncertainty: 0.2 },
+    features: ["REST API", "高可用", "无需认证", "速率限制友好"],
+    features_en: [
+      "REST API",
+      "High availability",
+      "No auth required",
+      "Rate-limit friendly",
+    ],
+    usageGuide:
+      "发送GET请求到 https://ipapi.co/json/ 即可获取当前IP的地理位置信息，支持自定义IP参数。",
+    usageGuide_en:
+      "Send GET to https://ipapi.co/json/ to get geolocation info. Supports custom IP parameter.",
+    codeExample:
+      '{\n  "method": "GET",\n  "url": "https://ipapi.co/json/",\n  "headers": { "Accept": "application/json" }\n}',
+  },
 ];
