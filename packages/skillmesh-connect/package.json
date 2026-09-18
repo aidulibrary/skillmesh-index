@@ -1,0 +1,34 @@
+{
+  "name": "skillmesh-connect",
+  "version": "1.0.0",
+  "description": "SkillMesh CCP → DeepSeek-Harness 本地连接器。一键启动本地 DSH catalog 代理，将 SkillMesh 能力注册表接入本地 Harness。",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "skillmesh-connect": "src/index.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "skillmesh",
+    "ccp",
+    "deepseek-harness",
+    "dsh",
+    "catalog",
+    "plugin-marketplace",
+    "ai-agent",
+    "capability-registry"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aidulibrary/skillmesh-index",
+    "directory": "packages/skillmesh-connect"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
