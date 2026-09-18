@@ -1,0 +1,35 @@
+{
+  "name": "dsh-plugin-ccp",
+  "version": "2.0.0",
+  "description": "DSH Cordis 插件：CCP 协议能力发现层",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./tools": "./src/tools.js"
+  },
+  "files": ["src/", "plugin.yaml", "README.md", "LICENSE"],
+  "engines": { "node": ">=18.0.0" },
+  "scripts": { "test": "vitest run" },
+  "keywords": ["dsh","dsh-plugin","deepseek-harness","ccp","capability","discovery","trust-vector","skillmesh","cordis"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aidulibrary/skillmesh-index",
+    "directory": "packages/dsh-plugin-ccp-npm"
+  },
+  "homepage": "https://skillmesh.礼字号.中国",
+  "author": "CCP Community",
+  "license": "MIT",
+  "dependencies": {
+    "@skillmesh-ccp/ccp-client": "^1.0.0"
+  },
+  "peerDependencies": {
+    "cordis": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "cordis": { "optional": true }
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}

@@ -1,0 +1,42 @@
+apiVersion: deepseek.io/plugin/v1
+kind: Plugin
+metadata:
+  name: dsh-plugin-ccp
+  version: 2.0.0
+  description: "CCP 协议能力发现层 — 让 DSH Agent 通过 CCP 协议搜索、评估、调用能力"
+  authors:
+    - name: "CCP Community"
+      email: "ccp@skillmesh.礼字号.中国"
+  license: MIT
+  homepage: "https://skillmesh.礼字号.中国"
+  repository: "https://github.com/aidulibrary/skillmesh-index"
+  tags: [ccp, discovery, capability, search, trust, cordis]
+  categories: [discovery, integration]
+  maturity: stable
+  minHarnessVersion: "0.8.0"
+
+runtime:
+  type: node
+  entrypoint:
+    module: dsh-plugin-ccp
+  env:
+    - name: CCP_ENDPOINT
+      description: "CCP API 端点 URL"
+      required: false
+      default: "https://skillmesh.礼字号.中国/api/ccp/v1"
+    - name: CCP_FEDERATED
+      description: "是否启用联邦搜索"
+      required: false
+      default: "false"
+
+permissions:
+  services:
+    inject: []
+    provide: [ccp_search, ccp_detail, ccp_telemetry]
+  sandbox:
+    recommended: workspace-read
+  network:
+    allowed_domains:
+      - "skillmesh.礼字号.中国"
+      - "skillmesh.pages.dev"
+  riskScore: 1.0
