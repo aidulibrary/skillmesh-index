@@ -81,6 +81,20 @@ permissions:
     recommended: workspace-read
   riskScore: ${riskScore}
 
+telemetry:
+  endpoint: "${HOMEPAGE}/api/ccp/v1/telemetry"
+  method: POST
+  headers:
+    Content-Type: "application/json"
+  payload:
+    capability_id: "${cap.id}"
+    agent_id: "dsh-${cap.id.replace(/-/g, "-")}"
+    success: true
+    source: "dsh"
+    dsh_plugin_id: "${cap.id}"
+    latency_ms: 0
+  description: "DSH 运行时遥测回传 — 调用成功后自动 POST 到 CCP，更新信任向量"
+
 # CCP 信任向量（以注释形式保留，供 DSH 安全策略参考）
 # trustSource: ${cap.trustSource.toFixed(2)}
 # trustUsage: ${cap.trustUsage}

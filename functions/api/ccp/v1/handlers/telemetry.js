@@ -3,9 +3,10 @@
  * ===============
  * CCP 协议遥测端点 — 信任向量运行时闭环。
  *
- * POST /api/ccp/v1/telemetry
+ * POST /api/ccp/v1/telemetry    → 遥测回传（Agent / DSH 插件）
+ * GET  /api/ccp/v1/telemetry    → 遥测记录列表（按 source 筛选）
  *
- * 接收 Agent 回传的调用结果，自动更新：
+ * 接收 Agent 或 DSH 插件回传的调用结果，自动更新：
  * - 信任向量（trustUsage, trustUsageRate, trustSuccess, trustTime）
  * - 证据层（evidence.count, evidence.uncertainty）
  * - 版本历史（capability_versions 表）
@@ -13,7 +14,7 @@
  * 限流：每 IP 每能力每秒最多 1 次请求
  * 持久化：随请求同步写入 D1（信任向量 + 版本历史 + 遥测明细）
  *
- * 版本：v1.0
+ * 版本：v1.1 — 新增 source 字段 + GET 列表端点（DSH 遥测闭环 S15）
  * 协议：CCP v1.0.0
  */
 
@@ -57,6 +58,8 @@ async function persistItem({
   latencyMs,
   traceId,
   traceParent,
+  source,
+  dshPluginId,
 }) {
   try {
     await db
@@ -101,10 +104,11 @@ async function persistItem({
 
     // S9-3：遥测明细落 telemetry_records（健康面板数据源）
     // S10-9：附加 W3C Trace Context（trace_id + trace_parent）
+    // S15：附加 source（direct/dsh）和 dsh_plugin_id（DSH 遥测闭环）
     await db
       .prepare(
-        `INSERT INTO telemetry_records (capability_id, agent_id, event_type, success, latency_ms, trace_id, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
+        `INSERT INTO telemetry_records (capability_id, agent_id, event_type, success, latency_ms, trace_id, source, dsh_plugin_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
       )
       .bind(
         capId,
@@ -113,6 +117,8 @@ async function persistItem({
         success ? 1 : 0,
         latencyMs || 0,
         traceId || null,
+        source || "direct",
+        dshPluginId || null,
       )
       .run();
   } catch (_) {}
@@ -161,6 +167,10 @@ export async function handleTelemetry(request, db, env) {
   const traceId =
     body.trace_id || (traceParent ? traceParent.split("-")[1] : null);
 
+  // S15：DSH 遥测闭环 — 追踪遥测来源
+  const source = body.source === "dsh" ? "dsh" : "direct";
+  const dshPluginId = body.dsh_plugin_id || null;
+
   try {
     const existing = await queryOne(db, capId);
     if (!existing) {
@@ -187,6 +197,8 @@ export async function handleTelemetry(request, db, env) {
       latencyMs: body.latency_ms || 0,
       traceId,
       traceParent,
+      source,
+      dshPluginId,
       update: {
         ...result,
         snapshot: existing,
@@ -199,6 +211,8 @@ export async function handleTelemetry(request, db, env) {
       capability_id: capId,
       agent_id: body.agent_id,
       success: body.success,
+      source,
+      dsh_plugin_id: dshPluginId || undefined,
       trace_id: traceId || undefined,
       updated: {
         trust_usage: result.trustUsage,
@@ -218,4 +232,91 @@ export async function handleTelemetry(request, db, env) {
   }
 }
 
-export default { handleTelemetry };
+// ============================================================
+// GET /api/ccp/v1/telemetry — 遥测记录列表
+// 查询参数：
+//   ?source=direct|dsh  按来源筛选（可选，默认全部）
+//   ?capability_id={id}  按能力 ID 筛选（可选）
+//   ?limit={n}           返回条数限制（默认 20，最大 100）
+// ============================================================
+export async function handleTelemetryList(db, url) {
+  if (!db) {
+    return structuredError("DB_ERROR", {
+      detail: { reason: "D1 database not available" },
+    });
+  }
+
+  const params = new URL(url).searchParams;
+  const sourceFilter = params.get("source");
+  const capFilter = params.get("capability_id");
+  const limit = Math.min(parseInt(params.get("limit") || "20", 10), 100);
+
+  let where = [];
+  let binds = [];
+
+  if (sourceFilter === "direct" || sourceFilter === "dsh") {
+    where.push("source = ?");
+    binds.push(sourceFilter);
+  }
+  if (capFilter) {
+    where.push("capability_id = ?");
+    binds.push(capFilter);
+  }
+
+  const whereClause = where.length > 0 ? `WHERE ${where.join(" AND ")}` : "";
+
+  try {
+    const records = await db
+      .prepare(
+        `SELECT * FROM telemetry_records ${whereClause} ORDER BY created_at DESC LIMIT ?`,
+      )
+      .bind(...binds, limit)
+      .all();
+
+    const totalResult = await db
+      .prepare("SELECT COUNT(*) as total FROM telemetry_records")
+      .first();
+
+    const dshResult = await db
+      .prepare(
+        "SELECT COUNT(*) as total FROM telemetry_records WHERE source = 'dsh'",
+      )
+      .first();
+
+    const directResult = await db
+      .prepare(
+        "SELECT COUNT(*) as total FROM telemetry_records WHERE source = 'direct'",
+      )
+      .first();
+
+    return jsonResponse({
+      protocol: "CCP",
+      version: CCP_VERSION,
+      records: (records.results || []).map((r) => ({
+        id: r.id,
+        capability_id: r.capability_id,
+        agent_id: r.agent_id,
+        event_type: r.event_type,
+        success: r.success === 1,
+        latency_ms: r.latency_ms,
+        source: r.source || "direct",
+        dsh_plugin_id: r.dsh_plugin_id || null,
+        trace_id: r.trace_id || null,
+        created_at: r.created_at,
+      })),
+      summary: {
+        total: totalResult?.total || 0,
+        by_source: {
+          direct: directResult?.total || 0,
+          dsh: dshResult?.total || 0,
+        },
+      },
+    });
+  } catch (e) {
+    return structuredError("INTERNAL_ERROR", {
+      detail: { cause: e.message },
+    });
+  }
+}
+
+export default { handleTelemetry, handleTelemetryList };

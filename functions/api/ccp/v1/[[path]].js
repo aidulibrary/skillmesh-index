@@ -32,7 +32,7 @@ import {
   handleDetail,
   handleSearch,
 } from "./handlers/capabilities.js";
-import { handleTelemetry } from "./handlers/telemetry.js";
+import { handleTelemetry, handleTelemetryList } from "./handlers/telemetry.js";
 import { handleContribute } from "./handlers/contribute.js";
 import { jsonResponse, yamlResponse, corsResponse } from "./lib/response.js";
 import { structuredError } from "./lib/errors.js";
@@ -105,7 +105,52 @@ const result = await fetch("${cap.endpoint}", {
 }).then(r => r.json());
 console.log(result);`;
 
-  return { curl, python, javascript: js };
+  const telemetryCurl = `# 使用能力后回传遥测到 CCP
+curl -X POST "${baseUrl}/telemetry" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "capability_id": "${capId}",
+    "agent_id": "my-agent-001",
+    "success": true,
+    "source": "direct",
+    "latency_ms": 42
+  }'`;
+
+  const telemetryPython = `# 使用能力后回传遥测
+requests.post(
+    "${baseUrl}/telemetry",
+    json={
+        "capability_id": "${capId}",
+        "agent_id": "my-agent-001",
+        "success": True,
+        "source": "direct",
+        "latency_ms": 42
+    }
+)`;
+
+  const telemetryJs = `// 使用能力后回传遥测
+await fetch("${baseUrl}/telemetry", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    capability_id: "${capId}",
+    agent_id: "my-agent-001",
+    success: true,
+    source: "direct",
+    latency_ms: 42
+  })
+});`;
+
+  return {
+    curl,
+    python,
+    javascript: js,
+    telemetry: {
+      curl: telemetryCurl,
+      python: telemetryPython,
+      javascript: telemetryJs,
+    },
+  };
 }
 
 export async function onRequest(context) {
@@ -246,6 +291,8 @@ export async function onRequest(context) {
       }
     } else if (relative.startsWith("contributors")) {
       response = await handleContributors(request, db);
+    } else if (relative === "telemetry") {
+      response = await handleTelemetryList(db, request.url);
     } else if (relative.startsWith("health")) {
       response = await handleHealth(request, db);
     } else if (relative === "stats") {
@@ -325,6 +372,11 @@ export async function onRequest(context) {
                 `#`,
                 `# Node.js`,
                 `#   ${examples.javascript.split("\n").join("\n#   ")}`,
+                `#`,
+                `# ──────── 遥测回传（DSH→CCP 闭环）────────`,
+                `# 使用能力后回传遥测，更新信任向量`,
+                `# curl`,
+                `#   ${examples.telemetry.curl.split("\n").join("\n#   ")}`,
               ].join("\n");
               response = yamlResponse(exampleBlock);
             } else {

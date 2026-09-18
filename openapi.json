@@ -415,28 +415,142 @@
       }
     },
     "/telemetry": {
+      "get": {
+        "tags": ["Telemetry"],
+        "summary": "遥测记录列表",
+        "description": "查询遥测记录（支持按来源 source=direct|dsh 筛选）。",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["direct", "dsh"] },
+            "description": "按遥测来源筛选（direct=Agent 直传，dsh=DSH 插件回传）"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "capability_id",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "遥测记录列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "integer" },
+                          "capability_id": { "type": "string" },
+                          "agent_id": { "type": "string" },
+                          "success": { "type": "boolean" },
+                          "latency_ms": { "type": "integer" },
+                          "source": {
+                            "type": "string",
+                            "enum": ["direct", "dsh"]
+                          },
+                          "dsh_plugin_id": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "trace_id": { "type": "string", "nullable": true },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    },
+                    "summary": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "by_source": {
+                          "type": "object",
+                          "properties": {
+                            "direct": { "type": "integer" },
+                            "dsh": { "type": "integer" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": ["Telemetry"],
         "summary": "遥测回传",
-        "description": "客户端上报调用遥测数据（最佳努力，失败静默）。",
+        "description": "客户端（Agent 或 DSH 插件）上报调用遥测数据，自动更新信任向量。",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["capability_id", "agent_id", "success"],
                 "properties": {
-                  "agent_id": { "type": "string" },
                   "capability_id": { "type": "string" },
+                  "agent_id": { "type": "string" },
                   "success": { "type": "boolean" },
                   "latency_ms": { "type": "integer" },
-                  "error_type": { "type": "string" }
+                  "source": {
+                    "type": "string",
+                    "enum": ["direct", "dsh"],
+                    "default": "direct",
+                    "description": "遥测来源：direct=Agent 直传，dsh=DSH 插件回传"
+                  },
+                  "dsh_plugin_id": {
+                    "type": "string",
+                    "description": "DSH 插件标识（source=dsh 时必填）"
+                  },
+                  "error": { "type": "string" },
+                  "trace_id": { "type": "string" }
                 }
               }
             }
           }
         },
         "responses": {
-          "202": { "description": "已接受" }
+          "200": {
+            "description": "遥测已接收，信任向量已更新",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "capability_id": { "type": "string" },
+                    "success": { "type": "boolean" },
+                    "source": { "type": "string", "enum": ["direct", "dsh"] },
+                    "dsh_plugin_id": { "type": "string", "nullable": true },
+                    "version": { "type": "integer" },
+                    "updated": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "缺少必填字段" },
+          "404": { "description": "能力 ID 不存在" },
+          "429": { "description": "限流（每 IP 每能力每秒最多 1 次）" }
         }
       }
     },

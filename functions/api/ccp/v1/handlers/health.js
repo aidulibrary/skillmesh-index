@@ -90,7 +90,7 @@ async function getIndexCoverage(db) {
 }
 
 /**
- * 获取遥测统计
+ * 获取遥测统计（含来源分布 direct/dsh）
  */
 async function getTelemetryStats(db) {
   const totalResult = await db
@@ -109,10 +109,27 @@ async function getTelemetryStats(db) {
     )
     .all();
 
+  // S15：遥测来源分布统计（direct / dsh）
+  let bySource = [
+    { source: "direct", count: 0 },
+    { source: "dsh", count: 0 },
+  ];
+  try {
+    const { results } = await db
+      .prepare(
+        "SELECT source, COUNT(*) as count FROM telemetry_records GROUP BY source ORDER BY count DESC",
+      )
+      .all();
+    if (results && results.length > 0) {
+      bySource = results;
+    }
+  } catch (_) {}
+
   return {
     total_telemetries: totalResult?.total || 0,
     last_24h: recentResult?.count || 0,
     by_type: byType || [],
+    by_source: bySource,
   };
 }
 
@@ -240,6 +257,19 @@ async function getStats(db) {
     .prepare("SELECT COUNT(*) as total FROM telemetry_records")
     .first();
 
+  // S15：遥测来源分布
+  let telemetryBySource = { direct: 0, dsh: 0 };
+  try {
+    const { results: srcResults } = await db
+      .prepare(
+        "SELECT source, COUNT(*) as count FROM telemetry_records GROUP BY source",
+      )
+      .all();
+    (srcResults || []).forEach((r) => {
+      telemetryBySource[r.source] = r.count;
+    });
+  } catch (_) {}
+
   const proposalsResult = await db
     .prepare("SELECT COUNT(*) as total FROM governance_proposals")
     .first();
@@ -259,6 +289,7 @@ async function getStats(db) {
       federation_nodes: nodesResult?.total || 0,
       contributors: contributorsResult?.total || 0,
       telemetries: telemetryResult?.total || 0,
+      telemetry_by_source: telemetryBySource,
       governance_proposals: proposalsResult?.total || 0,
     },
     categories: categoriesResult?.results || [],
