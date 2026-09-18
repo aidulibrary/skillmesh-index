@@ -14,7 +14,7 @@
   "keywords": ["dsh","dsh-plugin","deepseek-harness","ccp","capability","discovery","trust-vector","skillmesh","cordis"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/aidulibrary/skillmesh-index",
+    "url": "git+https://github.com/aidulibrary/skillmesh-index.git",
     "directory": "packages/dsh-plugin-ccp-npm"
   },
   "homepage": "https://skillmesh.礼字号.中国",

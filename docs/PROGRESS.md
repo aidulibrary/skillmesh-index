@@ -1,6 +1,6 @@
 # SkillMesh 项目深度复盘与统筹执行规划 — 进度跟踪
 
-> 最后更新：2026-09-16
+> 最后更新：2026-09-18
 > 当前部署版本：`e30d5ee`（S13 生产发布：D8 白名单闭环 + 代理测试 + bump `20260913c`/SW `ccp-v7`；上游基线 `3ad28f7`，Cloudflare Pages）
 > 当前阶段：阶段十三（S13：D8 债务闭环 + CORS 代理验证 + DSH 短 URL 端点 + 版本发布 — 已完成 ✅）
 > 测试覆盖：158/158（9 个测试文件，含新增 dsh-yaml.test.js 17 项）
@@ -344,3 +344,26 @@
 ---
 
 > **下一次更新触发条件**：完成任意一个交付物后更新此文档
+
+---
+
+## 2026-09-18 — S18 / S19 / P1
+
+| 里程碑                   | 描述                                                                                            | 状态           | commit  |
+| ------------------------ | ----------------------------------------------------------------------------------------------- | -------------- | ------- |
+| S18 能力采集引擎         | 3 源适配（DeepSeek API + GitHub MCP + awesome-mcp），D1 批量写入，熔断保护，每日 06:00 UTC cron | ✅ 代码完成    | 77d015b |
+| S19 skillmesh-connect    | CCP→DSH 本地连接器，npm 发布 @1.0.0，npx 一键启动验证通过                                       | ✅ 已发布      | 77d015b |
+| P1 dsh-plugin-ccp v2.0.0 | Python→Cordis/npm 重写，3 工具（search/detail/telemetry），npm 发布                             | 📦 npm publish | d6dd864 |
+
+### S18 待配置
+
+- Cloudflare Secrets: `COLLECT_ADMIN_KEY` / `GITHUB_TOKEN` 待注入
+- GitHub Actions Secrets: 同步配置后 cron 自动采集生效
+
+### P1 待完成
+
+- awesome-dsh-plugin PR 收录
+
+### 测试基线
+
+- 12 个测试文件，268/268 通过
