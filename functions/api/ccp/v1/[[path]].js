@@ -50,6 +50,7 @@ import { handleTrustPolicy } from "./federation/trust-policy.js";
 import { handleGovernance } from "./handlers/governance.js";
 import { handleContributors } from "./handlers/contributors.js";
 import { handleHealth, handleStats } from "./handlers/health.js";
+import { handleCollect } from "./admin/collect.js";
 
 const CCP_VERSION = "v1.0.0";
 
@@ -195,6 +196,8 @@ export async function onRequest(context) {
         response = await handleGovernance(request, db);
       } else if (relative.startsWith("contributors")) {
         response = await handleContributors(request, db);
+      } else if (relative === "admin/collect") {
+        response = await handleCollect(request, db, env);
       } else {
         response = structuredError("METHOD_NOT_ALLOWED");
       }
