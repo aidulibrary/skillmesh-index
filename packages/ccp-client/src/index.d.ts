@@ -29,7 +29,39 @@ declare module "@skillmesh-ccp/ccp-client" {
     capability_id: string;
     agent_id?: string;
     success: boolean;
+    latency_ms?: number;
+    source?: "direct" | "dsh";
+    dsh_plugin_id?: string;
     [key: string]: unknown;
+  }
+
+  interface TelemetryListParams {
+    source?: "direct" | "dsh";
+    capability_id?: string;
+    limit?: number;
+  }
+
+  interface TelemetryRecord {
+    id: number;
+    capability_id: string;
+    agent_id: string;
+    success: boolean;
+    latency_ms: number;
+    source: "direct" | "dsh";
+    dsh_plugin_id: string | null;
+    trace_id: string | null;
+    created_at: string;
+  }
+
+  interface TelemetryListResult {
+    records: TelemetryRecord[];
+    summary: {
+      total: number;
+      by_source: {
+        direct: number;
+        dsh: number;
+      };
+    };
   }
 
   interface ContributeData {
@@ -118,6 +150,7 @@ declare module "@skillmesh-ccp/ccp-client" {
     getAdapter(id: string, framework: string): Promise<AdapterResult>;
     getMetrics(): Promise<MetricsResult>;
     sendTelemetry(data: TelemetryData): Promise<unknown>;
+    listTelemetry(params?: TelemetryListParams): Promise<TelemetryListResult>;
     contribute(data: ContributeData): Promise<unknown>;
     getNodeInfo(): Promise<NodeInfo>;
     listNodes(): Promise<{ nodes: FederationNodeData[] }>;

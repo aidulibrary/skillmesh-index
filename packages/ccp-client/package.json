@@ -1,6 +1,6 @@
 {
   "name": "@skillmesh-ccp/ccp-client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CCP v1.0.0 client SDK — 13 API methods for agents to discover, evaluate, invoke, and route capabilities via the Capability Commensurability Protocol",
   "main": "src/index.js",
   "types": "src/index.d.ts",

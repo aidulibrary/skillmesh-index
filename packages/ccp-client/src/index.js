@@ -165,6 +165,23 @@ class CCPClient {
   }
 
   /**
+   * 查询遥测记录列表
+   * @param {object} [params]
+   * @param {"direct"|"dsh"} [params.source] - 按来源筛选
+   * @param {string} [params.capability_id] - 按能力 ID 筛选
+   * @param {number} [params.limit] - 返回条数限制（默认 20，最大 100）
+   * @returns {Promise<object>} { records, summary }
+   */
+  async listTelemetry(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.source) qs.set("source", params.source);
+    if (params.capability_id) qs.set("capability_id", params.capability_id);
+    if (params.limit) qs.set("limit", String(params.limit));
+    const q = qs.toString();
+    return this._request("GET", `/telemetry${q ? "?" + q : ""}`);
+  }
+
+  /**
    * 遥测中间件 — 自动回传调用结果到 CCP
    * @returns {{ after: (capabilityId: string, success: boolean, latencyMs?: number) => Promise<void> }}
    */
@@ -204,7 +221,10 @@ class CCPClient {
 
   /** 删除联邦节点 */
   async removeNode(id) {
-    return this._request("DELETE", `/federation/nodes/${encodeURIComponent(id)}`);
+    return this._request(
+      "DELETE",
+      `/federation/nodes/${encodeURIComponent(id)}`,
+    );
   }
 
   /** 交换索引摘要 */
@@ -234,4 +254,10 @@ class CCPClient {
   }
 }
 
-module.exports = { CCPClient, computeTrustVector, TRUST_DIMS, DEFAULT_BASE_URL, DEFAULT_TIMEOUT };
+module.exports = {
+  CCPClient,
+  computeTrustVector,
+  TRUST_DIMS,
+  DEFAULT_BASE_URL,
+  DEFAULT_TIMEOUT,
+};

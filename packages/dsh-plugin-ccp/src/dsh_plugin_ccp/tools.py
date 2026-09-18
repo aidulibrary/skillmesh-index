@@ -112,18 +112,25 @@ class CCPClient:
         except Exception as e:
             return {"error": {"code": "NETWORK_ERROR", "detail": str(e)}}
 
-    def telemetry(self, capability_id: str, success: bool, latency_ms: int = 0) -> dict:
-        """回传调用结果"""
-        return self._request(
-            "/telemetry",
-            method="POST",
-            body={
-                "capability_id": capability_id,
-                "success": success,
-                "latency_ms": latency_ms,
-                "agent_id": "dsh-plugin-ccp",
-            },
-        )
+    def telemetry(
+        self,
+        capability_id: str,
+        success: bool,
+        latency_ms: int = 0,
+        source: str = "dsh",
+        dsh_plugin_id: Optional[str] = None,
+    ) -> dict:
+        """回传调用结果（S15：DSH 遥测闭环 — 自动标记来源）"""
+        body = {
+            "capability_id": capability_id,
+            "success": success,
+            "latency_ms": latency_ms,
+            "agent_id": "dsh-plugin-ccp",
+            "source": source,
+        }
+        if dsh_plugin_id:
+            body["dsh_plugin_id"] = dsh_plugin_id
+        return self._request("/telemetry", method="POST", body=body)
 
     def list_capabilities(self, category: Optional[str] = None) -> dict:
         """列出所有能力锚点"""
@@ -203,51 +210,54 @@ def ccp_detail(capability_id: str) -> dict:
     return result
 
 
-def ccp_telemetry(capability_id: str, success: bool, latency_ms: int = 0) -> dict:
+def ccp_telemetry(capability_id: str, success: bool, latency_ms: int = 0, source: str = "dsh", dsh_plugin_id: Optional[str] = None) -> dict:
     """
     DSH 工具：回传调用结果到 CCP 遥测端点。
 
     每次 Agent 调用能力后应回传结果，以维护信任向量的准确性。
+    S15 新增：自动标记遥测来源为 dsh，确保 DSH 遥测闭环。
 
     Args:
         capability_id: 能力锚点 ID
         success: 调用是否成功
         latency_ms: 调用延迟（毫秒）
+        source: 遥测来源（默认 dsh，表示 DSH 插件回传）
+        dsh_plugin_id: DSH 插件标识（可选）
 
     Returns:
         确认信息
     """
-    result = _client.telemetry(capability_id, success, latency_ms)
+    result = _client.telemetry(capability_id, success, latency_ms, source, dsh_plugin_id)
     if "error" in result:
         return {"error": result["error"], "acknowledged": False}
-    return {"acknowledged": True, "capability_id": capability_id}
+    return {"acknowledged": True, "capability_id": capability_id, "source": source}
 
 
-def telemetry_wrapper(func, capability_id: str):
-    """自动遥测包装器 — 包裹任意能力调用，自动回传 success/latency_ms 到 CCP。"""
+def telemetry_wrapper(func, capability_id: str, dsh_plugin_id: Optional[str] = None):
+    """自动遥测包装器 — 包裹任意能力调用，自动回传 success/latency_ms 到 CCP（S15：标记 DSH 来源）。"""
     start = time.time()
     try:
         result = func()
         latency = int((time.time() - start) * 1000)
-        _client.telemetry(capability_id, True, latency)
+        _client.telemetry(capability_id, True, latency, "dsh", dsh_plugin_id)
         return result
     except Exception as e:
         latency = int((time.time() - start) * 1000)
-        _client.telemetry(capability_id, False, latency)
+        _client.telemetry(capability_id, False, latency, "dsh", dsh_plugin_id)
         raise e
 
 
-def telemetry_async_wrapper(func, capability_id: str):
-    """异步遥测包装器 — 包裹异步能力调用，自动回传遥测到 CCP。"""
+def telemetry_async_wrapper(func, capability_id: str, dsh_plugin_id: Optional[str] = None):
+    """异步遥测包装器 — 包裹异步能力调用，自动回传遥测到 CCP（S15：标记 DSH 来源）。"""
     async def _wrap():
         start = time.time()
         try:
             result = await func
             latency = int((time.time() - start) * 1000)
-            _client.telemetry(capability_id, True, latency)
+            _client.telemetry(capability_id, True, latency, "dsh", dsh_plugin_id)
             return result
         except Exception as e:
             latency = int((time.time() - start) * 1000)
-            _client.telemetry(capability_id, False, latency)
+            _client.telemetry(capability_id, False, latency, "dsh", dsh_plugin_id)
             raise e
     return _wrap()

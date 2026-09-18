@@ -142,13 +142,88 @@ paths:
                 $ref: "#/components/schemas/MetricsResponse"
 
   /telemetry:
+    get:
+      operationId: listTelemetry
+      summary: "查询遥测记录列表"
+      description: |
+        查询遥测记录，支持按来源（source=direct|dsh）和能力 ID 筛选。
+        S15 新增：DSH 遥测闭环 — DSH 插件回传的遥测自动标记为 dsh 来源。
+      tags: ["Telemetry"]
+      parameters:
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: ["direct", "dsh"]
+          description: "按遥测来源筛选（direct=Agent 直传，dsh=DSH 插件回传）"
+        - name: capability_id
+          in: query
+          schema:
+            type: string
+          description: "按能力锚点 ID 筛选"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: "返回条数限制"
+      responses:
+        "200":
+          description: "遥测记录列表"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  records:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        capability_id:
+                          type: string
+                        agent_id:
+                          type: string
+                        success:
+                          type: boolean
+                        latency_ms:
+                          type: integer
+                        source:
+                          type: string
+                          enum: ["direct", "dsh"]
+                        dsh_plugin_id:
+                          type: string
+                          nullable: true
+                        trace_id:
+                          type: string
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                  summary:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      by_source:
+                        type: object
+                        properties:
+                          direct:
+                            type: integer
+                          dsh:
+                            type: integer
     post:
       operationId: submitTelemetry
       summary: "提交遥测数据"
       description: |
-        Agent 回传调用结果，自动更新信任向量和证据层。
+        Agent 或 DSH 插件回传调用结果，自动更新信任向量和证据层。
         限流：每 IP 每能力每秒最多 1 次请求。
         批量写入：内存缓冲 60 秒或 100 条。
+        S15 新增：source 字段区分直接调用（direct）与 DSH 插件回传（dsh）。
       tags: ["Telemetry"]
       requestBody:
         required: true
@@ -168,11 +243,42 @@ paths:
                   type: boolean
                 latency_ms:
                   type: integer
+                source:
+                  type: string
+                  enum: ["direct", "dsh"]
+                  default: "direct"
+                  description: "遥测来源：direct=Agent 直传，dsh=DSH 插件回传"
+                dsh_plugin_id:
+                  type: string
+                  description: "DSH 插件标识（source=dsh 时必填）"
                 error:
+                  type: string
+                trace_id:
                   type: string
       responses:
         "200":
           description: "遥测已接收，信任向量已更新"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  capability_id:
+                    type: string
+                  success:
+                    type: boolean
+                  source:
+                    type: string
+                    enum: ["direct", "dsh"]
+                  dsh_plugin_id:
+                    type: string
+                    nullable: true
+                  version:
+                    type: integer
+                  updated:
+                    type: object
         "400":
           description: "缺少必填字段"
         "404":

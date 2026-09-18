@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dsh-plugin-ccp"
-version = "1.0.0"
+version = "1.1.0"
 description = "DSH 插件：CCP 协议能力发现层 — 让 DSH Agent 通过 CCP 协议搜索、评估、调用能力"
 readme = "README.md"
 license = { text = "MIT" }
