@@ -33,9 +33,15 @@ function parseListEntries(markdown) {
   const lines = markdown.split("\n");
 
   let currentCategory = "";
-  // 匹配列表项：- [Name](url) - description
-  const itemPattern = /^-\s+\[([^\]]+)\]\(([^)]+)\)\s*[-–—]\s*(.+)$/;
+  // 宽松匹配列表项：- [Name](url) 后跟任意内容（徽标/emoji/描述）
+  // 实际 README 格式：- [Name](url) [![badge](img)](glama) 🐍 ☁️ - description
+  const itemPattern = /^-\s+\[([^\]]+)\]\(([^)]+)\)/;
   const headingPattern = /^##\s+(.+)/;
+  // 徽标链接：[![alt](img)](link)
+  const badgePattern = /\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)/g;
+  // emoji 与修饰符
+  const emojiPattern = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{2B00}-\u{2BFF}\u{2190}-\u{21FF}\u{2B50}\u{2764}\u{2705}]/gu;
+  const sepPattern = /^\s*[-–—]\s*(.+)$/;
 
   for (const line of lines) {
     const headingMatch = line.match(headingPattern);
@@ -48,7 +54,13 @@ function parseListEntries(markdown) {
     if (itemMatch) {
       const name = itemMatch[1].trim();
       const url = itemMatch[2].trim();
-      const description = itemMatch[3].trim();
+      // 剩余部分：去掉徽标、emoji 后取 "- description"
+      let remainder = line.replace(itemPattern, "").replace(badgePattern, " ").replace(emojiPattern, " ").trim();
+      let description = "";
+      const sepMatch = remainder.match(sepPattern);
+      if (sepMatch) {
+        description = sepMatch[1].trim();
+      }
 
       const isGitHub = url.includes("github.com");
       const repoPath = isGitHub
