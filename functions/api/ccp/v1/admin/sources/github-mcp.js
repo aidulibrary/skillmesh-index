@@ -58,11 +58,32 @@ function buildFeatures(topics, language) {
 }
 
 export async function fetchGitHubMCPServers(token) {
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  const limit = Math.min(50, token ? 50 : 30);
-
+  const limit = token ? 50 : 30;
   const url = `${GITHUB_API}/search/repositories?q=topic:mcp-server+is:public&sort=stars&order=desc&per_page=${limit}`;
-  const data = await fetchJSON(url, headers);
+
+  let data;
+  let authError = null;
+
+  if (token) {
+    try {
+      data = await fetchJSON(url, { Authorization: `Bearer ${token}` });
+    } catch (e) {
+      authError = e.message;
+      console.warn(
+        `[github-mcp] Auth failed (${authError}), retrying without token...`,
+      );
+    }
+  }
+
+  if (!data) {
+    try {
+      data = await fetchJSON(url, {});
+    } catch (e) {
+      throw new Error(
+        authError ? `Auth: ${authError} | Unauth: ${e.message}` : e.message,
+      );
+    }
+  }
 
   if (!data.items || !Array.isArray(data.items)) {
     console.warn("[github-mcp] Unexpected response format:", Object.keys(data));
