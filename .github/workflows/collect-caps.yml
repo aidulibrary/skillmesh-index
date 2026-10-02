@@ -17,7 +17,7 @@ jobs:
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             -H "X-Admin-Key: ${ADMIN_KEY}" \
             -H "Content-Type: application/json" \
-            "https://eb5e0233.skillmesh.pages.dev/api/ccp/v1/admin/collect")
+            "https://42892317.skillmesh.pages.dev/api/ccp/v1/admin/collect")
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | sed '$d')
           echo "HTTP Status: $HTTP_CODE"
