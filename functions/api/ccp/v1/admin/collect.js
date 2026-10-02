@@ -27,6 +27,7 @@ import { fetchAwesomeMCPServers } from "./sources/awesome-mcp.js";
 
 const MAX_TOTAL = 500;
 const BATCH_SIZE = 100;
+const QUERY_ID_BATCH = 99; // D1 单条 SQL 绑定参数上限以下，避免 IN 查询参数过多失败
 const MAX_CONSECUTIVE_ERRORS = 5;
 
 function normalizeCapability(cap) {
@@ -60,17 +61,32 @@ function normalizeCapability(cap) {
 
 async function queryExistingIds(db, ids) {
   if (!db || ids.length === 0) return new Set();
-  try {
-    const placeholders = ids.map(() => "?").join(",");
-    const { results } = await db
-      .prepare(`SELECT id FROM capabilities WHERE id IN (${placeholders})`)
-      .bind(...ids)
-      .all();
-    return new Set((results || []).map((r) => r.id));
-  } catch (e) {
-    console.error("[collector] queryExistingIds error:", e.message);
-    return new Set();
+  const found = new Set();
+  let chunkError = null;
+
+  // 分批查询：单条 SQL 绑定参数过多会导致 D1 查询失败，
+  // 静默返回空集会让已存在 id 全部误走 INSERT 撞 UNIQUE 约束。
+  for (let i = 0; i < ids.length; i += QUERY_ID_BATCH) {
+    const chunk = ids.slice(i, i + QUERY_ID_BATCH);
+    try {
+      const placeholders = chunk.map(() => "?").join(",");
+      const { results } = await db
+        .prepare(`SELECT id FROM capabilities WHERE id IN (${placeholders})`)
+        .bind(...chunk)
+        .all();
+      for (const r of results || []) found.add(r.id);
+    } catch (e) {
+      chunkError = e;
+      console.error(`[collector] queryExistingIds chunk error (offset=${i}):`, e.message);
+    }
   }
+
+  if (chunkError) {
+    // 任一区块查询失败时不静默降级为空集（会误判为全新数据导致 UNIQUE 冲突），
+    // 抛给上层记录错误，由调用方决定本次采集失败而非写入脏数据。
+    throw new Error(`queryExistingIds incomplete: ${chunkError.message}`);
+  }
+  return found;
 }
 
 async function batchUpsert(db, capabilities, existingIds) {
