@@ -2,7 +2,7 @@ name: Collect Capabilities
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 jobs:
@@ -11,16 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger admin/collect
+        env:
+          ADMIN_KEY: ${{ secrets.COLLECT_ADMIN_KEY }}
         run: |
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-            -H "X-Admin-Key: ${{ secrets.COLLECT_ADMIN_KEY }}" \
+            -H "X-Admin-Key: ${ADMIN_KEY}" \
             -H "Content-Type: application/json" \
             "https://skillmesh.pages.dev/api/ccp/v1/admin/collect")
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | sed '$d')
           echo "HTTP Status: $HTTP_CODE"
           echo "$BODY" | jq .
-          if [ "$HTTP_CODE" -ne 200 ]; then
+          if [ "$HTTP_CODE" != "200" ]; then
             echo "Collection failed with status $HTTP_CODE"
             exit 1
           fi
