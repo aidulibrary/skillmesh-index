@@ -8,4 +8,7 @@
 --   无源码引用，非种子数据，0 次调用
 -- ============================================================
 
-DELETE FROM capabilities WHERE endpoint = 'mcp://math-server/calc';
+-- 先清除子表外键依赖（capability_versions 中 1 条关联记录）
+-- 再删除主表数据（已在远程 D1 执行验证，此处仅做迁移归档）
+DELETE FROM capability_versions WHERE cap_id = 'test-math-calc-021';
+DELETE FROM capabilities WHERE id = 'test-math-calc-021';

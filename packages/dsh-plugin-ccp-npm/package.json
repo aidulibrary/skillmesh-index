@@ -8,8 +8,11 @@
     ".": "./src/index.js",
     "./tools": "./src/tools.js"
   },
-  "files": ["src/", "plugin.yaml", "README.md", "LICENSE"],
+  "files": ["src/", "plugin.yaml", "cordis.patch.yml", "README.md", "LICENSE"],
   "engines": { "node": ">=18.0.0" },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" }
+  },
   "scripts": { "test": "vitest run" },
   "keywords": ["dsh","dsh-plugin","deepseek-harness","ccp","capability","discovery","trust-vector","skillmesh","cordis"],
   "repository": {

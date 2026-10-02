@@ -33,8 +33,8 @@ describe("CCP Search", () => {
 describe("CCP Detail", () => {
   it("获取详情含适配器", async () => {
     const tools = createTools();
-    tools.client.detail = async () => ({ id: "pdf-001", name: "PDF Extract", trust_source: 0.8 });
-    tools.client.adapter = async () => ({ adapter: "name: pdf-001\ntype: tool" });
+    tools.client.getCapability = async () => ({ id: "pdf-001", name: "PDF Extract", trust_source: 0.8 });
+    tools.client.getAdapter = async () => ({ adapter: "name: pdf-001\ntype: tool" });
     const result = await tools.ccp_detail("pdf-001");
     expect(result.id).toBe("pdf-001");
     expect(result.adapter).toContain("name: pdf-001");
@@ -42,8 +42,8 @@ describe("CCP Detail", () => {
 
   it("不存在的 ID 返回 NOT_FOUND", async () => {
     const tools = createTools();
-    tools.client.detail = async () => null;
-    tools.client.adapter = async () => null;
+    tools.client.getCapability = async () => null;
+    tools.client.getAdapter = async () => null;
     const result = await tools.ccp_detail("nonexistent");
     expect(result.error.code).toBe("NOT_FOUND");
   });
@@ -52,14 +52,14 @@ describe("CCP Detail", () => {
 describe("CCP Telemetry", () => {
   it("成功回传返回 acknowledged", async () => {
     const tools = createTools();
-    tools.client.telemetry = async () => ({});
+    tools.client.sendTelemetry = async () => ({});
     const result = await tools.ccp_telemetry("pdf-001", true, 100);
     expect(result.acknowledged).toBe(true);
   });
 
   it("回传失败返回 error", async () => {
     const tools = createTools();
-    tools.client.telemetry = async () => ({ error: { code: "TELEMETRY_ERROR" } });
+    tools.client.sendTelemetry = async () => ({ error: { code: "TELEMETRY_ERROR" } });
     const result = await tools.ccp_telemetry("pdf-001", false, 200);
     expect(result.acknowledged).toBe(false);
   });

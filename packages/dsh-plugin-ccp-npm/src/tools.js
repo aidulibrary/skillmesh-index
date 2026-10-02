@@ -32,8 +32,12 @@ export function createTools(config = {}) {
   };
 
   async function ccp_search(q, category) {
-    const result = await client.search(q, { category, federated: federated ? "true" : undefined });
+    let result = await client.search(q, { federated: federated ? "true" : undefined });
     if (result.error) return { error: result.error, results: [], count: 0 };
+    if (category && result.results) {
+      const c = String(category).toLowerCase();
+      result = { ...result, results: result.results.filter((cap) => String(cap.category || "").toLowerCase() === c) };
+    }
 
     const summary = (result.results || []).map((cap) => ({
       id: cap.id,
@@ -56,8 +60,8 @@ export function createTools(config = {}) {
 
   async function ccp_detail(capabilityId, framework = "dsh") {
     const [detail, adapter] = await Promise.all([
-      client.detail(capabilityId).catch(() => null),
-      client.adapter(capabilityId, framework).catch(() => null),
+      client.getCapability(capabilityId).catch(() => null),
+      client.getAdapter(capabilityId, framework).catch(() => null),
     ]);
 
     if (!detail && !adapter) {
@@ -65,11 +69,17 @@ export function createTools(config = {}) {
     }
     if (detail?.error) return { error: detail.error };
 
-    return { ...detail, adapter: adapter?.adapter || null, framework };
+    return { ...detail, adapter: typeof adapter === "string" ? adapter : adapter?.adapter || null, framework };
   }
 
   async function ccp_telemetry(capabilityId, success, latencyMs = 0) {
-    const result = await client.telemetry(capabilityId, success, latencyMs, "dsh", "dsh-plugin-ccp");
+    const result = await client.sendTelemetry({
+      capability_id: capabilityId,
+      success,
+      latency_ms: latencyMs,
+      source: "dsh",
+      dsh_plugin_id: "dsh-plugin-ccp",
+    });
     if (result?.error) return { error: result.error, acknowledged: false };
     return { acknowledged: true, capability_id: capabilityId, source: "dsh" };
   }
