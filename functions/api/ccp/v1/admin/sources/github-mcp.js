@@ -26,7 +26,9 @@ async function fetchJSON(url, headers = {}) {
     },
   });
   if (!resp.ok) {
-    throw new Error(`GitHub API ${resp.status}: ${resp.statusText}`);
+    const body = await resp.text().catch(() => "");
+    const detail = body ? ` — ${body.substring(0, 200)}` : "";
+    throw new Error(`GitHub API ${resp.status}: ${resp.statusText}${detail}`);
   }
   return resp.json();
 }

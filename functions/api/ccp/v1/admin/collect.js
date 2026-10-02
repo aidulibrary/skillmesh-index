@@ -78,6 +78,7 @@ async function batchUpsert(db, capabilities, existingIds) {
 
   let inserted = 0;
   let updated = 0;
+  const seenInBatch = new Set();
 
   for (let i = 0; i < capabilities.length; i += BATCH_SIZE) {
     const batch = capabilities.slice(i, i + BATCH_SIZE);
@@ -85,9 +86,11 @@ async function batchUpsert(db, capabilities, existingIds) {
 
     for (const cap of batch) {
       const normalized = normalizeCapability(cap);
-      const exists = existingIds.has(normalized.id);
+      const exists =
+        existingIds.has(normalized.id) || seenInBatch.has(normalized.id);
 
       if (exists) {
+        seenInBatch.add(normalized.id);
         stmts.push(
           db
             .prepare(
@@ -295,7 +298,7 @@ export async function handleCollect(request, db, env) {
   );
 
   // 源 2：GitHub MCP 生态
-  const githubToken = env?.GITHUB_TOKEN || env?.GH_TOKEN;
+  const githubToken = (env?.GITHUB_TOKEN || env?.GH_TOKEN || "").trim();
   if (githubToken) {
     sources.push(
       await collectSource(
