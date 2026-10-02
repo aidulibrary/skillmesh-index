@@ -234,11 +234,41 @@ export async function handleCollect(request, db, env) {
   }
 
   const adminKey = env?.ADMIN_KEY || env?.COLLECT_ADMIN_KEY;
+  if (!adminKey) {
+    return new Response(
+      JSON.stringify({
+        error:
+          "Server not configured: COLLECT_ADMIN_KEY not set in environment",
+        collected: false,
+        env_keys: Object.keys(env || {}).filter(
+          (k) =>
+            k.toUpperCase().includes("KEY") ||
+            k.toUpperCase().includes("ADMIN") ||
+            k.toUpperCase().includes("COLLECT"),
+        ),
+      }),
+      { status: 503, headers: { "Content-Type": "application/json" } },
+    );
+  }
   if (adminKey) {
     const provided = request.headers.get("X-Admin-Key") || "";
+    if (!provided) {
+      return new Response(
+        JSON.stringify({
+          error: "No X-Admin-Key header provided",
+          collected: false,
+        }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
     if (provided !== adminKey) {
       return new Response(
-        JSON.stringify({ error: "Unauthorized", collected: false }),
+        JSON.stringify({
+          error: "Invalid admin key",
+          provided_length: provided.length,
+          expected_length: adminKey.length,
+          collected: false,
+        }),
         { status: 401, headers: { "Content-Type": "application/json" } },
       );
     }
